@@ -29,7 +29,8 @@ def owner_command(update,context):
     
 def handle_message(update,context):
     text = str(update.message.text).lower()
-    update.message.reply_text(r.sample_responses(text))
+    if r.sample_responses(text) not in (""):
+        update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
     update.message.reply_text(f"Update {update} caused error {context.error}")
@@ -110,11 +111,11 @@ def ttfdownload(update, context):
         os.chdir("../")
         #todof=
         #print(os.getcwd())
-        update.message.reply_text("allwell before modulify")
+        #update.message.reply_text("allwell before modulify")
         modulify()
-        update.message.reply_text("allwell after modulify "+os.getcwd())
+        #update.message.reply_text("allwell after modulify "+os.getcwd())
         os.chdir("../magiFont")
-        update.message.reply_text("allwell before sendfile")
+        #update.message.reply_text("allwell before sendfile")
         context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'))
         os.chdir("../")
     else:
