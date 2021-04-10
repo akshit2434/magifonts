@@ -7,6 +7,8 @@ import constants as keys
 import responses as r  
     
 todof = "file_17.ttf"
+logging.getLogger("telegram").setLevel(logging.DEBUG)
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s")
 def start_command(update, context):
     update.message.reply_text("Send a font file to begin!! use /about for more info")
     
