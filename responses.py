@@ -2,7 +2,7 @@
 """
 Created on Sat Apr 10 10:11:50 2021
 
-@author: rsran
+@author: akshit Singh
 """
 
 def sample_responses(input_text):
@@ -10,4 +10,4 @@ def sample_responses(input_text):
     if user_message in ("do you know anything?"):
         return "i know nothing rn... but i am gonna get an update soon..."
     
-    return "dont say gibberish bRAH"
+    return ""
