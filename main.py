@@ -6,6 +6,7 @@ import logging
 import constants as keys
 import responses as r  
     
+filename=""
 todof = "file_17.ttf"
 def start_command(update, context):
     update.message.reply_text("type something to begin!")
@@ -13,9 +14,23 @@ def start_command(update, context):
 def help_command(update,context):
     update.message.reply_text("Search for it on Google, duh")
     
+def ccache_command(update,context):
+    clear_cache()
+    update.message.reply_text("Done")
+    
+def maker_command(update,context):
+    update.message.reply_text("@TheSc1enceGuy(akshit singh) has made this bot...")
+
+def owner_command(update,context):
+    update.message.reply_text("@TheSc1enceGuy(akshit singh) is my father... and he is the owner too lel ;)")
+    
 def handle_message(update,context):
     text = str(update.message.text).lower()
-    update.message.reply_text(r.sample_responses(text))
+    if filename not in (""):
+        update.message.reply_text(r.sample_responses(text))
+    else:
+        filename = update.message.text
+        update.message.reply_text("OK!")
     
 def error(update,context):
     update.message.reply_text(f"Update {update} caused error {context.error}")
@@ -26,6 +41,9 @@ def main():
     
     dp.add_handler(CommandHandler("start", start_command))
     dp.add_handler(CommandHandler("help",help_command))
+    dp.add_handler(CommandHandler("ccache",ccache_command))
+    dp.add_handler(CommandHandler("creator",maker_command))
+    dp.add_handler(CommandHandler("owner",owner_command))
     
     dp.add_handler(MessageHandler(Filters.text, handle_message))
     
@@ -80,6 +98,7 @@ def ttfdownload(update, context):
     context.bot.get_file(update.message.document).download()
     update.message.reply_text("downloaded!!")
     global todof
+    global filename
     for dirs,file,name in os.walk(os.getcwd()):
         #print(dirs)
         print(file)
@@ -94,11 +113,13 @@ def ttfdownload(update, context):
     update.message.reply_text("allwell after modulify "+os.getcwd())
     os.chdir("../magiFont")
     update.message.reply_text("allwell before sendfile")
-    context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'))
+    update.message.reply_text("What shall i name the file??")
+    context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'), filename=str(filename))
     os.chdir("../")
     
 def clearcache():
     #print(os.getcwd())
+    filename=""
     path_to_folder = "todo"
     list_dir = os.listdir(path_to_folder)
     for filename in list_dir:
