@@ -7,8 +7,6 @@ import constants as keys
 import responses as r  
     
 todof = "file_17.ttf"
-logging.getLogger("telegram").setLevel(logging.DEBUG)
-logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s")
 def start_command(update, context):
     update.message.reply_text("Send a font file to begin!! use /about for more info")
     
@@ -90,47 +88,48 @@ def modulify():
     
     #print(os.getcwd())
     os.chdir("../../../magiTemplate")
-    shutil.make_archive("../magiFont/"+todof, 'zip', os.getcwd())
+    shutil.make_archive("../magiFont/"+todof.split(".")[0], 'zip', os.getcwd())
     
 
 def ttfdownload(update, context):
-    update.message.reply_text("file detected... "+update.message.document.file_name)
-    clearcache()
-    update.message.reply_text("cleared ccache")
-    #print(context.bot.get_file(update.message.document))
-    os.chdir("todo")
-    #print(context.bot.get_file(update.message.document).file_name)
-    #context.bot.get_file(update.message.document).download()
-    update.message.document.get_file().download(custom_path=update.message.document.file_name)
-
+    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
+        update.message.reply_text("file detected... "+update.message.document.file_name)
+        clearcache()
+        update.message.reply_text("cleared ccache")
+        #print(context.bot.get_file(update.message.document))
+        os.chdir("todo")
+        #print(context.bot.get_file(update.message.document).file_name)
+        #context.bot.get_file(update.message.document).download()
+        update.message.document.get_file().download(custom_path=update.message.document.file_name)
     
-    global todof
-    for dirs,file,name in os.walk(os.getcwd()):
-        #print(dirs)
-        print(file) 
-        print(name)
-        todof=name[len(name)-1]
-    
-    #print(todof.split("."))
-    if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
-        update.message.reply_text("downloaded!!")
-        print(todof)
-        os.chdir("../")
-        #todof=
-        #print(os.getcwd())
-        #update.message.reply_text("allwell before modulify")
-        modulify()
-        #update.message.reply_text("allwell after modulify "+os.getcwd())
-        os.chdir("../magiFont")
-        #update.message.reply_text("allwell before sendfile")
-        context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'))
-        os.chdir("../")
-    else:
-        update.message.reply_text("invalid file type!")
-        os.chdir("../")
+        
+        global todof
+        for dirs,file,name in os.walk(os.getcwd()):
+            #print(dirs)
+            print(file) 
+            print(name)
+            todof=name[len(name)-1]
+        
+        #print(todof.split("."))
+        if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+            update.message.reply_text("downloaded!!")
+            print(todof)
+            os.chdir("../")
+            #todof=
+            #print(os.getcwd())
+            #update.message.reply_text("allwell before modulify")
+            modulify()
+            #update.message.reply_text("allwell after modulify "+os.getcwd())
+            os.chdir("../magiFont")
+            #update.message.reply_text("allwell before sendfile")
+            context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'))
+            os.chdir("../")
+        else:
+            update.message.reply_text("invalid file type!")
+            os.chdir("../")
     
 def clearcache():
-    #print(os.getcwd())
+    print(os.getcwd())
     path_to_folder = "todo"
     list_dir = os.listdir(path_to_folder)
     for filename in list_dir:
