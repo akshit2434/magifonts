@@ -92,15 +92,20 @@ def modulify():
     
 
 def ttfdownload(update, context):
-    update.message.reply_text("file detected...")
+    update.message.reply_text("file detected... "+update.message.document.file_name)
     clearcache()
+    update.message.reply_text("cleared ccache")
     #print(context.bot.get_file(update.message.document))
     os.chdir("todo")
-    context.bot.get_file(update.message.document).download()
+    #print(context.bot.get_file(update.message.document).file_name)
+    #context.bot.get_file(update.message.document).download()
+    update.message.document.get_file().download(custom_path=update.message.document.file_name)
+
+    
     global todof
     for dirs,file,name in os.walk(os.getcwd()):
         #print(dirs)
-        print(file)
+        print(file) 
         print(name)
         todof=name[len(name)-1]
     
