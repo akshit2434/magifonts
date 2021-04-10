@@ -78,6 +78,7 @@ def ttfdownload(update, context):
     #print(context.bot.get_file(update.message.document))
     os.chdir("todo")
     context.bot.get_file(update.message.document).download()
+    update.message.reply_text("downloaded!!")
     global todof
     for dirs,file,name in os.walk(os.getcwd()):
         #print(dirs)
@@ -94,6 +95,7 @@ def ttfdownload(update, context):
     os.chdir("../magiFont")
     update.message.reply_text("allwell before sendfile")
     context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'))
+    os.chdir("../")
     
 def clearcache():
     #print(os.getcwd())
@@ -121,9 +123,3 @@ def clearcache():
     
     
 main()
-    
-    
-    
-    
-    
-    
