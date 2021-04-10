@@ -30,6 +30,8 @@ def handle_message(update,context):
         update.message.reply_text(r.sample_responses(text))
     else:
         filename = update.message.text
+        context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'), filename=str(update.message.text)
+        os.chdir("../")
         update.message.reply_text("OK!")
     
 def error(update,context):
@@ -114,8 +116,8 @@ def ttfdownload(update, context):
     os.chdir("../magiFont")
     update.message.reply_text("allwell before sendfile")
     update.message.reply_text("What shall i name the file??")
-    context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'), filename=str(filename))
-    os.chdir("../")
+    
+    
     
 def clearcache():
     #print(os.getcwd())
