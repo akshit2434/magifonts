@@ -95,24 +95,30 @@ def ttfdownload(update, context):
     #print(context.bot.get_file(update.message.document))
     os.chdir("todo")
     context.bot.get_file(update.message.document).download()
-    update.message.reply_text("downloaded!!")
     global todof
     for dirs,file,name in os.walk(os.getcwd()):
         #print(dirs)
         print(file)
         print(name)
         todof=name[len(name)-1]
-    print(todof)
-    os.chdir("../")
-    #todof=
-    #print(os.getcwd())
-    update.message.reply_text("allwell before modulify")
-    modulify()
-    update.message.reply_text("allwell after modulify "+os.getcwd())
-    os.chdir("../magiFont")
-    update.message.reply_text("allwell before sendfile")
-    context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'))
-    os.chdir("../")
+    
+    #print(todof.split("."))
+    if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+        update.message.reply_text("downloaded!!")
+        print(todof)
+        os.chdir("../")
+        #todof=
+        #print(os.getcwd())
+        update.message.reply_text("allwell before modulify")
+        modulify()
+        update.message.reply_text("allwell after modulify "+os.getcwd())
+        os.chdir("../magiFont")
+        update.message.reply_text("allwell before sendfile")
+        context.bot.send_document(update.message.chat_id, open(todof+".zip",'rb'))
+        os.chdir("../")
+    else:
+        update.message.reply_text("invalid file type!")
+        os.chdir("../")
     
 def clearcache():
     #print(os.getcwd())
