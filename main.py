@@ -8,7 +8,7 @@ import responses as r
     
 todof = "file_17.ttf"
 def start_command(update, context):
-    update.message.reply_text("type something to begin!")
+    update.message.reply_text("Send a font file to begin!! use /about for more info")
     
 def help_command(update,context):
     update.message.reply_text("Search for it on Google, duh")
