@@ -48,7 +48,7 @@ def main():
     
     dp.add_handler(MessageHandler(Filters.text, handle_message))
     
-    dp.add_handler(MessageHandler(Filters.document, ttfdownload))
+    dp.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
     dp.add_error_handler(error)
     
     updater.start_polling(drop_pending_updates=True)
