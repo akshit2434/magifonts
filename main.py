@@ -4,9 +4,14 @@ import os
 import shutil
 import logging
 import constants as keys
-import responses as r  
+import responses as r
+import random
     
 todof = "file_17.ttf"
+file_responses = ["Here you go!", "Thanks for being a part of our family","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
+
+
+
 def start_command(update, context):
     update.message.reply_text("Send a font file to begin!! use /about for more info")
     
@@ -19,7 +24,7 @@ def ccache_command(update,context):
     
 def module_command(update,context):
     #clearcache()
-    update.message.reply_text("reply to this message and send a .otf/.ttf file...")
+    update.message.reply_text("Send a .otf/.ttf file...")
     
 def about_command(update,context):
     update.message.reply_text("Chat ID: "+str(update.message.chat_id))
@@ -117,7 +122,7 @@ def ttfdownload(update, context):
         
         #print(todof.split("."))
         if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
-            update.message.reply_text("downloaded!!")
+            #update.message.reply_text("downloaded!!")
             print(todof)
             os.chdir("../")
             #todof=
@@ -127,7 +132,8 @@ def ttfdownload(update, context):
             #update.message.reply_text("allwell after modulify "+os.getcwd())
             os.chdir("../magiFont")
             #update.message.reply_text("allwell before sendfile")
-            context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'))
+            context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+            update.message.reply_text("Make sure to send an ss... Thanks for being a part of the community!!")
             os.chdir("../")
         else:
             update.message.reply_text("invalid file type!")
