@@ -17,6 +17,10 @@ def ccache_command(update,context):
     clearcache()
     update.message.reply_text("Done")
     
+def module_command(update,context):
+    #clearcache()
+    update.message.reply_text("reply to this message and send a .otf/.ttf file...")
+    
 def about_command(update,context):
     update.message.reply_text("Chat ID: "+str(update.message.chat_id))
     update.message.reply_text("@TheSc1enceGuy(akshit singh) is the  developer of this bot... This bot will convert any sent font (.ttf or .otf) to a magisk flashable zip... enjoy!")
@@ -45,6 +49,7 @@ def main():
     dp.add_handler(CommandHandler("creator",maker_command))
     dp.add_handler(CommandHandler("owner",owner_command))
     dp.add_handler(CommandHandler("about",about_command))
+    dp.add_handler(CommandHandler("module",module_command))
     
     dp.add_handler(MessageHandler(Filters.text, handle_message))
     
