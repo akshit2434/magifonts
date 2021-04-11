@@ -8,7 +8,7 @@ import responses as r
 import random
     
 todof = "file_17.ttf"
-file_responses = ["Here you go!", "Thanks for being a part of our family","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
+file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
 
 
 
@@ -103,9 +103,9 @@ def modulify():
 
 def ttfdownload(update, context):
     if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
-        update.message.reply_text("file detected... "+update.message.document.file_name)
+        update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
-        update.message.reply_text("cleared ccache")
+        #update.message.reply_text("cleared ccache")
         #print(context.bot.get_file(update.message.document))
         os.chdir("todo")
         #print(context.bot.get_file(update.message.document).file_name)
