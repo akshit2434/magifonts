@@ -8,7 +8,7 @@ import responses as r
 import random
     
 todof = "file_17.ttf"
-file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
+file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for being one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
 
 
 
@@ -133,7 +133,7 @@ def ttfdownload(update, context):
             os.chdir("../magiFont")
             #update.message.reply_text("allwell before sendfile")
             context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
-            update.message.reply_text("Make sure to send an ss... Thanks for being a part of the community!!")
+            update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
             os.chdir("../")
         else:
             update.message.reply_text("invalid file type!")
