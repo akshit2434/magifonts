@@ -14,11 +14,13 @@ file_responses = ["This your OP font by your OP group", "You are the best!!", "Y
 bot = Bot(keys.API_KEY)
 
 def member_join(update, context):
+    
     for member in update.message.new_chat_members:
         member_count = int(bot.get_chat_members_count(update.message.chat_id))
         if member_count%10 == 0:
-            message = update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(members_count)+" members!")
-            bot.pin_chat_message(update.message.chat_id, message.message_id)
+            message = update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(member_count)+" members!")
+            if not bot.pin_chat_message(update.message.chat_id, message.message_id):
+                update.message.reply_text("I can't even pin a message.. dang!")
 
 def start_command(update, context):
     update.message.reply_text("Send a font file to begin!! use /about for more info")
@@ -51,7 +53,7 @@ def handle_message(update,context):
         update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
-    update.message.reply_text(f"Update {update} caused error {context.error}")
+    print(f"Update {update} caused error {context.error}")
     
 def main():
     updater = Updater(keys.API_KEY)
@@ -64,6 +66,7 @@ def main():
     dp.add_handler(CommandHandler("owner",owner_command))
     dp.add_handler(CommandHandler("about",about_command))
     dp.add_handler(CommandHandler("module",module_command))
+    dp.add_handler(CommandHandler("faketrigger",member_join))
     
     dp.add_handler(MessageHandler(Filters.text, handle_message))
     
@@ -128,14 +131,14 @@ def ttfdownload(update, context):
         global todof
         for dirs,file,name in os.walk(os.getcwd()):
             #print(dirs)
-            print(file) 
-            print(name)
+            #print(file) 
+            #print(name)
             todof=name[len(name)-1]
         
         #print(todof.split("."))
         if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
             #update.message.reply_text("downloaded!!")
-            print(todof)
+            #print(todof)
             os.chdir("../")
             #todof=
             #print(os.getcwd())
@@ -152,16 +155,16 @@ def ttfdownload(update, context):
             os.chdir("../")
     
 def clearcache():
-    print(os.getcwd())
+    #print(os.getcwd())
     path_to_folder = "todo"
     list_dir = os.listdir(path_to_folder)
     for filename in list_dir:
         file_path = os.path.join(path_to_folder, filename)
         if os.path.isfile(file_path) or os.path.islink(file_path):
-            print("deleting file:", file_path)
+            #print("deleting file:", file_path)
             os.unlink(file_path)
         elif os.path.isdir(file_path):
-            print("deleting folder:", file_path)
+            #print("deleting folder:", file_path)
             shutil.rmtree(file_path)
             
     path_to_folder = "magiFont"
@@ -169,10 +172,10 @@ def clearcache():
     for filename in list_dir:
         file_path = os.path.join(path_to_folder, filename)
         if os.path.isfile(file_path) or os.path.islink(file_path):
-            print("deleting file:", file_path)
+            #print("deleting file:", file_path)
             os.unlink(file_path)
         elif os.path.isdir(file_path):
-            print("deleting folder:", file_path)
+            #print("deleting folder:", file_path)
             shutil.rmtree(file_path)
     
     
