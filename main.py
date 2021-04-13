@@ -17,8 +17,8 @@ def member_join(update, context):
     for member in update.message.new_chat_members:
         member_count = int(bot.get_chat_members_count(update.message.chat_id))
         if member_count%10 == 0:
-            update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(members_count)+" members!")
-            
+            message = update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(members_count)+" members!")
+            bot.pin_chat_message(update.message.chat_id, message.message_id)
 
 def start_command(update, context):
     update.message.reply_text("Send a font file to begin!! use /about for more info")
@@ -70,7 +70,7 @@ def main():
     dp.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
     dp.add_error_handler(error)
     add_group_handle = MessageHandler(Filters.status_update.new_chat_members, member_join)
-    dispatcher.add_handler(add_group_handle)
+    dp.add_handler(add_group_handle)
 
     
     updater.start_polling(drop_pending_updates=True)
