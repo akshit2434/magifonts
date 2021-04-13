@@ -19,9 +19,9 @@ def sample_responses(input_text):
     message_array = user_message.split(" ")
     if ("hello" in message_array) or ("hey" in message_array) or ("hi" in message_array):
         return "Hello Sar!"
-    if "good morning" in message_array:
+    if "good morning" in user_message:
         return "Good Morning Sar!"
-    if "good night" in message_array:
+    if "good night" in user_message:
         return "Good Night Sar!"
     if "bye" in message_array:
         return "See you soon Sar!"
