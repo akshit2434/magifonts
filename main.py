@@ -1,5 +1,6 @@
 from telegram import *
 from telegram.ext import *
+#import telegram
 import os
 import shutil
 import logging
@@ -10,7 +11,14 @@ import random
 todof = "file_17.ttf"
 file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for being one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
 
+bot = Bot(keys.API_KEY)
 
+def member_join(update, context):
+    for member in update.message.new_chat_members:
+        member_count = int(bot.get_chat_members_count(update.message.chat_id))
+        if member_count%10 == 0:
+            update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(members_count)+" members!")
+            
 
 def start_command(update, context):
     update.message.reply_text("Send a font file to begin!! use /about for more info")
@@ -26,8 +34,9 @@ def module_command(update,context):
     #clearcache()
     update.message.reply_text("Send a .otf/.ttf file...")
     
+    
 def about_command(update,context):
-    update.message.reply_text("Chat ID: "+str(update.message.chat_id))
+    #update.message.reply_text("Memebers count: "+str(bot.get_chat_members_count(update.message.chat_id)))
     update.message.reply_text("@TheSc1enceGuy(akshit singh) is the  developer of this bot... This bot will convert any sent font (.ttf or .otf) to a magisk flashable zip... enjoy!")
 
 def maker_command(update,context):
@@ -60,6 +69,9 @@ def main():
     
     dp.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
     dp.add_error_handler(error)
+    add_group_handle = MessageHandler(Filters.status_update.new_chat_members, member_join)
+    dispatcher.add_handler(add_group_handle)
+
     
     updater.start_polling(drop_pending_updates=True)
     updater.idle()
