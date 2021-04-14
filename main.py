@@ -119,7 +119,7 @@ def modulify():
 
 def ttfdownload(update, context):
     if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
-        update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
+        bot.send_message(update.message.chat_id,"font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
         #update.message.reply_text("cleared ccache")
         #print(context.bot.get_file(update.message.document))
@@ -149,7 +149,7 @@ def ttfdownload(update, context):
             os.chdir("../magiFont")
             #update.message.reply_text("allwell before sendfile")
             context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
-            update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
+            bot.send_message(update.message.chat_id,"Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
             os.chdir("../")
         else:
             update.message.reply_text("invalid file type!")
