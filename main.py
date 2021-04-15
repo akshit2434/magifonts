@@ -196,12 +196,12 @@ def main():
     dispatcher.add_handler(add_group_handle)
 
     # Start the Bot
-    updater.start_polling()
+    updater.start_polling(drop_pending_updates=True)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle(drop_pending_updates=True)
+    updater.idle()
     
     
 tfonts = ['MiLanProVF.ttf',
@@ -298,6 +298,7 @@ def modulifybi(fname):
 
 def ttfdownload(update, context):
     print("ttf download requested by @"+update.message.from_user.username)
+    update.message.reply_text("Check /module for creating fonts with custom bold and/or italic fonts!!")
     if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
