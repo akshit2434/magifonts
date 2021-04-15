@@ -187,7 +187,9 @@ def main():
     
     dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
     
-    dispatcher.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
+    dispatcher.add_handler(MessageHandler(Filters.document, ttfdownload))
+
+    #dispatcher.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
     dispatcher.add_error_handler(error)
     add_group_handle = MessageHandler(Filters.status_update.new_chat_members, member_join)
     dispatcher.add_handler(add_group_handle)
@@ -309,8 +311,8 @@ def ttfdownload(update, context):
             os.chdir("../")
             modulify()
             os.chdir("../magiFont")
-            context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
-            update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
+            context.bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+            update.message.reply_text("Your file has been posted in @magifonts_support\nMake sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
             os.chdir("../")
         else:
             update.message.reply_text("invalid file type!")
