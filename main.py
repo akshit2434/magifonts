@@ -7,10 +7,11 @@ import logging
 import constants as keys
 import responses as r
 import random
-    
+
+magifonts_id = -1001393886080
 todof = "file_17.ttf"
 file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for being one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
-
+FONT, BOLD, ITALICS = range(3)
 bot = Bot(keys.API_KEY)
 
 def member_join(update, context):
@@ -48,15 +49,115 @@ def owner_command(update,context):
     update.message.reply_text("@TheSc1enceGuy(akshit singh) is my father... and he is the owner too lel ;)")
     
 def handle_message(update,context):
-    return True
-    #text = str(update.message.text).lower()
-    #if r.sample_responses(text) not in (""):
-    #    update.message.reply_text(r.sample_responses(text))
+    text = str(update.message.text).lower()
+    if r.sample_responses(text) not in (""):
+        update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
     
-def main():
+def module(update,context):
+    if "-" in str(update.message.chat_id):
+        update.message.reply_text("Try running this command in my pm...")
+    else:
+        bot.send_message(update.message.chat_id,"Hey "+update.message.from_user.first_name+", i think you want to make a custom font.\nSend /cancel to cancel the process...")
+        bot.send_message(update.message.chat_id,"Send /cancel to cancel any time\nSend a font file to continue!")
+        return FONT
+
+def font(update,context):
+    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
+        #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
+        clearcache()
+        os.chdir("todo")
+        update.message.document.get_file().download(custom_path=update.message.document.file_name)
+    
+        
+        global todof
+        for dirs,file,name in os.walk(os.getcwd()):
+            todof=name[len(name)-1]
+        
+        if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+            os.chdir("../")
+            #modulify()
+            #os.chdir("../magiFont")
+            #context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+            #update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
+            #os.chdir("../")
+            bot.send_message(update.message.chat_id, "Do you have the bold version?\nSend /skip to skip this step\nSend Bold font file or do /skip ...")
+            return BOLD
+        else:
+            update.message.reply_text("invalid file type!")
+            os.chdir("../")
+            bot.send_message(update.message.chat_id, "Send a valid font file to continue...")
+            return FONT
+        
+def bold(update,context):
+    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
+        #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
+        #clearcache()
+        os.chdir("todo")
+        update.message.document.get_file().download(custom_path=todof+"-bold.ttf")
+        
+        if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+            os.chdir("../")
+            #modulify()
+            #os.chdir("../magiFont")
+            #context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+            #update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
+            #os.chdir("../")
+            bot.send_message(update.message.chat_id, "Do you have the italics version?\nSend /skip to skip this step\nSend Italics font file or do /skip ...")
+            return ITALICS
+        else:
+            update.message.reply_text("invalid file type!")
+            os.chdir("../")
+            bot.send_message(update.message.chat_id, "Send a valid font file to continue...")
+            return BOLD
+        
+def italics(update,context):
+    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
+        #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
+        #clearcache()
+        os.chdir("todo")
+        update.message.document.get_file().download(custom_path=todof+"-italics.ttf")
+        
+        if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+            os.chdir("../")
+            #modulify()
+            #os.chdir("../magiFont")
+            #context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+            #update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
+            #os.chdir("../")
+            bot.send_message(update.message.chat_id, "Ok... Processing...")
+            modulifybi(todof)
+            print(os.getcwd())
+            print("../magiFont/"+todof.split(".")[0]+".zip")
+            bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+            return ConversationHandler.END
+        else:
+            update.message.reply_text("invalid file type!")
+            os.chdir("../")
+            bot.send_message(update.message.chat_id, "Send a valid font file to continue...")
+            return ITALICS
+    
+def skip_bold(update,context):
+    bot.send_message(update.message.chat_id, "OK, np. Do you have Italics font file?\nSend to continue or send /skip ...")
+    return ITALICS
+
+def skip_italics(update,context):
+    bot.send_message(update.message.chat_id, "OK, np. Processing, give me a minute sar ...")
+    modulifybi(todof)
+    bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+    bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
+    update.message.reply_text("Check Magifonts group (@magifonts_support). Your font has been posted")
+    
+    return ConversationHandler.END
+    
+def cancel(update, context):
+    bot.send_message(update.message.chat_id, "Cancelled... :(")
+    return ConversationHandler.END
+
+
+def main2():
     updater = Updater(keys.API_KEY)
     dp = updater.dispatcher
     
@@ -66,19 +167,74 @@ def main():
     dp.add_handler(CommandHandler("creator",maker_command))
     dp.add_handler(CommandHandler("owner",owner_command))
     dp.add_handler(CommandHandler("about",about_command))
-    dp.add_handler(CommandHandler("module",module_command))
+    #dp.add_handler(CommandHandler("module",module_command))
     dp.add_handler(CommandHandler("faketrigger",member_join))
     
     dp.add_handler(MessageHandler(Filters.text, handle_message))
     
-    dp.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
+    #dp.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
+    ttf_handler = ConversationHandler(
+        entry_points=[CommandHandler('module', module)],
+        states={
+            FONT: [MessageHandler(Filters.document, font)],
+            BOLD: [MessageHandler(Filters.document, bold), CommandHandler('skip', skip_bold)],
+            ITALICS: [MessageHandler(Filters.document, italics), CommandHandler('skip', skip_italics)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)],
+    )
+
+    dp.add_handler(ttf_handler)
     dp.add_error_handler(error)
     add_group_handle = MessageHandler(Filters.status_update.new_chat_members, member_join)
     dp.add_handler(add_group_handle)
-
-    
+      
     updater.start_polling(drop_pending_updates=True)
     updater.idle()
+    
+    
+    
+def main():
+    # Create the Updater and pass it your bot's token.
+    updater = Updater(keys.API_KEY)
+
+    # Get the dispatcher to register handlers
+    dispatcher = updater.dispatcher
+    
+    ttf_handler = ConversationHandler(
+        entry_points=[CommandHandler('module', module)],
+        states={
+            FONT: [MessageHandler(Filters.document, font)],
+            BOLD: [MessageHandler(Filters.document, bold), CommandHandler('skip', skip_bold)],
+            ITALICS: [MessageHandler(Filters.document, italics), CommandHandler('skip', skip_italics)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)],
+    )
+
+    dispatcher.add_handler(ttf_handler)
+    dispatcher.add_handler(CommandHandler("start", start_command))
+    dispatcher.add_handler(CommandHandler("help",help_command))
+    dispatcher.add_handler(CommandHandler("ccache",ccache_command))
+    dispatcher.add_handler(CommandHandler("creator",maker_command))
+    dispatcher.add_handler(CommandHandler("owner",owner_command))
+    dispatcher.add_handler(CommandHandler("about",about_command))
+    #dp.add_handler(CommandHandler("module",module_command))
+    dispatcher.add_handler(CommandHandler("faketrigger",member_join))
+    
+    dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
+    
+    dispatcher.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
+    dispatcher.add_error_handler(error)
+    add_group_handle = MessageHandler(Filters.status_update.new_chat_members, member_join)
+    dispatcher.add_handler(add_group_handle)
+
+    # Start the Bot
+    updater.start_polling()
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
+    
     
 tfonts = ['MiLanProVF.ttf',
  'Roboto-Black.ttf',
@@ -103,6 +259,32 @@ tfonts = ['MiLanProVF.ttf',
  'RobotoCondensed-Regular.ttf',
  'RobotoNum-3R.ttf',
  'RRobotoNum-3L.ttf']
+
+tfontsr = ['MiLanProVF.ttf',
+ 'Roboto-Black.ttf',
+ 'Roboto-Light.ttf',
+ 'Roboto-Medium.ttf',
+ 'Roboto-Regular.ttf',
+ 'Roboto-Thin.ttf',
+ 'RobotoCondensed-Light.ttf',
+ 'RobotoCondensed-Medium.ttf',
+ 'RobotoCondensed-Regular.ttf',
+ 'RobotoNum-3R.ttf',
+ 'RRobotoNum-3L.ttf']
+
+tfontsb = ['Roboto-Bold.ttf',
+ 'Roboto-BoldItalic.ttf',
+ 'RobotoCondensed-Bold.ttf',
+ 'RobotoCondensed-BoldItalic.ttf']
+
+tfontsi = ['Roboto-BlackItalic.ttf'
+ 'Roboto-Italic.ttf',
+ 'Roboto-LightItalic.ttf',
+ 'Roboto-MediumItalic.ttf',
+ 'Roboto-ThinItalic.ttf',
+ 'RobotoCondensed-Italic.ttf',
+ 'RobotoCondensed-LightItalic.ttf',
+ 'RobotoCondensed-MediumItalic.ttf']
 #todof= file...
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
@@ -116,56 +298,67 @@ def modulify():
     os.chdir("../../../magiTemplate")
     shutil.make_archive("../magiFont/"+todof.split(".")[0], 'zip', os.getcwd())
     
+def modulifybi(fname):
+    
+    todofb = todof+"-bold.ttf"
+    todofi = todof+"-italics.ttf"
+    todocontents = []
+    
+    for dirs,file,name in os.walk("todo"):
+        todocontents = name
+        
+    if todofb not in todocontents:
+        todofb = todof
+    
+    if todofi not in todocontents:
+        todofi = todof
+    
+    os.chdir("magiTemplate/system/fonts")
+    for i in range(0,len(tfontsr)):
+        shutil.copyfile(src="../../../todo/"+todof , dst=tfontsr[i])
+    
+    for i in range(0,len(tfontsb)):
+        shutil.copyfile(src="../../../todo/"+todofb , dst=tfontsb[i])
+        
+    for i in range(0,len(tfontsi)):
+        shutil.copyfile(src="../../../todo/"+todofi , dst=tfontsi[i])
+    
+    #print(os.getcwd())
+    os.chdir("../../../magiTemplate")
+    shutil.make_archive("../magiFont/"+todof.split(".")[0], 'zip', os.getcwd())
+    
 
 def ttfdownload(update, context):
     if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
-        bot.send_message(update.message.chat_id,"font request, huh? how's this font btw? -  "+update.message.document.file_name)
+        update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
-        #update.message.reply_text("cleared ccache")
-        #print(context.bot.get_file(update.message.document))
         os.chdir("todo")
-        #print(context.bot.get_file(update.message.document).file_name)
-        #context.bot.get_file(update.message.document).download()
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
     
         
         global todof
         for dirs,file,name in os.walk(os.getcwd()):
-            #print(dirs)
-            #print(file) 
-            #print(name)
             todof=name[len(name)-1]
         
-        #print(todof.split("."))
         if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
-            #update.message.reply_text("downloaded!!")
-            #print(todof)
             os.chdir("../")
-            #todof=
-            #print(os.getcwd())
-            #update.message.reply_text("allwell before modulify")
             modulify()
-            #update.message.reply_text("allwell after modulify "+os.getcwd())
             os.chdir("../magiFont")
-            #update.message.reply_text("allwell before sendfile")
             context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
-            bot.send_message(update.message.chat_id,"Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
+            update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
             os.chdir("../")
         else:
             update.message.reply_text("invalid file type!")
             os.chdir("../")
     
 def clearcache():
-    #print(os.getcwd())
     path_to_folder = "todo"
     list_dir = os.listdir(path_to_folder)
     for filename in list_dir:
         file_path = os.path.join(path_to_folder, filename)
         if os.path.isfile(file_path) or os.path.islink(file_path):
-            #print("deleting file:", file_path)
             os.unlink(file_path)
         elif os.path.isdir(file_path):
-            #print("deleting folder:", file_path)
             shutil.rmtree(file_path)
             
     path_to_folder = "magiFont"
@@ -173,11 +366,10 @@ def clearcache():
     for filename in list_dir:
         file_path = os.path.join(path_to_folder, filename)
         if os.path.isfile(file_path) or os.path.islink(file_path):
-            #print("deleting file:", file_path)
             os.unlink(file_path)
         elif os.path.isdir(file_path):
-            #print("deleting folder:", file_path)
             shutil.rmtree(file_path)
     
     
-main()
+if __name__ == '__main__':
+    main()
