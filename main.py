@@ -65,7 +65,6 @@ def module(update,context):
         return FONT
 
 def font(update,context):
-    update.message.reply_text(os.getcwd())
     if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
         #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
@@ -133,6 +132,7 @@ def italics(update,context):
             print(os.getcwd())
             print("../magiFont/"+todof.split(".")[0]+".zip")
             bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+            os.chdir("../")
             return ConversationHandler.END
         else:
             update.message.reply_text("invalid file type!")
@@ -150,7 +150,7 @@ def skip_italics(update,context):
     bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
     bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
     update.message.reply_text("Check Magifonts group (@magifonts_support). Your font has been posted")
-    
+    os.chdir("../")
     return ConversationHandler.END
     
 def cancel(update, context):
