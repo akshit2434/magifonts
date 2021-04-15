@@ -61,6 +61,7 @@ def module(update,context):
     if "-" in str(update.message.chat_id):
         update.message.reply_text("Try running this command in my pm...")
     else:
+        print("module requested by @"+update.message.from_user.username)
         bot.send_message(update.message.chat_id,"Hey "+update.message.from_user.first_name+", i think you want to make a custom font.\nSend /cancel to cancel the process...")
         bot.send_message(update.message.chat_id,"Send /cancel to cancel any time\nSend a font file to continue!")
         return FONT
@@ -200,7 +201,7 @@ def main():
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+    updater.idle(drop_pending_updates=True)
     
     
 tfonts = ['MiLanProVF.ttf',
@@ -296,6 +297,7 @@ def modulifybi(fname):
     
 
 def ttfdownload(update, context):
+    print("ttf download requested by @"+update.message.from_user.username)
     if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
@@ -312,6 +314,7 @@ def ttfdownload(update, context):
             modulify()
             os.chdir("../magiFont")
             context.bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+            bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
             update.message.reply_text("Your file has been posted in @magifonts_support\nMake sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
             os.chdir("../")
         else:
