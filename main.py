@@ -9,6 +9,7 @@ import responses as r
 import random
 
 magifonts_id = -1001393886080
+font_ext = ("ttf", "otf")
 todof = "file_17.ttf"
 file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for being one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
 FONT, BOLD, ITALICS = range(3)
@@ -65,7 +66,7 @@ def module(update,context):
         return FONT
 
 def font(update,context):
-    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
+    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
         #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
         os.chdir("todo")
@@ -76,7 +77,7 @@ def font(update,context):
         for dirs,file,name in os.walk(os.getcwd()):
             todof=name[len(name)-1]
         
-        if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+        if todof.split(".")[len(todof.split("."))-1].lower() in font_ext:
             os.chdir("../")
             #modulify()
             #os.chdir("../magiFont")
@@ -92,13 +93,13 @@ def font(update,context):
             return FONT
         
 def bold(update,context):
-    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
+    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
         #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         #clearcache()
         os.chdir("todo")
         update.message.document.get_file().download(custom_path=todof+"-bold.ttf")
         
-        if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+        if todof.split(".")[len(todof.split("."))-1].lower() in font_ext:
             os.chdir("../")
             #modulify()
             #os.chdir("../magiFont")
@@ -114,13 +115,13 @@ def bold(update,context):
             return BOLD
         
 def italics(update,context):
-    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
+    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
         #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         #clearcache()
         os.chdir("todo")
         update.message.document.get_file().download(custom_path=todof+"-italics.ttf")
         
-        if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+        if todof.split(".")[len(todof.split("."))-1].lower() in font_ext:
             os.chdir("../")
             #modulify()
             #os.chdir("../magiFont")
@@ -293,7 +294,7 @@ def modulifybi(fname):
     
 
 def ttfdownload(update, context):
-    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
+    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
         os.chdir("todo")
@@ -304,7 +305,7 @@ def ttfdownload(update, context):
         for dirs,file,name in os.walk(os.getcwd()):
             todof=name[len(name)-1]
         
-        if todof.split(".")[len(todof.split("."))-1] in ("ttf", "otf"):
+        if todof.split(".")[len(todof.split("."))-1].lower() in font_ext:
             os.chdir("../")
             modulify()
             os.chdir("../magiFont")
