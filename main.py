@@ -65,6 +65,7 @@ def module(update,context):
         return FONT
 
 def font(update,context):
+    update.message.reply_text(os.getcwd())
     if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1] in ("otf", "ttf"):
         #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
@@ -155,43 +156,6 @@ def skip_italics(update,context):
 def cancel(update, context):
     bot.send_message(update.message.chat_id, "Cancelled... :(")
     return ConversationHandler.END
-
-
-def main2():
-    updater = Updater(keys.API_KEY)
-    dp = updater.dispatcher
-    
-    dp.add_handler(CommandHandler("start", start_command))
-    dp.add_handler(CommandHandler("help",help_command))
-    dp.add_handler(CommandHandler("ccache",ccache_command))
-    dp.add_handler(CommandHandler("creator",maker_command))
-    dp.add_handler(CommandHandler("owner",owner_command))
-    dp.add_handler(CommandHandler("about",about_command))
-    #dp.add_handler(CommandHandler("module",module_command))
-    dp.add_handler(CommandHandler("faketrigger",member_join))
-    
-    dp.add_handler(MessageHandler(Filters.text, handle_message))
-    
-    #dp.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
-    ttf_handler = ConversationHandler(
-        entry_points=[CommandHandler('module', module)],
-        states={
-            FONT: [MessageHandler(Filters.document, font)],
-            BOLD: [MessageHandler(Filters.document, bold), CommandHandler('skip', skip_bold)],
-            ITALICS: [MessageHandler(Filters.document, italics), CommandHandler('skip', skip_italics)]
-        },
-        fallbacks=[CommandHandler('cancel', cancel)],
-    )
-
-    dp.add_handler(ttf_handler)
-    dp.add_error_handler(error)
-    add_group_handle = MessageHandler(Filters.status_update.new_chat_members, member_join)
-    dp.add_handler(add_group_handle)
-      
-    updater.start_polling(drop_pending_updates=True)
-    updater.idle()
-    
-    
     
 def main():
     # Create the Updater and pass it your bot's token.
