@@ -300,32 +300,32 @@ def modulify():
     
 def modulifybi(fname):
     
-    todofb = todof+"-bold.ttf"
-    todofi = todof+"-italics.ttf"
+    fnameb = fname+"-bold.ttf"
+    fnamei = fname+"-italics.ttf"
     todocontents = []
     
     for dirs,file,name in os.walk("todo"):
         todocontents = name
         
-    if todofb not in todocontents:
-        todofb = todof
+    if fnameb not in todocontents:
+        fnameb = fname
     
-    if todofi not in todocontents:
-        todofi = todof
+    if fnamei not in todocontents:
+        fnamei = fname
     
     os.chdir("magiTemplate/system/fonts")
     for i in range(0,len(tfontsr)):
-        shutil.copyfile(src="../../../todo/"+todof , dst=tfontsr[i])
+        shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
     
     for i in range(0,len(tfontsb)):
-        shutil.copyfile(src="../../../todo/"+todofb , dst=tfontsb[i])
+        shutil.copyfile(src="../../../todo/"+fnameb , dst=tfontsb[i])
         
     for i in range(0,len(tfontsi)):
-        shutil.copyfile(src="../../../todo/"+todofi , dst=tfontsi[i])
+        shutil.copyfile(src="../../../todo/"+fnamei , dst=tfontsi[i])
     
     #print(os.getcwd())
     os.chdir("../../../magiTemplate")
-    shutil.make_archive("../magiFont/"+todof.split(".")[0], 'zip', os.getcwd())
+    shutil.make_archive("../magiFont/"+fname.split(".")[0], 'zip', os.getcwd())
     
 
 def ttfdownload(update, context):
