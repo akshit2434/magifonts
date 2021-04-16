@@ -166,6 +166,8 @@ def main():
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
     
+    intitialize()
+    
     ttf_handler = ConversationHandler(
         entry_points=[CommandHandler('module', module)],
         states={
@@ -383,6 +385,19 @@ def clearcache():
             os.unlink(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path)
+    
+    
+def initialize():
+    clearcache()
+    create_dir("todo")
+    create_dir("magiFont")
+    create_dir("ziptodo")
+    
+def create_dir(folder):
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+    else:
+        return True
     
     
 if __name__ == '__main__':
