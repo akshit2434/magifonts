@@ -302,16 +302,19 @@ def modulifybi(fname):
 def ttfdownload(update, context):
     clearcache()
     print("ttf download requested by @"+update.message.from_user.username)
-    print(update.message.document.file_name.split(".")[-1].lower())
+    #print(update.message.document.file_name.split(".")[-1].lower())
     if update.message.document.file_name.split(".")[-1].lower() in font_ext:
         bot.send_message(update.message.chat_id, "Check /module for creating fonts with custom bold and/or italic fonts!!")
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
+        os.chdir("todo")
+
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
-    
-        
         global todof
         for dirs,file,name in os.walk(os.getcwd()):
+            print("DIRECTLY LOCATION ABHI KI:")
+            print(os.getcwd())
             todof=name[-1]
+            print(name)
         
         if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
