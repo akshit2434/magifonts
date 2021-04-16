@@ -356,12 +356,6 @@ def ttfdownload(update, context):
         else:
             ttfarray = []
             for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
-                #print("dirs:")
-                #print(dirs)
-                #print("file:")
-                #print(file)
-                #print("name:")
-                #print(name)                
                 ttfarray = name
                 
             def regularttf(x):
@@ -369,17 +363,50 @@ def ttfdownload(update, context):
                     return False
                 else:
                     return True
+                
+            def boldttf(x):
+                if ("condensed" in x) or ("italics" in x) or ("light" in x):
+                    return False
+                elif ("bold" in x) or ("-b." in x):
+                    return True
+                
+            def italicsttf(x):
+                if ("condensed" in x) or ("bold" in x) or ("light" in x):
+                    return False
+                elif ("-i." in x) or ("ital" in x):
+                    return True
+                
+                
             
             ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-            #print(ttfarray)
             
             ttfarray = list(filter(regularttf, ttfarray))
-            #print(ttfarray)
             if len(ttfarray)>0:
-                shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0])
+                print(1)
                 todof = ttfarray[0]
+                shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0])
+                print(1.1)
+                for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
+                    ttfarray = name
+                print(1.2)
+                ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
+                ttfarray = list(filter(boldttf, ttfarray))
+                print(1.3)
+                if len(ttfarray)>0:
+                    shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0],"../todo/"+ttfarray[0].split(".")[0]+"-bold.ttf")
+                print(2)
+                for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
+                    ttfarray = name
+                ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
+                ttfarray = list(filter(italicsttf, ttfarray))
+                print(3)
+                if len(ttfarray)>0:
+                    shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0].split(".")[0]+"-italics.ttf")
+
+        
                 os.chdir("../")
-                modulify()
+                print("modulifybi...")
+                modulifybi(todof)
                 os.chdir("../magiFont")
                 bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
                 bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
