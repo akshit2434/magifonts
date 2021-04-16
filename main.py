@@ -407,6 +407,7 @@ def ttfdownload(update, context):
                 os.chdir("../magiFont")
                 bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
                 bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
+                bot.send_message(magifonts_id,"The file has been posted to @magifonts_support")
                 os.chdir("../")
             else:                
                 os.chdir("../")
