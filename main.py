@@ -168,7 +168,6 @@ def main():
     dispatcher = updater.dispatcher
     
     initialize()
-    
     ttf_handler = ConversationHandler(
         entry_points=[CommandHandler('module', module)],
         states={
@@ -270,7 +269,7 @@ def modulify():
     shutil.make_archive("../magiFont/"+todof.split(".")[0], 'zip', os.getcwd())
     
 def modulifybi(fname):
-    
+    os.chdir(orig_dir)
     fnameb = fname+"-bold.ttf"
     fnamei = fname+"-italics.ttf"
     todocontents = []
@@ -300,13 +299,15 @@ def modulifybi(fname):
     
 
 def ttfdownload(update, context):
+    os.chdir(orig_dir)
     clearcache()
     print("ttf download requested by @"+update.message.from_user.username)
     #print(update.message.document.file_name.split(".")[-1].lower())
     if update.message.document.file_name.split(".")[-1].lower() in font_ext:
         bot.send_message(update.message.chat_id, "Check /module for creating fonts with custom bold and/or italic fonts!!")
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
-        os.chdir("/app/todo")
+        print(os.getcwd())
+        os.chdir("todo")
 
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
         global todof
@@ -407,7 +408,8 @@ def ttfdownload(update, context):
                 os.chdir("../magiFont")
                 bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
                 bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
-                bot.send_message(magifonts_id,"The file has been posted to @magifonts_support")
+                if not (update.message.chat_id == magifonts_id):
+                    bot.send_message(update.message.chat_id,"The file has been posted to @magifonts_support")
                 os.chdir("../")
             else:                
                 os.chdir("../")
@@ -419,6 +421,7 @@ def ttfdownload(update, context):
         
     
 def clearcache():
+    os.chdir(orig_dir)
     path_to_folder = "todo"
     list_dir = os.listdir(path_to_folder)
     for filename in list_dir:
@@ -476,4 +479,5 @@ def create_dir(folder):
     
 
 if __name__ == '__main__':
+    orig_dir = os.getcwd()
     main()
