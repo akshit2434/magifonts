@@ -50,9 +50,10 @@ def owner_command(update,context):
     update.message.reply_text("@TheSc1enceGuy(akshit singh) is my father... and he is the owner too lel ;)")
     
 def handle_message(update,context):
-    text = str(update.message.text).lower()
-    if r.sample_responses(text) not in (""):
-        update.message.reply_text(r.sample_responses(text))
+    if update.message.text:
+        text = str(update.message.text).lower()
+        if r.sample_responses(text) not in (""):
+            update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
@@ -67,7 +68,7 @@ def module(update,context):
         return FONT
 
 def font(update,context):
-    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
+    if update.message.document.file_name.split(".")[-1].lower() in font_ext:
         #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
         os.chdir("todo")
@@ -76,9 +77,9 @@ def font(update,context):
         
         global todof
         for dirs,file,name in os.walk(os.getcwd()):
-            todof=name[len(name)-1]
+            todof=name[-1]
         
-        if todof.split(".")[len(todof.split("."))-1].lower() in font_ext:
+        if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
             #modulify()
             #os.chdir("../magiFont")
@@ -94,13 +95,13 @@ def font(update,context):
             return FONT
         
 def bold(update,context):
-    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
+    if update.message.document.file_name.split(".")[-1].lower() in font_ext:
         #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         #clearcache()
         os.chdir("todo")
         update.message.document.get_file().download(custom_path=todof+"-bold.ttf")
         
-        if todof.split(".")[len(todof.split("."))-1].lower() in font_ext:
+        if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
             #modulify()
             #os.chdir("../magiFont")
@@ -116,13 +117,13 @@ def bold(update,context):
             return BOLD
         
 def italics(update,context):
-    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
+    if update.message.document.file_name.split(".")[-1].lower() in font_ext:
         #update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         #clearcache()
         os.chdir("todo")
         update.message.document.get_file().download(custom_path=todof+"-italics.ttf")
         
-        if todof.split(".")[len(todof.split("."))-1].lower() in font_ext:
+        if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
             #modulify()
             #os.chdir("../magiFont")
@@ -310,9 +311,9 @@ def ttfdownload(update, context):
         
         global todof
         for dirs,file,name in os.walk(os.getcwd()):
-            todof=name[len(name)-1]
+            todof=name[-1]
         
-        if todof.split(".")[len(todof.split("."))-1].lower() in font_ext:
+        if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
             modulify()
             os.chdir("../magiFont")
@@ -350,8 +351,39 @@ def ttfdownload(update, context):
                 update.message.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
                 os.chdir("../")
         else:
-            os.chdir("../")
-            update.message.reply_text("Sar, why gib me file that cannot be made to a module. Gib ttf ot otf file ;)")
+            ttfarray = []
+            for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
+                #print("dirs:")
+                #print(dirs)
+                #print("file:")
+                #print(file)
+                #print("name:")
+                #print(name)                
+                ttfarray = name
+                
+            def regularttf(x):
+                if ("bold" in x) or ("italics" in x) or ("ital" in x):
+                    return False
+                else:
+                    return True
+            
+            ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
+            #print(ttfarray)
+            
+            ttfarray = list(filter(regularttf, ttfarray))
+            #print(ttfarray)
+            if len(ttfarray)>0:
+                shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0])
+                todof = ttfarray[0]
+                os.chdir("../")
+                modulify()
+                os.chdir("../magiFont")
+                bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+                bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
+                os.chdir("../")
+            else:                
+                os.chdir("../")
+                update.message.reply_text("Sar, sorry but I can't make this to a module. Pls gib ttf ot otf file ;)")
         #os.chdir("../magiTemplate/system/fonts")
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
