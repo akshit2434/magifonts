@@ -76,7 +76,7 @@ def font(update,context):
     
         
         global todof
-        for dirs,file,name in os.walk(os.getcwd()):
+        for dirs,file,name in walklevel(os.getcwd(),1):
             todof=name[-1]
         
         if todof.split(".")[-1].lower() in font_ext:
@@ -275,7 +275,7 @@ def modulifybi(fname):
     fnamei = fname+"-italics.ttf"
     todocontents = []
     
-    for dirs,file,name in os.walk("todo"):
+    for dirs,file,name in walklevel("todo"):
         todocontents = name
         
     if fnameb not in todocontents:
@@ -306,11 +306,11 @@ def ttfdownload(update, context):
     if update.message.document.file_name.split(".")[-1].lower() in font_ext:
         bot.send_message(update.message.chat_id, "Check /module for creating fonts with custom bold and/or italic fonts!!")
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
-        os.chdir("todo")
+        os.chdir("/app/todo")
 
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
         global todof
-        for dirs,file,name in os.walk(os.getcwd()):
+        for dirs,file,name in walklevel(os.getcwd()):
             print("DIRECTORY LOCATION ABHI KI:")
             print(os.getcwd())
             todof=name[-1]
@@ -357,10 +357,8 @@ def ttfdownload(update, context):
                 os.chdir("../")
         else:
             ttfarray = []
-            for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
-                ttfarray = name
-                
             
+            ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
             ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
             print(ttfarray)
             ttfarray = list(filter(lambda x : (("regular" in x.lower()) or ("normal" in x.lower()) and not(("condensed" in x.lower()) or ("bold" in x.lower()) or ("italics" in x.lower()))), ttfarray))
@@ -370,18 +368,24 @@ def ttfdownload(update, context):
             if len(ttfarray)>0:
                 print(1)
             else:
-                for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
-                    ttfarray = name
+                print(os.getcwd())
+                ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
+                print("0_.1")
                 ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-                ttfarray = list(filter(lambda x : not (("bold" in x) or ("italics" in x) or ("ital" in x)), ttfarray))
-                print("1_" + ttfarray[0])
+                print("0_.2")
+                ttfarray = list(filter(lambda x : lambda x : not (("bold" in x) or ("italics" in x) or ("ital" in x)), ttfarray))
+                print("0_.3")
+                print("1_")
+                if len(ttfarray) == 0:
+                    ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
+                    ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
+                    ttfarray = ttfarray[0]
             
             if len(ttfarray) > 0:
                 todof = ttfarray[0]
                 shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0])
                 print(1.1)
-                for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
-                    ttfarray = name
+                ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
                 print(1.2)
                 ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
                 ttfarray = list(filter(lambda x : (("bold" in x) or ("-b." in x)) and not(("condensed" in x) or ("italics" in x) or ("light" in x)), ttfarray))
@@ -389,8 +393,7 @@ def ttfdownload(update, context):
                 if len(ttfarray)>0:
                     shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0],"../todo/"+ttfarray[0].split(".")[0]+"-bold.ttf")
                 print(2)
-                for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
-                    ttfarray = name
+                ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
                 ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
                 ttfarray = list(filter(lambda x : (("-i." in x) or ("ital" in x)) and not (("condensed" in x) or ("bold" in x) or ("light" in x)), ttfarray))
                 print(3)
@@ -441,6 +444,21 @@ def clearcache():
             os.unlink(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path)
+            
+def walklevel(some_dir, level=1):
+    some_dir = some_dir.rstrip(os.path.sep)
+    assert os.path.isdir(some_dir)
+    num_sep = some_dir.count(os.path.sep)
+    for root, dirs, files in os.walk(some_dir):
+        yield root, dirs, files
+        num_sep_this = root.count(os.path.sep)
+        if num_sep + level <= num_sep_this:
+            del dirs[:]
+
+def listfiles(direc):
+    for dirs,file,name in walklevel(direc, 1):
+        return name
+
 
     
 def initialize():
@@ -455,6 +473,6 @@ def create_dir(folder):
     else:
         return True
     
-    
+
 if __name__ == '__main__':
     main()
