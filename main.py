@@ -388,10 +388,10 @@ def clearcache():
     
     
 def initialize():
-    clearcache()
     create_dir("todo")
     create_dir("magiFont")
     create_dir("ziptodo")
+    clearcache()
     
 def create_dir(folder):
     if not os.path.exists(folder):
