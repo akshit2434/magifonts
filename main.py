@@ -311,7 +311,7 @@ def ttfdownload(update, context):
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
         global todof
         for dirs,file,name in os.walk(os.getcwd()):
-            print("DIRECTLY LOCATION ABHI KI:")
+            print("DIRECTORY LOCATION ABHI KI:")
             print(os.getcwd())
             todof=name[-1]
             print(name)
@@ -339,6 +339,8 @@ def ttfdownload(update, context):
         if os.path.exists(update.message.document.file_name.split(".")[0]+"/system/fonts"):
             if os.path.exists(update.message.document.file_name.split(".")[0]+"/module.prop"):
                 update.message.reply_text("The provided zip is already a magisk module LOL!")
+                os.chdir("../")
+                print(os.getcwd())
             else:
                 update.message.reply_text("Converting to a magisk module sar!!")
                 os.chdir(update.message.document.file_name.split(".")[0])
@@ -358,31 +360,23 @@ def ttfdownload(update, context):
             for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
                 ttfarray = name
                 
-            def regularttf(x):
-                if ("bold" in x) or ("italics" in x) or ("ital" in x):
-                    return False
-                else:
-                    return True
-                
-            def boldttf(x):
-                if ("condensed" in x) or ("italics" in x) or ("light" in x):
-                    return False
-                elif ("bold" in x) or ("-b." in x):
-                    return True
-                
-            def italicsttf(x):
-                if ("condensed" in x) or ("bold" in x) or ("light" in x):
-                    return False
-                elif ("-i." in x) or ("ital" in x):
-                    return True
-                
-                
             
             ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-            
-            ttfarray = list(filter(regularttf, ttfarray))
+            print(ttfarray)
+            ttfarray = list(filter(lambda x : (("regular" in x.lower()) or ("normal" in x.lower()) and not(("condensed" in x.lower()) or ("bold" in x.lower()) or ("italics" in x.lower()))), ttfarray))
+            print(ttfarray)
+            print("regular ttf file below")
+            print(ttfarray)
             if len(ttfarray)>0:
                 print(1)
+            else:
+                for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
+                    ttfarray = name
+                ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
+                ttfarray = list(filter(lambda x : not (("bold" in x) or ("italics" in x) or ("ital" in x)), ttfarray))
+                print("1_" + ttfarray[0])
+            
+            if len(ttfarray) > 0:
                 todof = ttfarray[0]
                 shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0])
                 print(1.1)
@@ -390,7 +384,7 @@ def ttfdownload(update, context):
                     ttfarray = name
                 print(1.2)
                 ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-                ttfarray = list(filter(boldttf, ttfarray))
+                ttfarray = list(filter(lambda x : (("bold" in x) or ("-b." in x)) and not(("condensed" in x) or ("italics" in x) or ("light" in x)), ttfarray))
                 print(1.3)
                 if len(ttfarray)>0:
                     shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0],"../todo/"+ttfarray[0].split(".")[0]+"-bold.ttf")
@@ -398,7 +392,7 @@ def ttfdownload(update, context):
                 for dirs,file,name in os.walk("../ziptodo/"+update.message.document.file_name.split(".")[0]):
                     ttfarray = name
                 ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-                ttfarray = list(filter(italicsttf, ttfarray))
+                ttfarray = list(filter(lambda x : (("-i." in x) or ("ital" in x)) and not (("condensed" in x) or ("bold" in x) or ("light" in x)), ttfarray))
                 print(3)
                 if len(ttfarray)>0:
                     shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0].split(".")[0]+"-italics.ttf")
@@ -413,7 +407,7 @@ def ttfdownload(update, context):
                 os.chdir("../")
             else:                
                 os.chdir("../")
-                update.message.reply_text("Sar, sorry but I can't make this to a module. Pls gib ttf ot otf file ;)")
+                update.message.reply_text("Sar, sorry but I can't make this to a module. Pls gib ttf ot otf file :(")
         #os.chdir("../magiTemplate/system/fonts")
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
@@ -447,7 +441,7 @@ def clearcache():
             os.unlink(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path)
-    
+
     
 def initialize():
     create_dir("todo")
