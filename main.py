@@ -298,8 +298,8 @@ def modulifybi(fname):
 
 def ttfdownload(update, context):
     print("ttf download requested by @"+update.message.from_user.username)
-    update.message.reply_text("Check /module for creating fonts with custom bold and/or italic fonts!!")
     if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
+        bot.send_message(update.message.chat_id, "Check /module for creating fonts with custom bold and/or italic fonts!!")
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         clearcache()
         os.chdir("todo")
@@ -316,7 +316,9 @@ def ttfdownload(update, context):
             os.chdir("../magiFont")
             context.bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
             bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
-            update.message.reply_text("Your file has been posted in @magifonts_support\nMake sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
+            if not str(update.message.chat_id) == str(magifonts_id):
+                update.message.reply_text("Your file has been posted in @magifonts_support")
+            update.message.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
             os.chdir("../")
         else:
             update.message.reply_text("invalid file type!")
