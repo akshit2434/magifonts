@@ -166,7 +166,7 @@ def main():
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
     
-    intitialize()
+    initialize()
     
     ttf_handler = ConversationHandler(
         entry_points=[CommandHandler('module', module)],
