@@ -297,12 +297,12 @@ def modulifybi(fname):
     
 
 def ttfdownload(update, context):
+    clearcache()
     print("ttf download requested by @"+update.message.from_user.username)
-    if update.message.document.file_name.split(".")[len(update.message.document.file_name.split("."))-1].lower() in font_ext:
+    print(update.message.document.file_name.split(".")[-1].lower())
+    if update.message.document.file_name.split(".")[-1].lower() in font_ext:
         bot.send_message(update.message.chat_id, "Check /module for creating fonts with custom bold and/or italic fonts!!")
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
-        clearcache()
-        os.chdir("todo")
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
     
         
@@ -323,6 +323,38 @@ def ttfdownload(update, context):
         else:
             update.message.reply_text("invalid file type!")
             os.chdir("../")
+    elif update.message.document.file_name.split(".")[-1].lower() == "zip":
+        update.message.reply_text("Zip detected!")
+        os.chdir("ziptodo")
+        update.message.document.get_file().download(custom_path=update.message.document.file_name)
+        print("file downloaded!")
+        shutil.unpack_archive(update.message.document.file_name,update.message.document.file_name.split(".")[0])
+        print("file unzipped")
+        if os.path.exists(update.message.document.file_name.split(".")[0]+"/system/fonts"):
+            if os.path.exists(update.message.document.file_name.split(".")[0]+"/module.prop"):
+                update.message.reply_text("The provided zip is already a magisk module LOL!")
+            else:
+                update.message.reply_text("Converting to a magisk module sar!!")
+                os.chdir(update.message.document.file_name.split(".")[0])
+                shutil.copyfile(src="../../magiTemplate/module.prop" , dst="module.prop")
+                shutil.copyfile(src="../../magiTemplate/META-INF/com/google/android/update-binary" , dst="META-INF/com/google/android/update-binary")
+                shutil.copyfile(src="../../magiTemplate/META-INF/com/google/android/updater-script" , dst="META-INF/com/google/android/updater-script")
+                shutil.make_archive("../../magiFont/"+update.message.document.file_name.split(".")[0], 'zip', os.getcwd())
+                os.chdir("../../magiFont")
+                bot.send_document(magifonts_id, open(update.message.document.file_name.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+                bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
+                if not str(update.message.chat_id) == str(magifonts_id):
+                    update.message.reply_text("Your file has been posted in @magifonts_support")
+                update.message.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
+                os.chdir("../")
+        else:
+            os.chdir("../")
+            update.message.reply_text("Sar, why gib me file that cannot be made to a module. Gib ttf ot otf file ;)")
+        #os.chdir("../magiTemplate/system/fonts")
+        #for i in range(0,len(tfontsr)):
+        #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
+        
+        
     
 def clearcache():
     path_to_folder = "todo"
@@ -335,6 +367,15 @@ def clearcache():
             shutil.rmtree(file_path)
             
     path_to_folder = "magiFont"
+    list_dir = os.listdir(path_to_folder)
+    for filename in list_dir:
+        file_path = os.path.join(path_to_folder, filename)
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
+    
+    path_to_folder = "ziptodo"
     list_dir = os.listdir(path_to_folder)
     for filename in list_dir:
         file_path = os.path.join(path_to_folder, filename)
