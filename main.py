@@ -126,7 +126,7 @@ def italics(update,context):
             os.chdir(orig_dir)
             print("magiFont/"+todof.split(".")[0]+".zip")
             bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
-            bot.edit_message_text(magifonts_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
+            bot.edit_message_text(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
             os.chdir("../")
             return ConversationHandler.END
         else:
@@ -144,7 +144,7 @@ def skip_italics(update,context):
     modulifybi(todof)
     bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
     bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
-    bot.edit_message_text(magifonts_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
+    bot.edit_message_text(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
     os.chdir("../")
     return ConversationHandler.END
     
