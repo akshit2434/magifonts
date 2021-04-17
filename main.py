@@ -33,7 +33,7 @@ def preview_command(update,context):
 
 def preview(update,context):
     os.chdir(orig_dir)
-    if update.message.document.file_name.split(".")[-1] == ".ttf":
+    if update.message.document.file_name.split(".")[-1] in font_ext:
         bot.send_message(update.message.chat_id, "1 min sar...")
         os.chdir("preview")
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
