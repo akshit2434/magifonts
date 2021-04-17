@@ -206,66 +206,25 @@ def main():
     updater.idle()
     
     
-tfonts = ['MiLanProVF.ttf',
- 'Roboto-Black.ttf',
- 'Roboto-BlackItalic.ttf',
- 'Roboto-Bold.ttf',
- 'Roboto-BoldItalic.ttf',
- 'Roboto-Italic.ttf',
- 'Roboto-Light.ttf',
- 'Roboto-LightItalic.ttf',
- 'Roboto-Medium.ttf',
- 'Roboto-MediumItalic.ttf',
- 'Roboto-Regular.ttf',
- 'Roboto-Thin.ttf',
- 'Roboto-ThinItalic.ttf',
- 'RobotoCondensed-Bold.ttf',
- 'RobotoCondensed-BoldItalic.ttf',
- 'RobotoCondensed-Italic.ttf',
- 'RobotoCondensed-Light.ttf',
- 'RobotoCondensed-LightItalic.ttf',
- 'RobotoCondensed-Medium.ttf',
- 'RobotoCondensed-MediumItalic.ttf',
- 'RobotoCondensed-Regular.ttf',
- 'RobotoNum-3R.ttf',
- 'RRobotoNum-3L.ttf']
+tfonts = ["MFFM.ttf"]
 
-tfontsr = ['MiLanProVF.ttf',
- 'Roboto-Black.ttf',
- 'Roboto-Light.ttf',
- 'Roboto-Medium.ttf',
- 'Roboto-Regular.ttf',
- 'Roboto-Thin.ttf',
- 'RobotoCondensed-Light.ttf',
- 'RobotoCondensed-Medium.ttf',
- 'RobotoCondensed-Regular.ttf',
- 'RobotoNum-3R.ttf',
- 'RRobotoNum-3L.ttf']
+tfontsr = ["Black", "Medium","Regular","Light","Thin"]
 
-tfontsb = ['Roboto-Bold.ttf',
- 'Roboto-BoldItalic.ttf',
- 'RobotoCondensed-Bold.ttf',
- 'RobotoCondensed-BoldItalic.ttf']
+tfontsb = ["Bold","BoldItalic"]
 
-tfontsi = ['Roboto-BlackItalic.ttf'
- 'Roboto-Italic.ttf',
- 'Roboto-LightItalic.ttf',
- 'Roboto-MediumItalic.ttf',
- 'Roboto-ThinItalic.ttf',
- 'RobotoCondensed-Italic.ttf',
- 'RobotoCondensed-LightItalic.ttf',
- 'RobotoCondensed-MediumItalic.ttf']
+tfontsi = ["MediumItalic", "Italic","BlackItalic","LightItalic","ThinItalic"]
 #todof= file...
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
 def modulify():
-    os.chdir("magiTemplate/system/fonts")
+    os.chdir("magiTemplate/Fonts")
     
     for i in range(0,len(tfonts)):
-        shutil.copyfile(src="../../../todo/"+todof , dst=tfonts[i])
+        shutil.copyfile(src="../../todo/"+todof , dst=tfonts[i])
     
     #print(os.getcwd())
-    os.chdir("../../../magiTemplate")
+    os.chdir(orig_dir)
+    os.chdir("magiTemplate")
     shutil.make_archive("../magiFont/"+todof.split(".")[0], 'zip', os.getcwd())
     
 def modulifybi(fname):
@@ -283,18 +242,19 @@ def modulifybi(fname):
     if fnamei not in todocontents:
         fnamei = fname
     
-    os.chdir("magiTemplate/system/fonts")
+    os.chdir("magiTemplate/Fonts")
     for i in range(0,len(tfontsr)):
-        shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
+        shutil.copyfile(src="../../todo/"+fname , dst=tfontsr[i])
     
     for i in range(0,len(tfontsb)):
-        shutil.copyfile(src="../../../todo/"+fnameb , dst=tfontsb[i])
+        shutil.copyfile(src="../../todo/"+fnameb , dst=tfontsb[i])
         
     for i in range(0,len(tfontsi)):
-        shutil.copyfile(src="../../../todo/"+fnamei , dst=tfontsi[i])
+        shutil.copyfile(src="../../todo/"+fnamei , dst=tfontsi[i])
     
     #print(os.getcwd())
-    os.chdir("../../../magiTemplate")
+    os.chdir(orig_dirs)
+    os.chdir("magiTemplate")
     shutil.make_archive("../magiFont/"+fname.split(".")[0], 'zip', os.getcwd())
     
 
