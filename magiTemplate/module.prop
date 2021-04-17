@@ -1,6 +1,6 @@
-id=custom_font
+id=MFFM_FontInstaller
 name=Magifonts
-version=1.0
-versionCode=100
-author=Magifonts
-description=Install cool custom fonts on your rooted Android device.
+version=v1.0
+versionCode=10
+author=@TheSc1enceGuy (akshit singh)
+description=Magifonts - Install custom fonts with ease.
