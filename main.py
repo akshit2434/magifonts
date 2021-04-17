@@ -7,7 +7,7 @@ import logging
 import constants as keys
 import responses as r
 import random
-from fontpreview import FontPreview
+from fontpreview import *
 
 magifonts_id = -1001393886080
 font_ext = ("ttf", "otf")
@@ -37,7 +37,7 @@ def preview(update,context):
         bot.send_message(update.message.chat_id, "1 min sar...")
         os.chdir("preview")
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
-        pic = previewfont("preview/"+update.message.document.file_name)
+        pic = previewfont("preview/"+update.message.document.file_name, update.message.document.file_name.split(".")[0])
         bot.send_photo(update.message.chat_id, open(pic, "rb"))
         return ConversationHandler.END
     else:
@@ -416,10 +416,37 @@ def ttfdownload(update, context):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
         
 
-def previewfont(fdir):
+def previewfont(fdir,fname):
+    bg_color = (29,53,87)
+    fg_color = (241,250,238)
     os.chdir(orig_dir)
     os.chdir("preview")
-    FontPreview("../"+fdir, mode="paragraph").save("preview.png")
+    fb = FontBanner('/tmp/noto.ttf', 'landscape' , mode='fontname')
+    fb2 = FontBanner('/tmp/noto.ttf', 'landscape' , mode='alpha')
+    fb3 = FontBanner('/tmp/noto.ttf', 'landscape' , mode='letter')
+    fb4 = FontBanner('/tmp/noto.ttf', 'landscape' , mode='paragraph')
+    fw = FontWall([fb,fb2,fb3,fb4])
+    fb.font_text = 'Checkout @Magifont_Support for instant awesome fonts and previews...\nAlso get your own custom font at lightning speed!!'
+    fb.bg_color = bg_color
+    fb.fg_color = fg_color
+    fb.set_font_size(110)
+    # Modify properties of second banner
+    fb2.font_text = 'This preview is made by @Magifont_bot which is developed by\n@TheSc1enceGuy (Akshit Singh)... Check it out!'
+    fb2.bg_color = bg_color
+    fb2.fg_color = fb_color
+    fb2.set_font_size(100)
+    # Modify properties of third banner
+    fb3.font_text = 'This group uses MFFM font templates!! btw the digits of pi are\n3.1415926535 8979323846 2643383 etc... '
+    fb3.bg_color = bg_color
+    fb3.fg_color = fg_color
+    fb3.set_font_size(100)                  # the font is resized automatically because it exceeds the size of the banner
+    # Modify properties of last banner
+    fb4.font_text = 'By the way, th1s is just a sample for fonts. How is this '+fname+'? Do you like it?'
+    fb4.bg_color = bg_color
+    fb4.fg_color = fg_color
+    fb4.set_font_size(120)
+    fw.draw(2)                           # draw it again, specify max_tile
+    fw.save('preview.png')
     return "preview.png"
     
 def clearcache():
