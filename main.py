@@ -38,7 +38,9 @@ def preview(update,context):
         os.chdir("preview")
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
         pic = previewfont("preview/"+update.message.document.file_name, update.message.document.file_name.split(".")[0])
-        bot.send_photo(update.message.chat_id, open(pic, "rb"))
+        os.chdir(orig_dir)
+        os.chdir("preview")
+        bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
         return ConversationHandler.END
     else:
         bot.send_message(update.message.chat_id, "Send a valid font file to continue")
@@ -420,32 +422,37 @@ def previewfont(fdir,fname):
     bg_color = (29,53,87)
     fg_color = (241,250,238)
     os.chdir(orig_dir)
-    os.chdir("preview")
-    fb = FontBanner('/tmp/noto.ttf', 'landscape' , mode='fontname')
-    fb2 = FontBanner('/tmp/noto.ttf', 'landscape' , mode='alpha')
-    fb3 = FontBanner('/tmp/noto.ttf', 'landscape' , mode='letter')
-    fb4 = FontBanner('/tmp/noto.ttf', 'landscape' , mode='paragraph')
+    
+    fb = FontBanner(fdir, 'landscape')
+    fb2 = FontBanner(fdir, 'landscape')
+    fb3 = FontBanner(fdir, 'landscape')
+    fb4 = FontBanner(fdir, 'landscape')
     fw = FontWall([fb,fb2,fb3,fb4])
-    fb.font_text = 'Checkout @Magifont_Support for instant awesome fonts and previews...\nAlso get your own custom font at lightning speed!!'
+    fb.font_text = 'Checkout @Magifont_Support for instant\nawesome fonts and previews!!'
     fb.bg_color = bg_color
     fb.fg_color = fg_color
-    fb.set_font_size(110)
+    fb.set_font_size(100)
+    fb.set_text_position('center')
     # Modify properties of second banner
-    fb2.font_text = 'This preview is made by @Magifont_bot which is developed by\n@TheSc1enceGuy (Akshit Singh)... Check it out!'
+    fb2.font_text = 'This preview is made by @Magifont_bot\nDeveloped by@TheSc1enceGuy (Akshit Singh)...\nCheck it out!'
     fb2.bg_color = bg_color
-    fb2.fg_color = fb_color
+    fb2.fg_color = fg_color
     fb2.set_font_size(100)
+    fb2.set_text_position('center')
     # Modify properties of third banner
-    fb3.font_text = 'This group uses MFFM font templates!! btw the digits of pi are\n3.1415926535 8979323846 2643383 etc... '
+    fb3.font_text = 'This group uses MFFM font templates!!\nbtw the digits of pi are\n3.1415926535 8979323846 2643383... '
     fb3.bg_color = bg_color
     fb3.fg_color = fg_color
-    fb3.set_font_size(100)                  # the font is resized automatically because it exceeds the size of the banner
+    fb3.set_font_size(100) 
+    fb3.set_text_position('center')                 # the font is resized automatically because it exceeds the size of the banner
     # Modify properties of last banner
-    fb4.font_text = 'By the way, th1s is just a sample for fonts. How is this '+fname+'? Do you like it?'
+    fb4.font_text = 'By the way, th1s is just a sample for fonts.\nHow is this '+fname+'? Do you like it?'
     fb4.bg_color = bg_color
     fb4.fg_color = fg_color
-    fb4.set_font_size(120)
-    fw.draw(2)                           # draw it again, specify max_tile
+    fb4.set_font_size(100)
+    fb4.set_text_position('center')
+    fw.draw(2)             
+    os.chdir("preview")
     fw.save('preview.png')
     return "preview.png"
     
