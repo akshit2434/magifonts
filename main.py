@@ -32,12 +32,7 @@ def help_command(update,context):
     
 def ccache_command(update,context):
     clearcache()
-    update.message.reply_text("Done")
-    
-def module_command(update,context):
-    #clearcache()
-    update.message.reply_text("Send a .otf/.ttf file...")
-    
+    update.message.reply_text("Done")  
     
 def about_command(update,context):
     #update.message.reply_text("Memebers count: "+str(bot.get_chat_members_count(update.message.chat_id)))
@@ -63,8 +58,7 @@ def module(update,context):
         update.message.reply_text("Try running this command in my pm...")
     else:
         print("module requested by @"+update.message.from_user.username)
-        bot.send_message(update.message.chat_id,"Hey "+update.message.from_user.first_name+", i think you want to make a custom font.\nSend /cancel to cancel the process...")
-        bot.send_message(update.message.chat_id,"Send /cancel to cancel any time\nSend a font file to continue!")
+        bot.send_message(update.message.chat_id,"This is the procedure to create multiweight fonts. Send the regular font to continue...\nSend /cancel anytime to skip")
         return FONT
 
 def font(update,context):
@@ -86,7 +80,7 @@ def font(update,context):
             #context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
             #update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
             #os.chdir("../")
-            bot.send_message(update.message.chat_id, "Do you have the bold version?\nSend /skip to skip this step\nSend Bold font file or do /skip ...")
+            bot.send_message(update.message.chat_id, "Do you have the bold version, send to continue?\nSend /skip to skip this step...")
             return BOLD
         else:
             update.message.reply_text("invalid file type!")
@@ -108,7 +102,7 @@ def bold(update,context):
             #context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
             #update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
             #os.chdir("../")
-            bot.send_message(update.message.chat_id, "Do you have the italics version?\nSend /skip to skip this step\nSend Italics font file or do /skip ...")
+            bot.send_message(update.message.chat_id, "Do you have the italics version, send to continue?\nSend /skip to skip this step ...")
             return ITALICS
         else:
             update.message.reply_text("invalid file type!")
@@ -125,16 +119,14 @@ def italics(update,context):
         
         if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
-            #modulify()
-            #os.chdir("../magiFont")
-            #context.bot.send_document(update.message.chat_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
-            #update.message.reply_text("Make sure to send a sample... \ncheck #submit-sample It takes no effort and helps us a ton!! \nThanks for being a part of the awesome community!!")
-            #os.chdir("../")
-            bot.send_message(update.message.chat_id, "Ok... Processing...")
+
+            temp_msg = bot.send_message(update.message.chat_id, "Ok... Processing...")
             modulifybi(todof)
-            print(os.getcwd())
-            print("../magiFont/"+todof.split(".")[0]+".zip")
+            #print(os.getcwd())
+            os.chdir(orig_dir)
+            print("magiFont/"+todof.split(".")[0]+".zip")
             bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+            bot.edit_message_text(magifonts_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
             os.chdir("../")
             return ConversationHandler.END
         else:
@@ -148,11 +140,11 @@ def skip_bold(update,context):
     return ITALICS
 
 def skip_italics(update,context):
-    bot.send_message(update.message.chat_id, "OK, np. Processing, give me a minute sar ...")
+    temp_msg = bot.send_message(update.message.chat_id, "OK sar, Processing, give me a minute...")
     modulifybi(todof)
     bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
     bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
-    update.message.reply_text("Check Magifonts group (@magifonts_support). Your font has been posted")
+    bot.edit_message_text(magifonts_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
     os.chdir("../")
     return ConversationHandler.END
     
@@ -169,7 +161,7 @@ def main():
     
     initialize()
     ttf_handler = ConversationHandler(
-        entry_points=[CommandHandler('module', module)],
+        entry_points=[CommandHandler('mwmodule', module)],
         states={
             FONT: [MessageHandler(Filters.document, font)],
             BOLD: [MessageHandler(Filters.document, bold), CommandHandler('skip', skip_bold)],
@@ -225,6 +217,7 @@ def modulify():
     #print(os.getcwd())
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
+    edit_module_prop(todof.split(".")[0])
     shutil.make_archive("../magiFont/"+todof.split(".")[0], 'zip', os.getcwd())
     
 def modulifybi(fname):
@@ -255,7 +248,15 @@ def modulifybi(fname):
     #print(os.getcwd())
     os.chdir(orig_dirs)
     os.chdir("magiTemplate")
+    c
     shutil.make_archive("../magiFont/"+fname.split(".")[0], 'zip', os.getcwd())
+
+def edit_module_prop(fname):
+    os.rename(r'module.prop',r'module.txt')
+    prop_list = ["id=MFFM_FontInstaller\n","name="+fname+"\n","version=v1.0\n""versionCode=10\n","author=@TheSc1enceGuy and MFFM\n","description=Magifonts - Install custom fonts with ease.\n"]
+    my_file = open("module.txt", "w")
+    my_file.write("".join(prop_list))
+    my_file.close()
     
 
 def ttfdownload(update, context):
