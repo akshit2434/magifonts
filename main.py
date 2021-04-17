@@ -409,6 +409,15 @@ def clearcache():
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path)
             
+    path_to_folder = "magiTemplate/Fonts"
+    list_dir = os.listdir(path_to_folder)
+    for filename in list_dir:
+        file_path = os.path.join(path_to_folder, filename)
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
+            
 def walklevel(some_dir, level=1):
     some_dir = some_dir.rstrip(os.path.sep)
     assert os.path.isdir(some_dir)
