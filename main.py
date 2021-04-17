@@ -126,7 +126,7 @@ def italics(update,context):
             os.chdir(orig_dir)
             print("magiFont/"+todof.split(".")[0]+".zip")
             bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
-            bot.edit_message_text(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
+            bot.send_message(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
             os.chdir("../")
             return ConversationHandler.END
         else:
@@ -144,7 +144,7 @@ def skip_italics(update,context):
     modulifybi(todof)
     bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
     bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
-    bot.edit_message_text(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
+    bot.send_message(update.message.chat_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
     os.chdir("../")
     return ConversationHandler.END
     
@@ -251,12 +251,12 @@ def modulifybi(fname):
     shutil.make_archive("../magiFont/"+fname.split(".")[0], 'zip', os.getcwd())
 
 def edit_module_prop(fname):
-    os.rename(r'module.prop',r'module.txt')
+    os.rename('module.prop','module.txt')
     prop_list = ["id=MFFM_FontInstaller\n","name="+fname+"\n","version=v1.0\n""versionCode=10\n","author=@TheSc1enceGuy and MFFM\n","description=Magifonts - Install custom fonts with ease.\n"]
     my_file = open("module.txt", "w")
     my_file.write("".join(prop_list))
     my_file.close()
-    
+    os.rename('module.txt','module.prop')
 
 def ttfdownload(update, context):
     os.chdir(orig_dir)
