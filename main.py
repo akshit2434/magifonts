@@ -246,7 +246,7 @@ def modulifybi(fname):
         shutil.copyfile(src="../../todo/"+fnamei , dst=tfontsi[i])
     
     #print(os.getcwd())
-    os.chdir(orig_dirs)
+    os.chdir(orig_dir)
     os.chdir("magiTemplate")
     c
     shutil.make_archive("../magiFont/"+fname.split(".")[0], 'zip', os.getcwd())
