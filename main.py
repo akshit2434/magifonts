@@ -248,7 +248,6 @@ def modulifybi(fname):
     #print(os.getcwd())
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
-    c
     shutil.make_archive("../magiFont/"+fname.split(".")[0], 'zip', os.getcwd())
 
 def edit_module_prop(fname):
