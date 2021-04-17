@@ -7,12 +7,14 @@ import logging
 import constants as keys
 import responses as r
 import random
+from fontpreview import FontPreview
 
 magifonts_id = -1001393886080
 font_ext = ("ttf", "otf")
 todof = "file_17.ttf"
 file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for being one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
 FONT, BOLD, ITALICS = range(3)
+PREVIEW = 1
 bot = Bot(keys.API_KEY)
 
 def member_join(update, context):
@@ -23,6 +25,29 @@ def member_join(update, context):
             message = update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(member_count)+" members!")
             if not bot.pin_chat_message(update.message.chat_id, message.message_id):
                 update.message.reply_text("I can't even pin a message.. dang!")
+
+def preview_command(update,context):
+    print("hey")
+    bot.send_message(update.message.chat_id, "Send the font file you would like the preview for...\nSend /cancel to cancel")
+    return PREVIEW
+
+def preview(update,context):
+    os.chdir(orig_dir)
+    if update.message.document.file_name.split(".")[-1] == ".ttf":
+        bot.send_message(update.message.chat_id, "1 min sar...")
+        os.chdir("preview")
+        update.message.document.get_file().download(custom_path=update.message.document.file_name)
+        pic = previewfont("preview/"+update.message.document.file_name)
+        bot.send_photo(update.message.chat_id, open(pic, "rb"))
+        return ConversationHandler.END
+    else:
+        bot.send_message(update.message.chat_id, "Send a valid font file to continue")
+        return PREVIEW
+
+def cancel_preview(update,context):
+    update.message.reply_text("OK. Preview cancelled...")
+    return ConversationHandler.END
+    
 
 def start_command(update, context):
     update.message.reply_text("Send a font file to begin!! use /about for more info")
@@ -167,10 +192,21 @@ def main():
             BOLD: [MessageHandler(Filters.document, bold), CommandHandler('skip', skip_bold)],
             ITALICS: [MessageHandler(Filters.document, italics), CommandHandler('skip', skip_italics)]
         },
-        fallbacks=[CommandHandler('cancel', cancel)],
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+    
+    preview_handler = ConversationHandler(
+        entry_points = [CommandHandler("preview",preview_command)],
+        states = {
+            PREVIEW: [MessageHandler(Filters.document, preview)]    
+        },
+        fallbacks=[CommandHandler("cancel",cancel_preview)]
+        
     )
 
+    
     dispatcher.add_handler(ttf_handler)
+    dispatcher.add_handler(preview_handler)
     dispatcher.add_handler(CommandHandler("start", start_command))
     dispatcher.add_handler(CommandHandler("help",help_command))
     dispatcher.add_handler(CommandHandler("ccache",ccache_command))
@@ -379,38 +415,22 @@ def ttfdownload(update, context):
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
         
-        
+
+def previewfont(fdir):
+    os.chdir(orig_dir)
+    os.chdir("preview")
+    FontPreview("../"+fdir, mode="paragraph").save("preview.png")
+    return "preview.png"
     
 def clearcache():
     os.chdir(orig_dir)
-    path_to_folder = "todo"
-    list_dir = os.listdir(path_to_folder)
-    for filename in list_dir:
-        file_path = os.path.join(path_to_folder, filename)
-        if os.path.isfile(file_path) or os.path.islink(file_path):
-            os.unlink(file_path)
-        elif os.path.isdir(file_path):
-            shutil.rmtree(file_path)
+    wipefiles("todo")
+    wipefiles("magiFont")
+    wipefiles("ziptodo")
+    wipefiles("magiTemplate/Fonts")
             
-    path_to_folder = "magiFont"
-    list_dir = os.listdir(path_to_folder)
-    for filename in list_dir:
-        file_path = os.path.join(path_to_folder, filename)
-        if os.path.isfile(file_path) or os.path.islink(file_path):
-            os.unlink(file_path)
-        elif os.path.isdir(file_path):
-            shutil.rmtree(file_path)
-    
-    path_to_folder = "ziptodo"
-    list_dir = os.listdir(path_to_folder)
-    for filename in list_dir:
-        file_path = os.path.join(path_to_folder, filename)
-        if os.path.isfile(file_path) or os.path.islink(file_path):
-            os.unlink(file_path)
-        elif os.path.isdir(file_path):
-            shutil.rmtree(file_path)
             
-    path_to_folder = "magiTemplate/Fonts"
+def wipefiles(path_to_folder):
     list_dir = os.listdir(path_to_folder)
     for filename in list_dir:
         file_path = os.path.join(path_to_folder, filename)
