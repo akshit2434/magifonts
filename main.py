@@ -27,7 +27,7 @@ def member_join(update, context):
                 update.message.reply_text("I can't even pin a message.. dang!")
 
 def preview_command(update,context):
-    print("hey")
+    clearcache()
     bot.send_message(update.message.chat_id, "Send the font file you would like the preview for...\nSend /cancel to cancel")
     return PREVIEW
 
@@ -428,6 +428,7 @@ def clearcache():
     wipefiles("magiFont")
     wipefiles("ziptodo")
     wipefiles("magiTemplate/Fonts")
+    wipefiles("preview")
             
             
 def wipefiles(path_to_folder):
@@ -459,6 +460,7 @@ def initialize():
     create_dir("todo")
     create_dir("magiFont")
     create_dir("ziptodo")
+    create_dir("preview")
     clearcache()
     
 def create_dir(folder):
