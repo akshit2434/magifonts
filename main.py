@@ -152,9 +152,9 @@ def italics(update,context):
             #print(os.getcwd())
             os.chdir(orig_dir)
             print("magiFont/"+todof.split(".")[0]+".zip")
-            bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+            bot.send_document(magifonts_id, open("magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
             bot.send_message(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
-            os.chdir("../")
+            
             return ConversationHandler.END
         else:
             update.message.reply_text("invalid file type!")
@@ -169,10 +169,11 @@ def skip_bold(update,context):
 def skip_italics(update,context):
     temp_msg = bot.send_message(update.message.chat_id, "OK sar, Processing, give me a minute...")
     modulifybi(todof)
-    bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+    os.chdir(orig_dir)
+    bot.send_document(magifonts_id, open("magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
     bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
     bot.send_message(update.message.chat_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
-    os.chdir("../")
+    
     return ConversationHandler.END
     
 def cancel(update, context):
