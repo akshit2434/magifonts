@@ -247,6 +247,7 @@ tfontsi = ["MediumItalic.ttf", "Italic.ttf","BlackItalic.ttf","LightItalic.ttf",
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
 def modulify():
+    os.chdir(orig_dir)
     os.chdir("magiTemplate/Fonts")
     
     for i in range(0,len(tfonts)):
