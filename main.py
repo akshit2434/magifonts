@@ -52,10 +52,10 @@ def cancel_preview(update,context):
     
 
 def start_command(update, context):
-    update.message.reply_text("Send a font file to begin!! use /about for more info")
+    update.message.reply_text("I'm alive bRUH!...")
     
 def help_command(update,context):
-    update.message.reply_text("Search for it on Google, duh")
+    update.message.reply_text("Search for it on Google, duh. Tag my master @TheSc1enceGuy for some very important questions...")
     
 def ccache_command(update,context):
     clearcache()
@@ -63,7 +63,7 @@ def ccache_command(update,context):
     
 def about_command(update,context):
     #update.message.reply_text("Memebers count: "+str(bot.get_chat_members_count(update.message.chat_id)))
-    update.message.reply_text("@TheSc1enceGuy(akshit singh) is the  developer of this bot... This bot will convert any sent font (.ttf or .otf) to a magisk flashable zip... enjoy!")
+    update.message.reply_text("This bot will convert any sent font (.ttf or .otf) or web downloaded zip file to a magisk flashable zip... enjoy!")
 
 def maker_command(update,context):
     update.message.reply_text("@TheSc1enceGuy(akshit singh) has made this bot...")
@@ -243,8 +243,7 @@ tfontsr = ["Regular.ttf", "Medium.ttf","Light.ttf","Thin.ttf"]
 
 tfontsb = ["Black.ttf","Bold.ttf"]
 
-tfontsi = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]
-#todof= file...
+tfontsi = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]#todof= file...
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
 def modulify(zipname):
@@ -322,7 +321,7 @@ def ttfdownload(update, context):
     os.chdir(orig_dir)
     clearcache()
     print("ttf download requested by @"+update.message.from_user.username)
-    #print(update.message.document.file_name.split(".")[-1].lower())
+    
     if update.message.document.file_name.split(".")[-1].lower() in font_ext:
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         print(os.getcwd())
@@ -378,7 +377,10 @@ def ttfdownload(update, context):
         else:
             
             #ttfarray=[]
-            if len(list(filter(lambda x : x.split(".")[-1].lower() in font_ext, listfiles("ziptodo/"+remove_ext(update.message.document.file_name)).copy()))) < 1:
+            os.chdir(orig_dir)
+            #print(remove_ext(update.message.document.file_name))
+            if not (len(list(filter(lambda x : x.split(".")[-1].lower() in font_ext, listfiles("ziptodo/"+remove_ext(update.message.document.file_name)).copy())))) >= 1:
+            #if False:
                 bot.send_message(update.message.chat_id, "This zip cannot be made to a font module, pls ensure that all fonts are located in the zip and not in a sub direectory...")
             else:
                 fontlist = origflist.copy()
