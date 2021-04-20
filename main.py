@@ -33,7 +33,7 @@ def preview_command(update,context):
 
 def preview(update,context):
     os.chdir(orig_dir)
-    if update.message.document.file_name.split(".")[-1] in font_ext:
+    if update.message.document.file_name.split(".")[-1].lower():
         bot.send_message(update.message.chat_id, "1 min sar...")
         os.chdir("preview")
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
@@ -153,7 +153,8 @@ def italics(update,context):
             os.chdir(orig_dir)
             print("magiFont/"+todof.split(".")[0]+".zip")
             bot.send_document(magifonts_id, open("magiFont/"+remove_ext(todof)+".zip","rb"),caption=random.choice(file_responses))
-            bot.send_message(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
+            bot.send_message(update.message.chat_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
+            context.bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
             os.chdir("../")
             return ConversationHandler.END
         else:
@@ -377,39 +378,42 @@ def ttfdownload(update, context):
         else:
             
             #ttfarray=[]
-            fontlist = origflist.copy()
-            os.chdir(orig_dir)
-            definefonts(fontlist)
-            fontlist[0][1] = find_font(fontlist[0][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,remove_ext(update.message.document.file_name))
-            definefonts(fontlist)
-            if fontlist[0][1]:
-                shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[0][1], "magiTemplate/Fonts/Regular.ttf")
-                #ttfarray = listfiles("../ziptodo/"+remove_ext(update.message.document.file_name))
+            if len(list(filter(lambda x : x.split(".")[-1].lower() in font_ext, listfiles("ziptodo/"+remove_ext(update.message.document.file_name)).copy()))) < 1:
+                bot.send_message(update.message.chat_id, "This zip cannot be made to a font module, pls ensure that all fonts are located in the zip and not in a sub direectory...")
+            else:
+                fontlist = origflist.copy()
+                os.chdir(orig_dir)
                 definefonts(fontlist)
-                
-                
-                for i in range(1,len(fontlist)):
-                    fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts)
-                    #if fontlist[i][1]:
-                    #    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[i][1],"magiTemplate/Fonts/"+fontlist[i][0]+".ttf")
+                fontlist[0][1] = find_font(fontlist[0][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,remove_ext(update.message.document.file_name))
+                definefonts(fontlist)
+                if fontlist[0][1]:
+                    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[0][1], "magiTemplate/Fonts/Regular.ttf")
+                    #ttfarray = listfiles("../ziptodo/"+remove_ext(update.message.document.file_name))
                     definefonts(fontlist)
-        
-                os.chdir(orig_dir)
-                
-                os.chdir(orig_dir)
-                os.chdir("magiFont")
-                zipname = update.message.document.file_name
-                #print("modulifybi...")
-                filedst = modulify2(fontlist,"ziptodo/"+remove_ext(zipname),"magiTemplate/Fonts",definedfonts,"magiFont/[MAGIFONTS]"+zipname)
-                #print (filedst)
-                bot.send_document(magifonts_id, open(filedst,'rb'),caption=random.choice(file_responses))
-                bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
-                if not (update.message.chat_id == magifonts_id):
-                    bot.send_message(update.message.chat_id,"The file has been posted to @magifonts_support")
-                os.chdir("../")
-            else:                
-                os.chdir("../")
-                update.message.reply_text("Sar, sorry but I can't make this to a module. Pls gib ttf ot otf file :(")
+                    
+                    
+                    for i in range(1,len(fontlist)):
+                        fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts)
+                        #if fontlist[i][1]:
+                        #    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[i][1],"magiTemplate/Fonts/"+fontlist[i][0]+".ttf")
+                        definefonts(fontlist)
+            
+                    os.chdir(orig_dir)
+                    
+                    os.chdir(orig_dir)
+                    os.chdir("magiFont")
+                    zipname = update.message.document.file_name
+                    #print("modulifybi...")
+                    filedst = modulify2(fontlist,"ziptodo/"+remove_ext(zipname),"magiTemplate/Fonts",definedfonts,"magiFont/[MAGIFONTS]"+zipname)
+                    #print (filedst)
+                    bot.send_document(magifonts_id, open(filedst,'rb'),caption=random.choice(file_responses))
+                    bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
+                    if not (update.message.chat_id == magifonts_id):
+                        bot.send_message(update.message.chat_id,"The file has been posted to @magifonts_support")
+                    os.chdir("../")
+                else:                
+                    os.chdir("../")
+                    update.message.reply_text("Sar, sorry but I can't make this to a module. Pls gib ttf ot otf file :(")
         #os.chdir("../magiTemplate/system/fonts")
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
@@ -443,7 +447,10 @@ def find_font(font, direc,flist,deffonts,filename=False):
         if len(a) > 0:
             return a[0]
         else:
-            return find_font(nearest_weight(flist, font, deffonts), direc, flist, filename, deffonts)
+            to_return = find_font(nearest_weight(flist, font, deffonts), direc, flist, filename, deffonts)
+            if to_return == "first_element":
+                return allfonts[0]
+            return to_return
     if font == "Black":
         a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()),allfonts))
         if len(a) > 0:
@@ -547,7 +554,9 @@ def nearest_weight(flist, x, deffonts):
                             break
         
         #return return_font(flist, "Regular")
-        return "Regular"
+        if "Regular" in definedfonts:
+            return "Regular"
+        return "first_element"
 definedfonts=[]
 def definefonts(flist):
     global definedfonts
