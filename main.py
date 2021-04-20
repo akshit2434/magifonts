@@ -148,11 +148,11 @@ def italics(update,context):
             os.chdir("../")
 
             temp_msg = bot.send_message(update.message.chat_id, "Ok... Processing...")
-            modulifybi(todof)
+            modulifybi(todof,)
             #print(os.getcwd())
             os.chdir(orig_dir)
             print("magiFont/"+todof.split(".")[0]+".zip")
-            bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+            bot.send_document(magifonts_id, open("magiFont/"+remove_ext(todof)+".zip","rb"),caption=random.choice(file_responses))
             bot.send_message(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
             os.chdir("../")
             return ConversationHandler.END
@@ -169,8 +169,8 @@ def skip_bold(update,context):
 def skip_italics(update,context):
     temp_msg = bot.send_message(update.message.chat_id, "OK sar, Processing, give me a minute...")
     modulifybi(todof)
-    bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
-    bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
+    bot.send_document(magifonts_id, open(".magiFont/"+remove_ext(todof)+".zip","rb"),caption=random.choice(file_responses))
+    context.bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
     bot.send_message(update.message.chat_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
     os.chdir("../")
     return ConversationHandler.END
@@ -261,38 +261,42 @@ def modulify(zipname):
     edit_module_prop(todof.split(".")[0])
     shutil.make_archive("../magiFont/"+zipname, 'zip', os.getcwd())
     
-def modulifybi(fname,zipname):
+def modulifybi(fname,zipname=False):
+    print(["moodulify bi reached",fname])
     if not zipname:
         zipname=fname.split(".")[0]
     os.chdir(orig_dir)
     fnameb = fname+"-bold.ttf"
     fnamei = fname+"-italics.ttf"
     todocontents = []
-    
+    print(1)
     for dirs,file,name in walklevel("todo"):
         todocontents = name
-        
+    print(2)
     if fnameb not in todocontents:
         fnameb = fname
     
     if fnamei not in todocontents:
         fnamei = fname
-    
+    print(3)
     os.chdir("magiTemplate/Fonts")
     for i in range(0,len(tfontsr)):
         shutil.copyfile(src="../../todo/"+fname , dst=tfontsr[i])
     
-    # for i in range(0,len(tfontsb)):
+    for i in range(0,len(tfontsb)):
         shutil.copyfile(src="../../todo/"+fnameb , dst=tfontsb[i])
         
     for i in range(0,len(tfontsi)):
         shutil.copyfile(src="../../todo/"+fnamei , dst=tfontsi[i])
-    
+    print(4)
     #print(os.getcwd())
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
-    edit_module_prop(fname.split(".")[0])
-    shutil.make_archive("../magiFont/"+zipname, 'zip', os.getcwd())
+    edit_module_prop(remove_ext(fname))
+    os.chdir(orig_dir)
+    #print(zipname)
+    shutil.make_archive("magiFont/"+zipname, 'zip', "magiTemplate/")
+    #print(5)
 
 def edit_module_prop(fname):
     os.rename('module.prop','module.txt')
@@ -423,6 +427,7 @@ def modulify2(flist,src,dst,definedfonts,filedst):
             for i in range(len(flist)):
                 if not flist[i][1]:
                     shutil.copyfile(src+"/"+return_font(flist,nearest_weight(flist,flist[i], definedfonts)), dst+"/"+flist[i][0]+".ttf")
+    edit_module_prop(remove_ext(filedst.split("/")[-1]))
     shutil.make_archive(remove_ext(filedst), 'zip', "magiTemplate/")
     return filedst
     
