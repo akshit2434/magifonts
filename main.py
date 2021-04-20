@@ -299,12 +299,15 @@ def modulifybi(fname,zipname=False):
     #print(5)
 
 def edit_module_prop(fname):
+    os.chdir(orig_dir)
+    os.chdir("magiTemplate")
     os.rename('module.prop','module.txt')
     prop_list = ["id=MFFM_FontInstaller\n","name="+fname+"\n","version=v1.0\n""versionCode=10\n","author=@TheSc1enceGuy and MFFM\n","description=Magifonts - Install custom fonts with ease.\n"]
     my_file = open("module.txt", "w")
     my_file.write("".join(prop_list))
     my_file.close()
     os.rename('module.txt','module.prop')
+    os.chdir(orig_dir)
 
 def remove_ext(filewext):
     file = filewext.split(".").copy()
