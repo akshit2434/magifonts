@@ -239,11 +239,11 @@ def main():
     
 tfonts = ["MFFM.ttf"]
 
-tfontsr = ["Regular.ttf","Black.ttf", "Medium.ttf","Light.ttf","Thin.ttf"]
+tfontsr = ["Regular.ttf", "Medium.ttf","Light.ttf","Thin.ttf"]
 
-tfontsb = ["Bold.ttf","BoldItalic.ttf"]
+tfontsb = ["Black.ttf","Bold.ttf"]
 
-tfontsi = ["MediumItalic.ttf","Italic.ttf","BlackItalic.ttf","LightItalic.ttf","ThinItalic.ttf"]
+tfontsi = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]
 #todof= file...
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
