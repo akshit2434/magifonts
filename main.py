@@ -152,9 +152,9 @@ def italics(update,context):
             #print(os.getcwd())
             os.chdir(orig_dir)
             print("magiFont/"+todof.split(".")[0]+".zip")
-            bot.send_document(magifonts_id, open("magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+            bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
             bot.send_message(update.message.chat_id,temp_msg.message_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
-            
+            os.chdir("../")
             return ConversationHandler.END
         else:
             update.message.reply_text("invalid file type!")
@@ -169,11 +169,10 @@ def skip_bold(update,context):
 def skip_italics(update,context):
     temp_msg = bot.send_message(update.message.chat_id, "OK sar, Processing, give me a minute...")
     modulifybi(todof)
-    os.chdir(orig_dir)
-    bot.send_document(magifonts_id, open("magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
+    bot.send_document(magifonts_id, open("../magiFont/"+todof.split(".")[0]+".zip","rb"),caption=random.choice(file_responses))
     bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
     bot.send_message(update.message.chat_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
-    
+    os.chdir("../")
     return ConversationHandler.END
     
 def cancel(update, context):
@@ -239,15 +238,17 @@ def main():
     
 tfonts = ["MFFM.ttf"]
 
-tfontsr = ["Black.ttf", "Medium.ttf","Regular.ttf","Light.ttf","Thin.ttf"]
+tfontsr = ["Regular.ttf","Black.ttf", "Medium.ttf","Light.ttf","Thin.ttf"]
 
 tfontsb = ["Bold.ttf","BoldItalic.ttf"]
 
-tfontsi = ["MediumItalic.ttf", "Italic.ttf","BlackItalic.ttf","LightItalic.ttf","ThinItalic.ttf"]
+tfontsi = ["MediumItalic.ttf","Italic.ttf","BlackItalic.ttf","LightItalic.ttf","ThinItalic.ttf"]
 #todof= file...
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
-def modulify():
+def modulify(zipname):
+    if not zipname:
+        zipname=todof.split(".")[0]
     os.chdir(orig_dir)
     os.chdir("magiTemplate/Fonts")
     
@@ -258,9 +259,11 @@ def modulify():
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
     edit_module_prop(todof.split(".")[0])
-    shutil.make_archive("../magiFont/"+todof.split(".")[0], 'zip', os.getcwd())
+    shutil.make_archive("../magiFont/"+zipname, 'zip', os.getcwd())
     
-def modulifybi(fname):
+def modulifybi(fname,zipname):
+    if not zipname:
+        zipname=fname.split(".")[0]
     os.chdir(orig_dir)
     fnameb = fname+"-bold.ttf"
     fnamei = fname+"-italics.ttf"
@@ -279,7 +282,7 @@ def modulifybi(fname):
     for i in range(0,len(tfontsr)):
         shutil.copyfile(src="../../todo/"+fname , dst=tfontsr[i])
     
-    for i in range(0,len(tfontsb)):
+    # for i in range(0,len(tfontsb)):
         shutil.copyfile(src="../../todo/"+fnameb , dst=tfontsb[i])
         
     for i in range(0,len(tfontsi)):
@@ -289,7 +292,7 @@ def modulifybi(fname):
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
     edit_module_prop(fname.split(".")[0])
-    shutil.make_archive("../magiFont/"+fname.split(".")[0], 'zip', os.getcwd())
+    shutil.make_archive("../magiFont/"+zipname, 'zip', os.getcwd())
 
 def edit_module_prop(fname):
     os.rename('module.prop','module.txt')
@@ -299,13 +302,20 @@ def edit_module_prop(fname):
     my_file.close()
     os.rename('module.txt','module.prop')
 
+def remove_ext(filewext):
+    file = filewext.split(".").copy()
+    file.pop(-1)
+    strfile = ""
+    for i in file:
+       strfile+=str(i)
+    return strfile
+
 def ttfdownload(update, context):
     os.chdir(orig_dir)
     clearcache()
     print("ttf download requested by @"+update.message.from_user.username)
     #print(update.message.document.file_name.split(".")[-1].lower())
     if update.message.document.file_name.split(".")[-1].lower() in font_ext:
-        bot.send_message(update.message.chat_id, "Check /module for creating fonts with custom bold and/or italic fonts!!")
         update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
         print(os.getcwd())
         os.chdir("todo")
@@ -320,13 +330,13 @@ def ttfdownload(update, context):
         
         if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
-            modulify()
+            modulify(remove_ext(update.message.document.file_name))
             os.chdir("../magiFont")
-            context.bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+            context.bot.send_document(magifonts_id, open(remove_ext(todof)+".zip",'rb'),caption=random.choice(file_responses))
             bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
             if not str(update.message.chat_id) == str(magifonts_id):
                 update.message.reply_text("Your file has been posted in @magifonts_support")
-            update.message.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
+                update.message.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
             os.chdir("../")
         else:
             update.message.reply_text("invalid file type!")
@@ -336,78 +346,56 @@ def ttfdownload(update, context):
         os.chdir("ziptodo")
         update.message.document.get_file().download(custom_path=update.message.document.file_name)
         print("file downloaded!")
-        shutil.unpack_archive(update.message.document.file_name,update.message.document.file_name.split(".")[0])
+        shutil.unpack_archive(update.message.document.file_name,remove_ext(update.message.document.file_name))
         print("file unzipped")
-        if os.path.exists(update.message.document.file_name.split(".")[0]+"/system/fonts"):
-            if os.path.exists(update.message.document.file_name.split(".")[0]+"/module.prop"):
-                update.message.reply_text("The provided zip is already a magisk module LOL!")
+        if os.path.exists(remove_ext(update.message.document.file_name)+"/system/fonts"):
+            if os.path.exists(remove_ext(update.message.document.file_name)+"/module.prop"):
+                #update.message.reply_text("The provided zip is already a magisk module LOL!")
                 os.chdir("../")
-                print(os.getcwd())
+                #print(os.getcwd())
             else:
                 update.message.reply_text("Converting to a magisk module sar!!")
-                os.chdir(update.message.document.file_name.split(".")[0])
+                os.chdir(remove_ext(update.message.document.file_name))
                 shutil.copyfile(src="../../magiTemplate/module.prop" , dst="module.prop")
                 shutil.copyfile(src="../../magiTemplate/META-INF/com/google/android/update-binary" , dst="META-INF/com/google/android/update-binary")
                 shutil.copyfile(src="../../magiTemplate/META-INF/com/google/android/updater-script" , dst="META-INF/com/google/android/updater-script")
-                shutil.make_archive("../../magiFont/"+update.message.document.file_name.split(".")[0], 'zip', os.getcwd())
+                shutil.make_archive("../../magiFont/"+remove_ext(update.message.document.file_name), 'zip', os.getcwd())
                 os.chdir("../../magiFont")
-                bot.send_document(magifonts_id, open(update.message.document.file_name.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+                bot.send_document(magifonts_id, open(remove_ext(update.message.document.file_name)+".zip",'rb'),caption=random.choice(file_responses))
                 bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
                 if not str(update.message.chat_id) == str(magifonts_id):
                     update.message.reply_text("Your file has been posted in @magifonts_support")
-                update.message.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
+                    update.message.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
                 os.chdir("../")
         else:
-            ttfarray = []
             
-            ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
-            ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-            print(ttfarray)
-            ttfarray = list(filter(lambda x : (("regular" in x.lower()) or ("normal" in x.lower()) and not(("condensed" in x.lower()) or ("bold" in x.lower()) or ("italics" in x.lower()))), ttfarray))
-            print(ttfarray)
-            print("regular ttf file below")
-            print(ttfarray)
-            if len(ttfarray)>0:
-                print(1)
-            else:
-                print(os.getcwd())
-                ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
-                print("0_.1")
-                ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-                print("0_.2")
-                ttfarray = list(filter(lambda x : lambda x : not (("bold" in x) or ("italics" in x) or ("ital" in x)), ttfarray))
-                print("0_.3")
-                print("1_")
-                if len(ttfarray) == 0:
-                    ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
-                    ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-                    ttfarray = ttfarray[0]
-            
-            if len(ttfarray) > 0:
-                todof = ttfarray[0]
-                shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0])
-                print(1.1)
-                ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
-                print(1.2)
-                ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-                ttfarray = list(filter(lambda x : (("bold" in x) or ("-b." in x)) and not(("condensed" in x) or ("italics" in x) or ("light" in x)), ttfarray))
-                print(1.3)
-                if len(ttfarray)>0:
-                    shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0],"../todo/"+ttfarray[0].split(".")[0]+"-bold.ttf")
-                print(2)
-                ttfarray = listfiles("../ziptodo/"+update.message.document.file_name.split(".")[0])
-                ttfarray = list(filter(lambda x : x.split(".")[-1] in font_ext, ttfarray))
-                ttfarray = list(filter(lambda x : (("-i." in x) or ("ital" in x)) and not (("condensed" in x) or ("bold" in x) or ("light" in x)), ttfarray))
-                print(3)
-                if len(ttfarray)>0:
-                    shutil.copy("../ziptodo/"+update.message.document.file_name.split(".")[0]+"/"+ttfarray[0], "../todo/"+ttfarray[0].split(".")[0]+"-italics.ttf")
-
+            #ttfarray=[]
+            fontlist = origflist.copy()
+            os.chdir(orig_dir)
+            definefonts(fontlist)
+            fontlist[0][1] = find_font(fontlist[0][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,remove_ext(update.message.document.file_name))
+            definefonts(fontlist)
+            if fontlist[0][1]:
+                shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[0][1], "magiTemplate/Fonts/Regular.ttf")
+                #ttfarray = listfiles("../ziptodo/"+remove_ext(update.message.document.file_name))
+                definefonts(fontlist)
+                
+                
+                for i in range(1,len(fontlist)):
+                    fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts)
+                    #if fontlist[i][1]:
+                    #    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[i][1],"magiTemplate/Fonts/"+fontlist[i][0]+".ttf")
+                    definefonts(fontlist)
         
-                os.chdir("../")
-                print("modulifybi...")
-                modulifybi(todof)
-                os.chdir("../magiFont")
-                bot.send_document(magifonts_id, open(todof.split(".")[0]+".zip",'rb'),caption=random.choice(file_responses))
+                os.chdir(orig_dir)
+                
+                os.chdir(orig_dir)
+                os.chdir("magiFont")
+                zipname = update.message.document.file_name
+                #print("modulifybi...")
+                filedst = modulify2(fontlist,"ziptodo/"+remove_ext(zipname),"magiTemplate/Fonts",definedfonts,"magiFont/[MAGIFONTS]"+zipname)
+                #print (filedst)
+                bot.send_document(magifonts_id, open(filedst,'rb'),caption=random.choice(file_responses))
                 bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
                 if not (update.message.chat_id == magifonts_id):
                     bot.send_message(update.message.chat_id,"The file has been posted to @magifonts_support")
@@ -418,7 +406,153 @@ def ttfdownload(update, context):
         #os.chdir("../magiTemplate/system/fonts")
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
+origflist = [["Regular",False],["Black",False],["Medium",False],["Light",False],["Thin",False],["Bold",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
+    
+def modulify2(flist,src,dst,definedfonts,filedst):
+    os.chdir(orig_dir)
+    
         
+    if "Regular" in definedfonts:
+        if len(definedfonts) == 1:
+            shutil.copyfile(src+"/"+flist[2][1], dst+"/MFFM.ttf")
+        else:
+            for i in range(len(flist)):
+                if flist[i][1]:
+                    shutil.copyfile(src+"/"+flist[i][1], dst+"/"+flist[i][0]+".ttf")
+                
+            for i in range(len(flist)):
+                if not flist[i][1]:
+                    shutil.copyfile(src+"/"+return_font(flist,nearest_weight(flist,flist[i], definedfonts)), dst+"/"+flist[i][0]+".ttf")
+    shutil.make_archive(remove_ext(filedst), 'zip', "magiTemplate/")
+    return filedst
+    
+def find_font(font, direc,flist,deffonts,filename=False):
+    files = listfiles(direc).copy()
+    allfonts = list(filter(lambda x : x.split(".")[-1].lower() in font_ext, files))
+    if font == "Regular":
+        a = list(filter(lambda x : (x.lower() in filename.lower()) or ("regular" in x.lower()), allfonts))
+        
+        if len(a) > 0:
+            return a[0]
+        else:
+            return find_font(nearest_weight(flist, font, deffonts), direc, flist, filename, deffonts)
+    if font == "Black":
+        a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+    
+    if font == "Medium":
+        a = list(filter(lambda x : ("-med" in x.lower()) or ("medium" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+            
+    if font == "Light":
+        a = list(filter(lambda x : ("-l" in x.lower()) or ("light" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+
+    if font == "Thin":
+        a = list(filter(lambda x : ("thin" in x.lower()) or ("-th" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+
+    if font == "Bold":
+        a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+
+    if font == "BoldItalic":
+        a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+
+    if font == "Italic":
+        a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+
+    if font == "MediumItalic":
+        a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+
+    if font == "LightItalic":
+        a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+
+    if font == "BlackItalic":
+        a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+
+    if font == "ThinItalic":
+        a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()), allfonts))
+        if len(a) > 0:
+            return a[0]
+        else:
+            return False
+    
+         
+    
+    
+def nearest_weight(flist, x, deffonts):
+    if x[0] in deffonts:
+        return x[1]
+    else:
+        allf_list = [tfontsr.copy(),tfontsb.copy(),tfontsi.copy()]
+        for array in allf_list:
+            if x[0]+".ttf" in array:
+                
+                l = (len(array)-array.index(x[0]+".ttf"))-1
+                i = (len(array)-l)-1
+                for j in range(1,max(l,i)+1):
+                    if l>=j:
+                        if  "".join(array.copy()[array.index(x[0]+".ttf")+j].split(".").pop(-1)) in deffonts:
+                            #return return_font(flist, "".join(array[array.index(x)+j].split(".").copy().pop(-1)))
+                            return "".join(array.copy()[array.index(x[0]+".ttf")+j].split(".").pop(-1))
+                            break
+                    if i>=j:
+                        if "".join(array.copy()[array.index(x[0]+".ttf")-j].split(".").pop(-1)) in deffonts:
+                            #return "".join(array[array.index(x)-j].split(".").copy().pop(-1))
+                            return "".join(array.copy()[array.index(x[0]+".ttf")-j].split(".").pop(-1))
+                            break
+        
+        #return return_font(flist, "Regular")
+        return "Regular"
+definedfonts=[]
+def definefonts(flist):
+    global definedfonts
+    definedfonts=[]
+    for i in flist:
+        if not i[1]==False:
+            if not i[0] in definedfonts:
+                definedfonts.append(i[0])
+
+def return_font(array, value):
+    for i in array:
+        if i[0] == value:
+            return i[1]
 
 def previewfont(fdir,fname):
     bg_color = (29,53,87)
@@ -488,7 +622,7 @@ def walklevel(some_dir, level=1):
 
 def listfiles(direc):
     for dirs,file,name in walklevel(direc, 1):
-        return name
+        return name.copy()
 
 
     
