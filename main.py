@@ -247,6 +247,7 @@ tfontsi = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","L
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
 def modulify(zipname):
+    print("modulify me hu")
     if not zipname:
         zipname=todof.split(".")[0]
     os.chdir(orig_dir)
@@ -254,13 +255,14 @@ def modulify(zipname):
     
     for i in range(0,len(tfonts)):
         shutil.copyfile(src="../../todo/"+todof , dst=tfonts[i])
-    
+    print("copied files")
     #print(os.getcwd())
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
     edit_module_prop(todof.split(".")[0])
     os.chdir(orig_dir)
     shutil.make_archive("magiFont/"+zipname, 'zip', os.getcwd())
+    print("archive ready")
     
 def modulifybi(fname,zipname=False):
     print(["moodulify bi reached",fname])
@@ -338,7 +340,8 @@ def ttfdownload(update, context):
             modulify(remove_ext(update.message.document.file_name))
             os.chdir(orig)
             os.chdir("magiFont")
-            context.bot.send_document(magifonts_id, open(remove_ext(todof)+".zip",'rb'),caption=random.choice(file_responses))
+            print("sending...")
+            bot.send_document(magifonts_id, open(remove_ext(todof)+".zip",'rb'),caption=random.choice(file_responses))
             bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
             if not str(update.message.chat_id) == str(magifonts_id):
                 update.message.reply_text("Your file has been posted in @magifonts_support")
@@ -536,7 +539,6 @@ def nearest_weight(flist, x, deffonts):
                 
                 l = (len(array)-array.index(x[0]+".ttf"))-1
                 i = (len(array)-l)-1
-                print(["Lll ",x,allf_list])
                 for j in range(1,max(l,i)+1):
                     if l>=j:
                         if  "".join(array.copy()[array.index(x[0]+".ttf")+j].split(".").pop(-1)) in deffonts:
