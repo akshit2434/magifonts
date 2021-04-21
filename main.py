@@ -454,9 +454,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
         if len(a) > 0:
             return a[0]
         else:
-            approx = return_font(nearest_weight(flist,font,deffonts))
-            print(["black ",approx])
-            return approx
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
     
     if font == "Medium":
         a = list(filter(lambda x : ("-med" in x.lower()) or ("medium" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
