@@ -454,7 +454,7 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print(["black ",approx,return_font(approx)])
+            print(["black ",approx,return_font(flist,approx)])
             return approx
     
     if font == "Medium":
