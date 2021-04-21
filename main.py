@@ -338,7 +338,7 @@ def ttfdownload(update, context):
         if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
             modulify(remove_ext(update.message.document.file_name))
-            os.chdir(orig)
+            os.chdir(orig_dir)
             os.chdir("magiFont")
             print("sending...")
             bot.send_document(magifonts_id, open(remove_ext(todof)+".zip",'rb'),caption=random.choice(file_responses))
