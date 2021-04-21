@@ -239,9 +239,9 @@ def main():
     
 tfonts = ["MFFM.ttf"]
 
-tfontsr = ["Regular.ttf", "Medium.ttf","Light.ttf","Thin.ttf"]
+tfontsr = ["Regular.ttf","Light.ttf","Thin.ttf"]
 
-tfontsb = ["Black.ttf","Bold.ttf"]
+tfontsb = [ "Medium.ttf","Black.ttf","Bold.ttf"]
 
 tfontsi = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]#todof= file...
 
@@ -259,7 +259,8 @@ def modulify(zipname):
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
     edit_module_prop(todof.split(".")[0])
-    shutil.make_archive("../magiFont/"+zipname, 'zip', os.getcwd())
+    os.chdir(orig_dir)
+    shutil.make_archive("magiFont/"+zipname, 'zip', os.getcwd())
     
 def modulifybi(fname,zipname=False):
     print(["moodulify bi reached",fname])
@@ -269,16 +270,13 @@ def modulifybi(fname,zipname=False):
     fnameb = fname+"-bold.ttf"
     fnamei = fname+"-italics.ttf"
     todocontents = []
-    print(1)
     for dirs,file,name in walklevel("todo"):
         todocontents = name
-    print(2)
     if fnameb not in todocontents:
         fnameb = fname
     
     if fnamei not in todocontents:
         fnamei = fname
-    print(3)
     os.chdir("magiTemplate/Fonts")
     for i in range(0,len(tfontsr)):
         shutil.copyfile(src="../../todo/"+fname , dst=tfontsr[i])
@@ -297,7 +295,7 @@ def modulifybi(fname,zipname=False):
     #print(zipname)
     shutil.make_archive("magiFont/"+zipname, 'zip', "magiTemplate/")
     #print(5)
-
+    
 def edit_module_prop(fname):
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
@@ -338,7 +336,8 @@ def ttfdownload(update, context):
         if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
             modulify(remove_ext(update.message.document.file_name))
-            os.chdir("../magiFont")
+            os.chdir(orig)
+            os.chdir("magiFont")
             context.bot.send_document(magifonts_id, open(remove_ext(todof)+".zip",'rb'),caption=random.choice(file_responses))
             bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
             if not str(update.message.chat_id) == str(magifonts_id):
@@ -386,21 +385,19 @@ def ttfdownload(update, context):
                 fontlist = origflist.copy()
                 os.chdir(orig_dir)
                 definefonts(fontlist)
-                fontlist[0][1] = find_font(fontlist[0][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,remove_ext(update.message.document.file_name))
-                definefonts(fontlist)
-                if fontlist[0][1]:
-                    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[0][1], "magiTemplate/Fonts/Regular.ttf")
-                    #ttfarray = listfiles("../ziptodo/"+remove_ext(update.message.document.file_name))
-                    definefonts(fontlist)
+                if True:#fontlist[0][1]:                   
                     
-                    
-                    for i in range(1,len(fontlist)):
-                        fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts)
+                    for i in range(0,len(fontlist)):
+                        fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
+                        #if fontlist[i][1]:
+                        #    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[i][1],"magiTemplate/Fonts/"+fontlist[i][0]+".ttf")
+                        definefonts(fontlist)
+                    for i in range(0,len(fontlist)):
+                        fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
                         #if fontlist[i][1]:
                         #    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[i][1],"magiTemplate/Fonts/"+fontlist[i][0]+".ttf")
                         definefonts(fontlist)
             
-                    os.chdir(orig_dir)
                     
                     os.chdir(orig_dir)
                     os.chdir("magiFont")
@@ -423,8 +420,7 @@ origflist = [["Regular",False],["Black",False],["Medium",False],["Light",False],
     
 def modulify2(flist,src,dst,definedfonts,filedst):
     os.chdir(orig_dir)
-    
-        
+
     if "Regular" in definedfonts:
         if len(definedfonts) == 1:
             shutil.copyfile(src+"/"+flist[2][1], dst+"/MFFM.ttf")
@@ -442,17 +438,14 @@ def modulify2(flist,src,dst,definedfonts,filedst):
     
 def find_font(font, direc,flist,deffonts,filename=False):
     files = listfiles(direc).copy()
+
     allfonts = list(filter(lambda x : x.split(".")[-1].lower() in font_ext, files))
     if font == "Regular":
         a = list(filter(lambda x : (x.lower() in filename.lower()) or ("regular" in x.lower()), allfonts))
-        
         if len(a) > 0:
             return a[0]
         else:
-            to_return = find_font(nearest_weight(flist, font, deffonts), direc, flist, filename, deffonts)
-            if to_return == "first_element":
-                return allfonts[0]
-            return to_return
+            return False
     if font == "Black":
         a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()),allfonts))
         if len(a) > 0:
@@ -543,10 +536,10 @@ def nearest_weight(flist, x, deffonts):
                 
                 l = (len(array)-array.index(x[0]+".ttf"))-1
                 i = (len(array)-l)-1
+                print(["Lll ",x,allf_list])
                 for j in range(1,max(l,i)+1):
                     if l>=j:
                         if  "".join(array.copy()[array.index(x[0]+".ttf")+j].split(".").pop(-1)) in deffonts:
-                            #return return_font(flist, "".join(array[array.index(x)+j].split(".").copy().pop(-1)))
                             return "".join(array.copy()[array.index(x[0]+".ttf")+j].split(".").pop(-1))
                             break
                     if i>=j:
