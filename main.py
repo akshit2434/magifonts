@@ -448,14 +448,16 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
     if font == "Black":
         a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
     
     if font == "Medium":
         a = list(filter(lambda x : ("-med" in x.lower()) or ("medium" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
@@ -463,7 +465,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
             
     if font == "Light":
         a = list(filter(lambda x : ("-l" in x.lower()) or ("light" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
@@ -471,7 +474,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
 
     if font == "Thin":
         a = list(filter(lambda x : ("thin" in x.lower()) or ("-th" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
@@ -479,7 +483,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
 
     if font == "Bold":
         a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()),allfonts))
@@ -487,7 +492,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
 
     if font == "BoldItalic":
         a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
@@ -495,7 +501,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
 
     if font == "Italic":
         a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()),allfonts))
@@ -503,7 +510,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
 
     if font == "MediumItalic":
         a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
@@ -511,7 +519,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
 
     if font == "LightItalic":
         a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
@@ -519,7 +528,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
 
     if font == "BlackItalic":
         a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
@@ -527,7 +537,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
 
     if font == "ThinItalic":
         a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()) , allfonts))
@@ -535,7 +546,8 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist, approx)
+            print([font,approx,return_font(flist,approx)])
+            return return_font(flist,approx)
     
          
     
@@ -554,12 +566,12 @@ def nearest_weight(flist, x, deffonts):
                     
                     if l>=j:
                         if  remove_ext(array[array.index(x+".ttf")+j]) in deffonts:
-                            print("millla j")
+                            print(["mila.. " + x, remove_ext(array[array.index(x+".ttf")+j])])
                             return remove_ext(array[array.index(x+".ttf")+j])
                             break
                     if i>=j:
                         if remove_ext(array[array.index(x+".ttf")-j]) in deffonts:
-                            print("mila.. i")
+                            print(["mila.. " + x, remove_ext(array[array.index(x+".ttf")-j])])
                             return remove_ext(array[array.index(x+".ttf")-j])
                             break
         
