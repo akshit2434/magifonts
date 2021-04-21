@@ -261,7 +261,7 @@ def modulify(zipname):
     os.chdir("magiTemplate")
     edit_module_prop(todof.split(".")[0])
     os.chdir(orig_dir)
-    shutil.make_archive("magiFont/"+zipname, 'zip', os.getcwd())
+    shutil.make_archive("magiFont/"+zipname, 'zip', "magiTemplate")
     print("archive ready")
     
 def modulifybi(fname,zipname=False):
