@@ -149,7 +149,6 @@ def italics(update,context):
 
             temp_msg = bot.send_message(update.message.chat_id, "Ok... Processing...")
             modulifybi(todof,)
-            #print(os.getcwd())
             os.chdir(orig_dir)
             print("magiFont/"+todof.split(".")[0]+".zip")
             bot.send_document(magifonts_id, open("magiFont/"+remove_ext(todof)+".zip","rb"),caption=random.choice(file_responses))
@@ -393,12 +392,12 @@ def ttfdownload(update, context):
                     for i in range(0,len(fontlist)):
                         x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
                         fontlist[i][1] = x
-                        print(x)
+                        print(["find-font: ",x])
                         definefonts(fontlist)
                     for i in range(0,len(fontlist)):
                         x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
                         fontlist[i][1] = x
-                        print(x)
+                        print(["find-font: ",x])
                         definefonts(fontlist)
             
                     print(["Fontlist: ",fontlist])
@@ -455,7 +454,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print(["Medium",approx,return_font(flist, approx)])
             return return_font(flist, approx)
     
     if font == "Medium":
@@ -464,7 +462,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print(["Medium",approx,return_font(flist, approx)])
             return return_font(flist, approx)
             
     if font == "Light":
