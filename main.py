@@ -447,14 +447,15 @@ def find_font(font, direc,flist,deffonts,filename=False):
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
     if font == "Black":
         a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            approx = nearest_weight(flist,font,deffonts)
-            print(["black ",approx,return_font(flist,approx)])
+            approx = return_font(nearest_weight(flist,font,deffonts))
+            print(["black ",approx])
             return approx
     
     if font == "Medium":
@@ -470,63 +471,72 @@ def find_font(font, direc,flist,deffonts,filename=False):
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
 
     if font == "Thin":
         a = list(filter(lambda x : ("thin" in x.lower()) or ("-th" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
 
     if font == "Bold":
         a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
 
     if font == "BoldItalic":
         a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
 
     if font == "Italic":
         a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
 
     if font == "MediumItalic":
         a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
 
     if font == "LightItalic":
         a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
 
     if font == "BlackItalic":
         a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
 
     if font == "ThinItalic":
         a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()) , allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return return_font(flist, nearest_weight(flist,font,deffonts))
+            approx = nearest_weight(flist,font,deffonts)
+            return return_font(flist, approx)
     
          
     
