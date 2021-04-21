@@ -392,16 +392,12 @@ def ttfdownload(update, context):
                     
                     for i in range(0,len(fontlist)):
                         fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
-                        #if fontlist[i][1]:
-                        #    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[i][1],"magiTemplate/Fonts/"+fontlist[i][0]+".ttf")
                         definefonts(fontlist)
                     for i in range(0,len(fontlist)):
                         fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
-                        #if fontlist[i][1]:
-                        #    shutil.copy("ziptodo/"+remove_ext(update.message.document.file_name)+"/"+fontlist[i][1],"magiTemplate/Fonts/"+fontlist[i][0]+".ttf")
                         definefonts(fontlist)
             
-                    
+                    print(["Fontlist: ",fontlist])
                     os.chdir(orig_dir)
                     os.chdir("magiFont")
                     zipname = update.message.document.file_name
@@ -419,7 +415,7 @@ def ttfdownload(update, context):
         #os.chdir("../magiTemplate/system/fonts")
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
-origflist = [["Regular",False],["Black",False],["Medium",False],["Light",False],["Thin",False],["Bold",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
+origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
     
 def modulify2(flist,src,dst,definedfonts,filedst):
     os.chdir(orig_dir)
@@ -434,7 +430,7 @@ def modulify2(flist,src,dst,definedfonts,filedst):
                 
             for i in range(len(flist)):
                 if not flist[i][1]:
-                    shutil.copyfile(src+"/"+return_font(flist,nearest_weight(flist,flist[i], definedfonts)), dst+"/"+flist[i][0]+".ttf")
+                    shutil.copyfile(src+"/"+return_font(flist,"Regular"), dst+"/"+flist[i][0]+".ttf")
     edit_module_prop(remove_ext(filedst.split("/")[-1]))
     shutil.make_archive(remove_ext(filedst), 'zip', "magiTemplate/")
     return filedst
@@ -448,111 +444,121 @@ def find_font(font, direc,flist,deffonts,filename=False):
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
     if font == "Black":
-        a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()),allfonts))
+        a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
     
     if font == "Medium":
-        a = list(filter(lambda x : ("-med" in x.lower()) or ("medium" in x.lower()),allfonts))
+        a = list(filter(lambda x : ("-med" in x.lower()) or ("medium" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
             
     if font == "Light":
-        a = list(filter(lambda x : ("-l" in x.lower()) or ("light" in x.lower()),allfonts))
+        a = list(filter(lambda x : ("-l" in x.lower()) or ("light" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
 
     if font == "Thin":
-        a = list(filter(lambda x : ("thin" in x.lower()) or ("-th" in x.lower()),allfonts))
+        a = list(filter(lambda x : ("thin" in x.lower()) or ("-th" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
 
     if font == "Bold":
         a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
 
     if font == "BoldItalic":
         a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
 
     if font == "Italic":
         a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
 
     if font == "MediumItalic":
         a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
 
     if font == "LightItalic":
         a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
 
     if font == "BlackItalic":
         a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
 
     if font == "ThinItalic":
-        a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()), allfonts))
+        a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()) , allfonts))
         if len(a) > 0:
             return a[0]
         else:
-            return False
+            return find_font(nearest_weight(flist,font,deffonts), direc, flist, deffonts, filename)
     
          
     
     
 def nearest_weight(flist, x, deffonts):
-    if x[0] in deffonts:
-        return x[1]
+    if x in deffonts:
+        return return_font(flist, x)
     else:
         allf_list = [tfontsr.copy(),tfontsb.copy(),tfontsi.copy()]
         for array in allf_list:
-            if x[0]+".ttf" in array:
-                
-                l = (len(array)-array.index(x[0]+".ttf"))-1
+            print("array: "+x)
+            print(array)
+            if x+".ttf" in array:
+                print("\n")
+                l = (len(array)-array.index(x+".ttf"))-1
                 i = (len(array)-l)-1
                 for j in range(1,max(l,i)+1):
+                    print([l,i,j])
+                    
                     if l>=j:
-                        if  "".join(array.copy()[array.index(x[0]+".ttf")+j].split(".").pop(-1)) in deffonts:
-                            return "".join(array.copy()[array.index(x[0]+".ttf")+j].split(".").pop(-1))
+                        print(["milega?: ",remove_ext(array[array.index(x+".ttf")+j])])
+                        if  remove_ext(array[array.index(x+".ttf")+j]) in deffonts:
+                            return remove_ext(array[array.index(x+".ttf")+j])
+                            print("millla j")
                             break
                     if i>=j:
-                        if "".join(array.copy()[array.index(x[0]+".ttf")-j].split(".").pop(-1)) in deffonts:
+                        print(["milega???: ",remove_ext(array[array.index(x+".ttf")-j]), deffonts])
+                        if remove_ext(array[array.index(x+".ttf")-j]) in deffonts:
                             #return "".join(array[array.index(x)-j].split(".").copy().pop(-1))
-                            return "".join(array.copy()[array.index(x[0]+".ttf")-j].split(".").pop(-1))
+                            #print(["milgaya: ","".join(array.copy()[array.index(x+".ttf")-j].split(".").pop(-1))])
+                            print("mila.. i")
+                            return remove_ext(array[array.index(x+".ttf")-j])
                             break
         
         #return return_font(flist, "Regular")
         if "Regular" in definedfonts:
-            return "Regular"
+            print("\nkuch nhi mila\n\n")
+            return False
         return "first_element"
 definedfonts=[]
 def definefonts(flist):
