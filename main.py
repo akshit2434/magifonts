@@ -391,10 +391,14 @@ def ttfdownload(update, context):
                 if True:#fontlist[0][1]:                   
                     
                     for i in range(0,len(fontlist)):
-                        fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
+                        x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
+                        fontlist[i][1] = x
+                        print(x)
                         definefonts(fontlist)
                     for i in range(0,len(fontlist)):
-                        fontlist[i][1] = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
+                        x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
+                        fontlist[i][1] = x
+                        print(x)
                         definefonts(fontlist)
             
                     print(["Fontlist: ",fontlist])
@@ -535,23 +539,18 @@ def nearest_weight(flist, x, deffonts):
     else:
         allf_list = [tfontsr.copy(),tfontsb.copy(),tfontsi.copy()]
         for array in allf_list:
-            print("array: "+x)
-            print(array)
             if x+".ttf" in array:
                 print("\n")
                 l = (len(array)-array.index(x+".ttf"))-1
                 i = (len(array)-l)-1
                 for j in range(1,max(l,i)+1):
-                    print([l,i,j])
                     
                     if l>=j:
-                        print([x,"milega?: ",remove_ext(array[array.index(x+".ttf")+j])])
                         if  remove_ext(array[array.index(x+".ttf")+j]) in deffonts:
                             print("millla j")
                             return remove_ext(array[array.index(x+".ttf")+j])
                             break
                     if i>=j:
-                        print([x,"milega???: ",remove_ext(array[array.index(x+".ttf")-j]), deffonts])
                         if remove_ext(array[array.index(x+".ttf")-j]) in deffonts:
                             print("mila.. i")
                             return remove_ext(array[array.index(x+".ttf")-j])
