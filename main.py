@@ -9,7 +9,7 @@ import responses as r
 import random
 from fontpreview import *
 
-magifonts_id = -1001393886080
+magifonts_id = keys.gid
 font_ext = ("ttf", "otf")
 todof = "file_17.ttf"
 file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for being one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
@@ -28,27 +28,25 @@ def member_join(update, context):
 
 def preview_command(update,context):
     clearcache()
-    bot.send_message(update.message.chat_id, "Send the font file you would like the preview for...\nSend /cancel to cancel")
-    return PREVIEW
+    if update.message.reply_to_message:
+        msg = bot.send_message(update.message.chat_id, "gimme a minute")
+        preview(update,context,update.message.reply_to_message)
+        bot.deleteMessage(update.message.chat_id, msg.message_id)
+        bot.send_message(update.message.chat_id, "Ignore any missing glyphs or broken characters. Those will be replaced by Roboto font when flashing the module...")
+    else:
+        update.message.reply_text("Reply to a valid font file...")
 
-def preview(update,context):
+def preview(update,context,doc):
     os.chdir(orig_dir)
-    if update.message.document.file_name.split(".")[-1].lower():
-        bot.send_message(update.message.chat_id, "1 min sar...")
+    if doc.document.file_name.split(".")[-1].lower() in font_ext:
         os.chdir("preview")
-        update.message.document.get_file().download(custom_path=update.message.document.file_name)
-        pic = previewfont("preview/"+update.message.document.file_name, update.message.document.file_name.split(".")[0])
+        doc.document.get_file().download(custom_path=doc.document.file_name)
+        pic = previewfont("preview/"+doc.document.file_name, doc.document.file_name.split(".")[0])
         os.chdir(orig_dir)
         os.chdir("preview")
         bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
-        return ConversationHandler.END
     else:
-        bot.send_message(update.message.chat_id, "Send a valid font file to continue")
-        return PREVIEW
-
-def cancel_preview(update,context):
-    update.message.reply_text("OK. Preview cancelled...")
-    return ConversationHandler.END
+        update.message.reply_text("Send valid font file wen?")
     
 
 def start_command(update, context):
@@ -148,6 +146,7 @@ def italics(update,context):
             os.chdir("../")
 
             temp_msg = bot.send_message(update.message.chat_id, "Ok... Processing...")
+        
             modulifybi(todof,)
             os.chdir(orig_dir)
             print("magiFont/"+todof.split(".")[0]+".zip")
@@ -169,7 +168,8 @@ def skip_bold(update,context):
 def skip_italics(update,context):
     temp_msg = bot.send_message(update.message.chat_id, "OK sar, Processing, give me a minute...")
     modulifybi(todof)
-    bot.send_document(magifonts_id, open(".magiFont/"+remove_ext(todof)+".zip","rb"),caption=random.choice(file_responses))
+    os.chdir(orig_dir)
+    bot.send_document(magifonts_id, open("magiFont/"+remove_ext(todof)+".zip","rb"),caption=random.choice(file_responses))
     context.bot.send_message(magifonts_id, "Here @"+update.message.from_user.username)
     bot.send_message(update.message.chat_id,"Check Magifonts group (@magifonts_support). Your font has been posted")
     os.chdir("../")
@@ -197,30 +197,29 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
     
-    preview_handler = ConversationHandler(
-        entry_points = [CommandHandler("preview",preview_command)],
-        states = {
-            PREVIEW: [MessageHandler(Filters.document, preview)]    
-        },
-        fallbacks=[CommandHandler("cancel",cancel_preview)]
-        
-    )
+    #preview_handler = ConversationHandler(
+    #    entry_points = [CommandHandler("preview",preview_command)],
+    #    states = {
+    #        PREVIEW: [MessageHandler(Filters.document, preview)]    
+    #    },
+    #    fallbacks=[CommandHandler("cancel",cancel_preview)]
+    #)
 
     
     dispatcher.add_handler(ttf_handler)
-    dispatcher.add_handler(preview_handler)
+    dispatcher.add_handler(CommandHandler("preview",preview_command))
     dispatcher.add_handler(CommandHandler("start", start_command))
     dispatcher.add_handler(CommandHandler("help",help_command))
     dispatcher.add_handler(CommandHandler("ccache",ccache_command))
     dispatcher.add_handler(CommandHandler("creator",maker_command))
     dispatcher.add_handler(CommandHandler("owner",owner_command))
     dispatcher.add_handler(CommandHandler("about",about_command))
-    #dp.add_handler(CommandHandler("module",module_command))
+    dispatcher.add_handler(CommandHandler("module",module_command))
     dispatcher.add_handler(CommandHandler("faketrigger",member_join))
     
     dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
     
-    dispatcher.add_handler(MessageHandler(Filters.document, ttfdownload))
+    #dispatcher.add_handler(MessageHandler(Filters.document, ttfdownload))
 
     #dispatcher.add_handler(MessageHandler(Filters.document & (Filters.chat(1441717868) | Filters.chat(-1001393886080) | Filters.chat(-503134615)), ttfdownload))
     dispatcher.add_error_handler(error)
@@ -235,7 +234,13 @@ def main():
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
     
-    
+def module_command(update,context):
+    if update.message.reply_to_message:
+        msg = update.message.reply_text("Processing...")
+        ttfdownload(update,context,update.message.reply_to_message)
+        bot.delete_message(update.message.chat_id,msg.message_id)
+    else:
+        update.message.reply_text("Reply to a font file/zip bro.")
 tfonts = ["MFFM.ttf"]
 
 tfontsr = ["Regular.ttf","Light.ttf","Thin.ttf"]
@@ -316,17 +321,19 @@ def remove_ext(filewext):
        strfile+=str(i)
     return strfile
 
-def ttfdownload(update, context):
+def ttfdownload(update, context,doc):
+    print(doc)
+    if not doc:
+        doc = update.message
     os.chdir(orig_dir)
     clearcache()
     print("ttf download requested by @"+update.message.from_user.username)
     
-    if update.message.document.file_name.split(".")[-1].lower() in font_ext:
-        update.message.reply_text("font request, huh? how's this font btw? -  "+update.message.document.file_name)
+    if doc.document.file_name.split(".")[-1].lower() in font_ext:
         print(os.getcwd())
         os.chdir("todo")
 
-        update.message.document.get_file().download(custom_path=update.message.document.file_name)
+        doc.document.get_file().download(custom_path=doc.document.file_name)
         global todof
         for dirs,file,name in walklevel(os.getcwd()):
             print("DIRECTORY LOCATION ABHI KI:")
@@ -336,7 +343,7 @@ def ttfdownload(update, context):
         
         if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
-            modulify(remove_ext(update.message.document.file_name))
+            modulify(remove_ext(doc.document.file_name))
             os.chdir(orig_dir)
             os.chdir("magiFont")
             print("sending...")
@@ -349,27 +356,27 @@ def ttfdownload(update, context):
         else:
             update.message.reply_text("invalid file type!")
             os.chdir("../")
-    elif update.message.document.file_name.split(".")[-1].lower() == "zip":
+    elif doc.document.file_name.split(".")[-1].lower() == "zip":
         update.message.reply_text("Zip detected!")
         os.chdir("ziptodo")
-        update.message.document.get_file().download(custom_path=update.message.document.file_name)
+        doc.document.get_file().download(custom_path=doc.document.file_name)
         print("file downloaded!")
-        shutil.unpack_archive(update.message.document.file_name,remove_ext(update.message.document.file_name))
+        shutil.unpack_archive(doc.document.file_name,remove_ext(doc.document.file_name))
         print("file unzipped")
-        if os.path.exists(remove_ext(update.message.document.file_name)+"/system/fonts"):
-            if os.path.exists(remove_ext(update.message.document.file_name)+"/module.prop"):
+        if os.path.exists(remove_ext(doc.document.file_name)+"/system/fonts"):
+            if os.path.exists(remove_ext(doc.document.file_name)+"/module.prop"):
                 #update.message.reply_text("The provided zip is already a magisk module LOL!")
                 os.chdir("../")
                 #print(os.getcwd())
             else:
                 update.message.reply_text("Converting to a magisk module sar!!")
-                os.chdir(remove_ext(update.message.document.file_name))
+                os.chdir(remove_ext(doc.document.file_name))
                 shutil.copyfile(src="../../magiTemplate/module.prop" , dst="module.prop")
                 shutil.copyfile(src="../../magiTemplate/META-INF/com/google/android/update-binary" , dst="META-INF/com/google/android/update-binary")
                 shutil.copyfile(src="../../magiTemplate/META-INF/com/google/android/updater-script" , dst="META-INF/com/google/android/updater-script")
-                shutil.make_archive("../../magiFont/"+remove_ext(update.message.document.file_name), 'zip', os.getcwd())
+                shutil.make_archive("../../magiFont/"+remove_ext(doc.document.file_name), 'zip', os.getcwd())
                 os.chdir("../../magiFont")
-                bot.send_document(magifonts_id, open(remove_ext(update.message.document.file_name)+".zip",'rb'),caption=random.choice(file_responses))
+                bot.send_document(magifonts_id, open(remove_ext(doc.document.file_name)+".zip",'rb'),caption=random.choice(file_responses))
                 bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
                 if not str(update.message.chat_id) == str(magifonts_id):
                     update.message.reply_text("Your file has been posted in @magifonts_support")
@@ -379,8 +386,8 @@ def ttfdownload(update, context):
             
             #ttfarray=[]
             os.chdir(orig_dir)
-            #print(remove_ext(update.message.document.file_name))
-            if not (len(list(filter(lambda x : x.split(".")[-1].lower() in font_ext, listfiles("ziptodo/"+remove_ext(update.message.document.file_name)).copy())))) >= 1:
+            #print(remove_ext(doc.document.file_name))
+            if not (len(list(filter(lambda x : x.split(".")[-1].lower() in font_ext, listfiles("ziptodo/"+remove_ext(doc.document.file_name)).copy())))) >= 1:
             #if False:
                 bot.send_message(update.message.chat_id, "This zip cannot be made to a font module, pls ensure that all fonts are located in the zip and not in a sub direectory...")
             else:
@@ -390,12 +397,12 @@ def ttfdownload(update, context):
                 if True:#fontlist[0][1]:                   
                     
                     for i in range(0,len(fontlist)):
-                        x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
+                        x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(doc.document.file_name),fontlist,definedfonts,doc.document.file_name)
                         fontlist[i][1] = x
                         print(["find-font: ",x])
                         definefonts(fontlist)
                     for i in range(0,len(fontlist)):
-                        x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(update.message.document.file_name),fontlist,definedfonts,update.message.document.file_name)
+                        x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(doc.document.file_name),fontlist,definedfonts,doc.document.file_name)
                         fontlist[i][1] = x
                         print(["find-font: ",x])
                         definefonts(fontlist)
@@ -403,7 +410,7 @@ def ttfdownload(update, context):
                     print(["Fontlist: ",fontlist])
                     os.chdir(orig_dir)
                     os.chdir("magiFont")
-                    zipname = update.message.document.file_name
+                    zipname = doc.document.file_name
                     #print("modulifybi...")
                     filedst = modulify2(fontlist,"ziptodo/"+remove_ext(zipname),"magiTemplate/Fonts",definedfonts,"magiFont/[MAGIFONTS]"+zipname)
                     #print (filedst)
@@ -415,6 +422,7 @@ def ttfdownload(update, context):
                 else:                
                     os.chdir("../")
                     update.message.reply_text("Sar, sorry but I can't make this to a module. Pls gib ttf ot otf file :(")
+    
         #os.chdir("../magiTemplate/system/fonts")
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
