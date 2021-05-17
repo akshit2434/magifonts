@@ -1,6 +1,6 @@
 from telegram import *
 from telegram.ext import *
-#import telegram
+import fnmatch
 import os
 import shutil
 import logging
@@ -29,10 +29,10 @@ def member_join(update, context):
 def preview_command(update,context):
     clearcache()
     if update.message.reply_to_message:
-        msg = bot.send_message(update.message.chat_id, "gimme a minute")
+        msg = bot.send_message(update.message.chat_id, "Gimme a minute")
         preview(update,context,update.message.reply_to_message)
         bot.deleteMessage(update.message.chat_id, msg.message_id)
-        bot.send_message(update.message.chat_id, "Ignore any missing glyphs or broken characters. Those will be replaced by Roboto font when flashing the module...")
+        bot.send_message(update.message.chat_id, "Ignore any missing glyphs or broken characters.\nThose will be replaced by Roboto font when flashing the module...")
     else:
         update.message.reply_text("Reply to a valid font file...")
 
@@ -45,8 +45,36 @@ def preview(update,context,doc):
         os.chdir(orig_dir)
         os.chdir("preview")
         bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
+    elif doc.document.file_name.split(".")[-1].lower() == "zip":
+        os.chdir("preview")
+        doc.document.get_file().download(custom_path="preview_zip.zip")
+        print(1)
+        shutil.unpack_archive("preview_zip.zip", "preview_zip")
+        print(2)
+        ffiles = []
+        ffiles = list(find("*.otf", "preview_zip"))
+        print(3)
+        regular_font = ""
+        if len(ffiles)<1:
+            print([4])
+            ffiles = list(find("*.ttf", "preview_zip"))
+            #print(ffiles)
+            for i in range(0,len(ffiles)):
+                print(5)
+                regular_font = find_font2(name_from_dir(ffiles[i]),"Regular")
+                print([6,ffiles[i],regular_font])
+                if regular_font:
+                    print(7)
+                    os.chdir(orig_dir)
+                    pic = previewfont(regular_font, doc.document.file_name.split(".")[0])
+                    os.chdir(orig_dir)
+                    os.chdir("preview")
+                    bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
+                    os.chdir(orig_dir)
+                    break
+        
     else:
-        update.message.reply_text("Send valid font file wen?")
+        update.message.reply_text("Send valid font file/zip wen?")
     
 
 def start_command(update, context):
@@ -610,7 +638,9 @@ def previewfont(fdir,fname):
     bg_color = (29,53,87)
     fg_color = (241,250,238)
     os.chdir(orig_dir)
-    
+    os.chdir("preview")
+    print(0.1)
+    print(os.path.join(os.getcwd(), fdir))
     fb = FontBanner(fdir, 'landscape')
     fb2 = FontBanner(fdir, 'landscape')
     fb3 = FontBanner(fdir, 'landscape')
@@ -640,6 +670,8 @@ def previewfont(fdir,fname):
     fb4.set_font_size(100)
     fb4.set_text_position('center')
     fw.draw(2)             
+    print(0.2)
+    os.chdir(orig_dir)
     os.chdir("preview")
     fw.save('preview.png')
     return "preview.png"
@@ -691,6 +723,83 @@ def create_dir(folder):
     else:
         return True
     
+def find(pattern, path):
+    result = []
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            if fnmatch.fnmatch(name, pattern):
+                #print("\n\nfind...")
+                
+                #result = os.path.join(str(result),os.path.join(root,name))
+                result.append(os.path.join(root, name))
+                #print(result)
+    return list(map(lambda x : str(x).replace("//","/"),result))
+
+def find_font2(name, font):
+    filename="hulu`124827@@#"
+    allfonts = [name]    
+    if font == "Regular":
+        a = list(filter(lambda x : (x.lower() in filename.lower()) or ("regular" in x.lower()) or ("mffm" in x.lower()), allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "Black":
+        a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "Medium":
+        a = list(filter(lambda x : ("-med" in x.lower()) or ("medium" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "Light":
+        a = list(filter(lambda x : ("-l" in x.lower()) or ("light" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "Thin":
+        a = list(filter(lambda x : ("thin" in x.lower()) or ("-th" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "Bold":
+        a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "BoldItalic":
+        a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "Italic":
+        a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "MediumItalic":
+        a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "LightItalic":
+        a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "BlackItalic":
+        a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
+        if len(a) > 0:
+            return a[0]
+
+    if font == "ThinItalic":
+        a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()) , allfonts))
+        if len(a) > 0:
+            return a[0]
+        
+def name_from_dir(x):
+    return x.split("/")[-1]
 
 if __name__ == '__main__':
     orig_dir = os.getcwd()
