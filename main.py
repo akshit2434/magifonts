@@ -714,7 +714,7 @@ def initialize():
     create_dir("todo")
     create_dir("magiFont")
     create_dir("ziptodo")
-    create_dir("preview")
+    create_dir("preview/preview_zip")
     clearcache()
     
 def create_dir(folder):
