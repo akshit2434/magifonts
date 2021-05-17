@@ -64,7 +64,8 @@ def preview(update,context,doc):
                 regular_font = find_font2(name_from_dir(ffiles[i]),"Regular")
                 print([6,ffiles[i],regular_font])
                 if regular_font:
-                    print([7,regular_font])
+                    regular_font = ffiles[i]
+                    print(7)
                     os.chdir(orig_dir)
                     pic = previewfont(regular_font, doc.document.file_name.split(".")[0])
                     os.chdir(orig_dir)
