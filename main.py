@@ -64,7 +64,7 @@ def preview(update,context,doc):
                 regular_font = find_font2(name_from_dir(ffiles[i]),"Regular")
                 print([6,ffiles[i],regular_font])
                 if regular_font:
-                    print(7)
+                    print([7,regular_font])
                     os.chdir(orig_dir)
                     pic = previewfont(regular_font, doc.document.file_name.split(".")[0])
                     os.chdir(orig_dir)
@@ -640,6 +640,7 @@ def previewfont(fdir,fname):
     os.chdir(orig_dir)
     os.chdir("preview")
     print(0.1)
+    print(fdir)
     print(os.path.join(os.getcwd(), fdir))
     fb = FontBanner(fdir, 'landscape')
     fb2 = FontBanner(fdir, 'landscape')
