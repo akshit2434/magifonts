@@ -389,10 +389,11 @@ def ttfdownload(update, context,doc):
         print("file unzipped")
         ffiles = find("*.ttf",remove_ext(doc.document.file_name))
         print(0)
+        flist = origflist.copy()
         if not ffiles:
             print("otf")
             ffiles = find("*.otf",remove_ext(doc.document.file_name))
-            flist = origflist.copy()
+
             
         if len(ffiles) == 1:
             shutil.copyfile(ffiles[0], "../magiTemplate/Fonts/MFFM.ttf")
