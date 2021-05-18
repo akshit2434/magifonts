@@ -41,38 +41,32 @@ def preview(update,context,doc):
     if doc.document.file_name.split(".")[-1].lower() in font_ext:
         os.chdir("preview")
         doc.document.get_file().download(custom_path=doc.document.file_name)
-        pic = previewfont("preview/"+doc.document.file_name, doc.document.file_name.split(".")[0])
+        pic = previewfont(doc.document.file_name, doc.document.file_name.split(".")[0])
         os.chdir(orig_dir)
         os.chdir("preview")
         bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
     elif doc.document.file_name.split(".")[-1].lower() == "zip":
         os.chdir("preview")
         doc.document.get_file().download(custom_path="preview_zip.zip")
-        print(1)
         shutil.unpack_archive("preview_zip.zip", "preview_zip")
-        print(2)
         ffiles = []
         ffiles = list(find("*.otf", "preview_zip"))
-        print(3)
         regular_font = ""
         if len(ffiles)<1:
-            print([4])
             ffiles = list(find("*.ttf", "preview_zip"))
             #print(ffiles)
-            for i in range(0,len(ffiles)):
-                print(5)
-                regular_font = find_font2(name_from_dir(ffiles[i]),"Regular")
-                print([6,ffiles[i],regular_font])
-                if regular_font:
-                    regular_font = ffiles[i]
-                    print(7)
-                    os.chdir(orig_dir)
-                    pic = previewfont(regular_font, doc.document.file_name.split(".")[0])
-                    os.chdir(orig_dir)
-                    os.chdir("preview")
-                    bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
-                    os.chdir(orig_dir)
-                    break
+            #for i in range(0,len(ffiles)):
+            regular_font = find_font2(ffiles,"Regular")
+            print(regular_font)
+            if regular_font:
+                #regular_font = ffiles[i]
+                os.chdir(orig_dir)
+                pic = previewfont(regular_font, doc.document.file_name.split(".")[0])
+                os.chdir(orig_dir)
+                os.chdir("preview")
+                bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
+                os.chdir(orig_dir)
+                #break
         
     else:
         update.message.reply_text("Send valid font file/zip wen?")
@@ -739,12 +733,15 @@ def find(pattern, path):
 
 def find_font2(name, font):
     filename="hulu`124827@@#"
-    allfonts = [name]    
+    allfonts = name    
     if font == "Regular":
         a = list(filter(lambda x : (x.lower() in filename.lower()) or ("regular" in x.lower()) or ("mffm" in x.lower()), allfonts))
         if len(a) > 0:
             return a[0]
-
+        if len(allfonts)== 1:
+            return allfonts[0]
+        return allfonts[0]
+        
     if font == "Black":
         a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
         if len(a) > 0:
