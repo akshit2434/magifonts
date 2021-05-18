@@ -272,6 +272,8 @@ tfontsb = [ "Medium.ttf","Black.ttf","Bold.ttf"]
 
 tfontsi = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]#todof= file...
 
+tfontsall = ["Regular.ttf","Light.ttf","Thin.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]
+
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
 def modulify(zipname):
     print("modulify me hu")
@@ -380,77 +382,66 @@ def ttfdownload(update, context,doc):
             update.message.reply_text("invalid file type!")
             os.chdir("../")
     elif doc.document.file_name.split(".")[-1].lower() == "zip":
-        update.message.reply_text("Zip detected!")
         os.chdir("ziptodo")
         doc.document.get_file().download(custom_path=doc.document.file_name)
         print("file downloaded!")
         shutil.unpack_archive(doc.document.file_name,remove_ext(doc.document.file_name))
         print("file unzipped")
-        if os.path.exists(remove_ext(doc.document.file_name)+"/system/fonts"):
-            if os.path.exists(remove_ext(doc.document.file_name)+"/module.prop"):
-                #update.message.reply_text("The provided zip is already a magisk module LOL!")
-                os.chdir("../")
-                #print(os.getcwd())
-            else:
-                update.message.reply_text("Converting to a magisk module sar!!")
-                os.chdir(remove_ext(doc.document.file_name))
-                shutil.copyfile(src="../../magiTemplate/module.prop" , dst="module.prop")
-                shutil.copyfile(src="../../magiTemplate/META-INF/com/google/android/update-binary" , dst="META-INF/com/google/android/update-binary")
-                shutil.copyfile(src="../../magiTemplate/META-INF/com/google/android/updater-script" , dst="META-INF/com/google/android/updater-script")
-                shutil.make_archive("../../magiFont/"+remove_ext(doc.document.file_name), 'zip', os.getcwd())
-                os.chdir("../../magiFont")
-                bot.send_document(magifonts_id, open(remove_ext(doc.document.file_name)+".zip",'rb'),caption=random.choice(file_responses))
-                bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
-                if not str(update.message.chat_id) == str(magifonts_id):
-                    update.message.reply_text("Your file has been posted in @magifonts_support")
-                    update.message.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
-                os.chdir("../")
-        else:
-            
-            #ttfarray=[]
-            os.chdir(orig_dir)
-            #print(remove_ext(doc.document.file_name))
-            if not (len(list(filter(lambda x : x.split(".")[-1].lower() in font_ext, listfiles("ziptodo/"+remove_ext(doc.document.file_name)).copy())))) >= 1:
-            #if False:
-                bot.send_message(update.message.chat_id, "This zip cannot be made to a font module, pls ensure that all fonts are located in the zip and not in a sub direectory...")
-            else:
-                fontlist = origflist.copy()
-                os.chdir(orig_dir)
-                definefonts(fontlist)
-                if True:#fontlist[0][1]:                   
+        ffiles = find("*.ttf",remove_ext(doc.document.file_name))
+        print(0)
+        if not ffiles:
+            print("otf")
+            ffiles = find("*.otf",remove_ext(doc.document.file_name))
+        flist = origflist.copy()
+        for i in range(len(ffiles)):
+            for j in range(len(tfontsall)):
+                x = find_font2(ffiles, remove_ext(tfontsall[j]))
+                if x:
+                    #print(x,flist)
+                    if [remove_ext(tfontsall[j]),False] in flist:
+                        flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
+        print(1)
+        for i in range(len(ffiles)):
+            for j in range(len(tfontsall)):
+                deffonts = definefonts(flist)
+                if not remove_ext(tfontsall[j]) in deffonts:
+                    nearest = nearest_weight2(flist,remove_ext(tfontsall[j]), deffonts)
+                    if nearest:
+                        x = find_font2(ffiles, nearest)
+                        if x:
+                            flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
+                        else:
+                            x = find_font2(ffiles, "Regular")
+                            if x:
+                                flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
                     
-                    for i in range(0,len(fontlist)):
-                        x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(doc.document.file_name),fontlist,definedfonts,doc.document.file_name)
-                        fontlist[i][1] = x
-                        print(["find-font: ",x])
-                        definefonts(fontlist)
-                    for i in range(0,len(fontlist)):
-                        x = find_font(fontlist[i][0],"ziptodo/"+remove_ext(doc.document.file_name),fontlist,definedfonts,doc.document.file_name)
-                        fontlist[i][1] = x
-                        print(["find-font: ",x])
-                        definefonts(fontlist)
-            
-                    print(["Fontlist: ",fontlist])
-                    os.chdir(orig_dir)
-                    os.chdir("magiFont")
-                    zipname = doc.document.file_name
-                    #print("modulifybi...")
-                    filedst = modulify2(fontlist,"ziptodo/"+remove_ext(zipname),"magiTemplate/Fonts",definedfonts,"magiFont/[MAGIFONTS]"+zipname)
-                    #print (filedst)
-                    bot.send_document(magifonts_id, open(filedst,'rb'),caption=random.choice(file_responses))
-                    bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
-                    if not (update.message.chat_id == magifonts_id):
-                        bot.send_message(update.message.chat_id,"The file has been posted to @magifonts_support")
-                    os.chdir("../")
-                else:                
-                    os.chdir("../")
-                    update.message.reply_text("Sar, sorry but I can't make this to a module. Pls gib ttf ot otf file :(")
+        print(2)
+        paste_to_template(flist,"ziptodo/","magiTemplate/Fonts")
+        print(3)
+        os.chdir(orig_dir)
+        print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
+        shutil.make_archive("magiFont/"+remove_ext(doc.document.file_name), "zip","magiTemplate/")
+        bot.send_document(magifonts_id, open("magiFont/"+remove_ext(doc.document.file_name)+".zip",'rb'),caption=random.choice(file_responses))
+        bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
+        if not (update.message.chat_id == magifonts_id):
+            bot.send_message(update.message.chat_id,"The file has been posted to @magifonts_support")
+        os.chdir("../")
+    else:                
+        os.chdir("../")
+        update.message.reply_text("Sar, sorry but I can't make this to a module. Pls gib font(ttf or otf) file/zip :(")
     
         #os.chdir("../magiTemplate/system/fonts")
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
 origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
-    
+
+def paste_to_template(flist,src,dst):
+    os.chdir(orig_dir)
+    for i in range(len(flist)):
+        if flist[i][1]:
+            if os.path.exists(src+"/"+flist[i][1]):
+                shutil.copyfile(src+"/"+flist[i][1], dst+"/"+flist[i][0]+".ttf")
+
 def modulify2(flist,src,dst,definedfonts,filedst):
     os.chdir(orig_dir)
 
@@ -479,7 +470,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
     if font == "Black":
         a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
@@ -487,7 +477,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
     
     if font == "Medium":
@@ -496,7 +485,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
             
     if font == "Light":
@@ -505,7 +493,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
 
     if font == "Thin":
@@ -514,7 +501,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
 
     if font == "Bold":
@@ -523,7 +509,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
 
     if font == "BoldItalic":
@@ -532,7 +517,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
 
     if font == "Italic":
@@ -541,7 +525,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
 
     if font == "MediumItalic":
@@ -550,7 +533,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
 
     if font == "LightItalic":
@@ -559,7 +541,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
 
     if font == "BlackItalic":
@@ -568,7 +549,6 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
 
     if font == "ThinItalic":
@@ -577,48 +557,73 @@ def find_font(font, direc,flist,deffonts,filename=False):
             return a[0]
         else:
             approx = nearest_weight(flist,font,deffonts)
-            print([font,approx,return_font(flist,approx)])
             return return_font(flist,approx)
     
          
+
+def nearest_weight2(defined_fonts, font):
+    deffonts = defined_fonts.copy()
+    if not deffonts[0].split(".")[-1] in font_ext:
+        deffonts = list(map(lambda x:x+".ttf", deffonts))
+    #The flist should be a copy of origflist
+    #The font var is the type of font we need to find the nearest_weight of. (ex. BlackItalic)
+    allflist = [tfontsr.copy(), tfontsb.copy(), tfontsi.copy()]
+    for i in range(len(allflist)):
+        
+        if font+".ttf" in allflist[i]:
+
+            font_index = allflist[i].index(font+".ttf")
+            forward_length = (len(allflist[i])-font_index)-1
+            backward_length = (len(allflist[i])-forward_length)-1 
+            
+            for j in range(0,max(forward_length, backward_length)+1):
+                if j <= forward_length:
+                    if allflist[i][font_index+j] in deffonts:
+                        return remove_ext(allflist[i][j])
+                if j <= backward_length:
+                    if allflist[i][font_index-j] in deffonts: 
+                        return remove_ext(allflist[i][j])
+                    
+    return "Regular"    
     
-    
-def nearest_weight(flist, x, deffonts):
+def nearest_weight2(flist, x, deffonts):
     if x in deffonts:
         return return_font(flist, x)
     else:
         allf_list = [tfontsr.copy(),tfontsb.copy(),tfontsi.copy()]
         for array in allf_list:
             if x+".ttf" in array:
-                print("\n")
                 l = (len(array)-array.index(x+".ttf"))-1
                 i = (len(array)-l)-1
                 for j in range(1,max(l,i)+1):
                     
                     if l>=j:
                         if  remove_ext(array[array.index(x+".ttf")+j]) in deffonts:
-                            print(["mila.. " + x, remove_ext(array[array.index(x+".ttf")+j])])
+                            print("x: ",x," / ",remove_ext(array[array.index(x+".ttf")+j]))
                             return remove_ext(array[array.index(x+".ttf")+j])
                             break
                     if i>=j:
                         if remove_ext(array[array.index(x+".ttf")-j]) in deffonts:
-                            print(["mila.. " + x, remove_ext(array[array.index(x+".ttf")-j])])
+                            print("x: ",x," / ",remove_ext(array[array.index(x+".ttf")-j]))
                             return remove_ext(array[array.index(x+".ttf")-j])
                             break
         
         #return return_font(flist, "Regular")
-        if "Regular" in definedfonts:
-            print("\nkuch nhi mila\n\n")
-            return False
-        return "first_element"
+    print("sed loif: ",x," / ",definedfonts)
+    if "Regular" in definedfonts:
+        print("regular")
+        return "Regular"
+        
 definedfonts=[]
 def definefonts(flist):
     global definedfonts
     definedfonts=[]
     for i in flist:
-        if not i[1]==False:
+        if i[1]:
             if not i[0] in definedfonts:
                 definedfonts.append(i[0])
+                
+    return definedfonts
 
 def return_font(array, value):
     if value=="first_element":
@@ -727,19 +732,19 @@ def find(pattern, path):
                 #print("\n\nfind...")
                 
                 #result = os.path.join(str(result),os.path.join(root,name))
-                result.append(os.path.join(root, name))
+                result.append(os.path.join(root.replace("//","/"), name.replace("//","/")).replace("//","/"))
                 #print(result)
-    return list(map(lambda x : str(x).replace("//","/"),result))
+    return list(map(lambda x : str(x).replace("\\","/"),result))
 
 def find_font2(name, font):
     filename="hulu`124827@@#"
-    allfonts = name    
+    allfonts = name.copy()
+    if len(allfonts)== 1:
+            return allfonts[0]
     if font == "Regular":
         a = list(filter(lambda x : (x.lower() in filename.lower()) or ("regular" in x.lower()) or ("mffm" in x.lower()), allfonts))
         if len(a) > 0:
             return a[0]
-        if len(allfonts)== 1:
-            return allfonts[0]
         return allfonts[0]
         
     if font == "Black":
