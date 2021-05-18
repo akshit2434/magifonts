@@ -392,31 +392,35 @@ def ttfdownload(update, context,doc):
         if not ffiles:
             print("otf")
             ffiles = find("*.otf",remove_ext(doc.document.file_name))
-        flist = origflist.copy()
-        for i in range(len(ffiles)):
-            for j in range(len(tfontsall)):
-                x = find_font2(ffiles, remove_ext(tfontsall[j]))
-                if x:
-                    #print(x,flist)
-                    if [remove_ext(tfontsall[j]),False] in flist:
-                        flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
-        print(1)
-        for i in range(len(ffiles)):
-            for j in range(len(tfontsall)):
-                deffonts = definefonts(flist)
-                if not remove_ext(tfontsall[j]) in deffonts:
-                    nearest = nearest_weight2(flist,remove_ext(tfontsall[j]), deffonts)
-                    if nearest:
-                        x = find_font2(ffiles, nearest)
-                        if x:
+            flist = origflist.copy()
+            
+        if len(ffiles) == 1:
+            shutil.copyfile(ffiles[0], "../magiTemplate/Fonts/MFFM.ttf")
+        else:
+            for i in range(len(ffiles)):
+                for j in range(len(tfontsall)):
+                    x = find_font2(ffiles, remove_ext(tfontsall[j]))
+                    if x:
+                        #print(x,flist)
+                        if [remove_ext(tfontsall[j]),False] in flist:
                             flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
-                        else:
-                            x = find_font2(ffiles, "Regular")
+            print(1)
+            for i in range(len(ffiles)):
+                for j in range(len(tfontsall)):
+                    deffonts = definefonts(flist)
+                    if not remove_ext(tfontsall[j]) in deffonts:
+                        nearest = nearest_weight2(flist,remove_ext(tfontsall[j]), deffonts)
+                        if nearest:
+                            x = find_font2(ffiles, nearest)
                             if x:
                                 flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
-                    
-        print(2)
-        paste_to_template(flist,"ziptodo/","magiTemplate/Fonts")
+                            else:
+                                x = find_font2(ffiles, "Regular")
+                                if x:
+                                    flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
+                        
+            print(2)
+            paste_to_template(flist,"ziptodo/","magiTemplate/Fonts")
         print(3)
         os.chdir(orig_dir)
         print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
