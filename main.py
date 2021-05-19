@@ -260,7 +260,14 @@ def main():
 def module_command(update,context):
     if update.message.reply_to_message:
         msg = update.message.reply_text("Processing...")
-        ttfdownload(update,context,update.message.reply_to_message)
+        #print("filename: ",context.args)
+        if "/module " in update.message.text:
+            msgarray = list(map(lambda x: x.replace('"', ""), update.message.text.replace("/module ", "").split(" ")))
+        filename=None
+        print("filename: ",msgarray)
+        if len(msgarray) >= 1:
+            filename = msgarray[0]
+        ttfdownload(update,context,update.message.reply_to_message,filename)
         bot.delete_message(update.message.chat_id,msg.message_id)
     else:
         update.message.reply_text("Reply to a font file/zip bro.")
@@ -346,7 +353,9 @@ def remove_ext(filewext):
        strfile+=str(i)
     return strfile
 
-def ttfdownload(update, context,doc):
+def ttfdownload(update, context,doc, zipname):
+    if not zipname:
+        remove_ext(doc.document.file_name)
     print(doc)
     if not doc:
         doc = update.message
@@ -425,8 +434,8 @@ def ttfdownload(update, context,doc):
         print(3)
         os.chdir(orig_dir)
         print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
-        shutil.make_archive("magiFont/"+remove_ext(doc.document.file_name), "zip","magiTemplate/")
-        bot.send_document(magifonts_id, open("magiFont/"+remove_ext(doc.document.file_name)+".zip",'rb'),caption=random.choice(file_responses))
+        shutil.make_archive("magiFont/"+zipname+"[Magifonts]", "zip","magiTemplate/")
+        bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses))
         bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
         if not (update.message.chat_id == magifonts_id):
             bot.send_message(update.message.chat_id,"The file has been posted to @magifonts_support")
