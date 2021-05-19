@@ -404,7 +404,7 @@ def ttfdownload(update, context,doc, zipname):
             print("otf")
             ffiles = find("*.otf",remove_ext(doc.document.file_name))
 
-            
+        print("files: ",ffiles)
         if len(ffiles) == 1:
             shutil.copyfile(ffiles[0], "../magiTemplate/Fonts/MFFM.ttf")
         else:
