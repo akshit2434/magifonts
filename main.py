@@ -261,10 +261,11 @@ def module_command(update,context):
     if update.message.reply_to_message:
         msg = update.message.reply_text("Processing...")
         #print("filename: ",context.args)
+        msgarray = []
         if "/module " in update.message.text:
             msgarray = list(map(lambda x: x.replace('"', ""), update.message.text.replace("/module ", "").split(" ")))
         filename=None
-        print("filename: ",msgarray)
+        #print("filename: ",msgarray)
         if len(msgarray) >= 1:
             filename = msgarray[0]
         ttfdownload(update,context,update.message.reply_to_message,filename)
@@ -355,7 +356,7 @@ def remove_ext(filewext):
 
 def ttfdownload(update, context,doc, zipname):
     if not zipname:
-        remove_ext(doc.document.file_name)
+        zipname = remove_ext(doc.document.file_name)
     print(doc)
     if not doc:
         doc = update.message
