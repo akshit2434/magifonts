@@ -355,6 +355,7 @@ def remove_ext(filewext):
     return strfile
 
 def ttfdownload(update, context,doc, zipname):
+    #flist = origlist.copy()
     if not zipname:
         zipname = remove_ext(doc.document.file_name)
     print(doc)
@@ -396,15 +397,16 @@ def ttfdownload(update, context,doc, zipname):
         doc.document.get_file().download(custom_path=doc.document.file_name)
         print("file downloaded!")
         shutil.unpack_archive(doc.document.file_name,remove_ext(doc.document.file_name))
-        print("file unzipped")
+        print("file unzipped: ",remove_ext(doc.document.file_name))
         ffiles = find("*.ttf",remove_ext(doc.document.file_name))
         print(0)
+        origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
         flist = origflist.copy()
         if not ffiles:
             print("otf")
             ffiles = find("*.otf",remove_ext(doc.document.file_name))
 
-        print("files: ",ffiles)
+        print("files: ",ffiles[0])
         if len(ffiles) == 1:
             shutil.copyfile(ffiles[0], "../magiTemplate/Fonts/MFFM.ttf")
         else:
@@ -431,7 +433,7 @@ def ttfdownload(update, context,doc, zipname):
                                     flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
                         
             print(2)
-            paste_to_template(flist,"ziptodo/","magiTemplate/Fonts")
+            paste_to_template(flist,"ziptodo","magiTemplate/Fonts")
         print(3)
         os.chdir(orig_dir)
         print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
@@ -452,6 +454,7 @@ origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["B
 
 def paste_to_template(flist,src,dst):
     os.chdir(orig_dir)
+    print(src+"/"+flist[0][1])
     for i in range(len(flist)):
         if flist[i][1]:
             if os.path.exists(src+"/"+flist[i][1]):
@@ -693,6 +696,7 @@ def previewfont(fdir,fname):
     return "preview.png"
     
 def clearcache():
+    origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
     os.chdir(orig_dir)
     wipefiles("todo")
     wipefiles("magiFont")
