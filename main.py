@@ -766,7 +766,7 @@ def find_font(name, font):
         a = list(filter(lambda x : (("thin" in x.lower()) or ("-th" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
 
     if font == "Bold":
-        a = list(filter(lambda x : (("bold" in x.lower()) or ("-b" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower()),allfonts))
+        a = list(filter(lambda x : (("bold" in x.lower()) or ("-b" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
 
     if font == "BoldItalic":
         a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
