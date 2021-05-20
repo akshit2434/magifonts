@@ -653,45 +653,54 @@ def return_font(array, value):
             return i[1]
 
 def previewfont(fdir,fname):
-    bg_color = (29,53,87)
-    fg_color = (241,250,238)
+    bg_color = (0, 43, 54)
+    fg_color = (0,160,153)
+    fg_color2 = (159,255,163)
     os.chdir(orig_dir)
     os.chdir("preview")
     print(0.1)
     print(fdir)
     print(os.path.join(os.getcwd(), fdir))
-    fb = FontBanner(fdir, 'landscape')
-    fb2 = FontBanner(fdir, 'landscape')
-    fb3 = FontBanner(fdir, 'landscape')
+    header = fb = FontBanner(fdir, 'landscape')
+    body = fb2 = FontBanner(fdir, 'landscape')
+    footer = fb3 = FontBanner(fdir, 'landscape')
     fb4 = FontBanner(fdir, 'landscape')
-    fw = FontWall([fb,fb2,fb3,fb4])
-    fb.font_text = 'Checkout @Magifont_Support for instant\nawesome fonts and previews!!'
+    fw = FontWall([fb,fb2,fb3,fb4],1,mode = "horizontal")
+    fb.font_text = 'Checkout @Magifont_Support\nfor instant awesome fonts and previews!!'
     fb.bg_color = bg_color
-    fb.fg_color = fg_color
-    fb.set_font_size(100)
+    fb.fg_color = fg_color2
+    
+    fb.set_font_size(80)
     fb.set_text_position('center')
     # Modify properties of second banner
-    fb2.font_text = 'This preview is made by @Magifont_bot\nDeveloped by@TheSc1enceGuy (Akshit Singh)...\nCheck it out!'
+    fb2.font_text = 'Ignore any broken glyphs or characters as\nthey will be replaced by the default Roboto\nwhen flashing the magisk module...'
     fb2.bg_color = bg_color
     fb2.fg_color = fg_color
-    fb2.set_font_size(100)
+    fb2.set_font_size(70)
     fb2.set_text_position('center')
     # Modify properties of third banner
-    fb3.font_text = 'This group uses MFFM font templates!!\nbtw the digits of pi are\n3.1415926535 8979323846 2643383... '
+    fb3.font_text = 'Aa   Bb   Cc   Dd   Ee   Ff   Gg\n\n1!   2@   3#   4$   5%   6^   7&'
     fb3.bg_color = bg_color
     fb3.fg_color = fg_color
-    fb3.set_font_size(100) 
+    fb3.set_font_size(90) 
     fb3.set_text_position('center')                 # the font is resized automatically because it exceeds the size of the banner
     # Modify properties of last banner
     fb4.font_text = 'By the way, th1s is just a sample for fonts.\nHow is this '+fname+'? Do you like it?'
     fb4.bg_color = bg_color
     fb4.fg_color = fg_color
-    fb4.set_font_size(100)
+    fb4.set_font_size(70)
     fb4.set_text_position('center')
-    fw.draw(2)             
+    fw.draw(1)
+    fpage = FontPage()
+    #fpage.set_header(header)
+    #fpage.set_body(body)
+    #fpage.set_footer(footer)
+    #fpage.draw()
+    
     print(0.2)
     os.chdir(orig_dir)
     os.chdir("preview")
+    #fpage.save('preview.png')
     fw.save('preview.png')
     return "preview.png"
     
