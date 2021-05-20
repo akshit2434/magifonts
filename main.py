@@ -238,6 +238,7 @@ def main():
     dispatcher.add_handler(CommandHandler("owner",owner_command))
     dispatcher.add_handler(CommandHandler("about",about_command))
     dispatcher.add_handler(CommandHandler("module",module_command))
+    dispatcher.add_handler(CommandHandler("ffiles",ffiles_command))
     dispatcher.add_handler(CommandHandler("faketrigger",member_join))
     
     dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
@@ -354,6 +355,33 @@ def remove_ext(filewext):
        strfile+=str(i)
     return strfile
 
+def ffiles_command(update,context):
+    if update.message.reply_to_message.document:
+        if update.message.reply_to_message.document.file_name.split(".")[-1] == "zip":
+            clearcache()
+            doc = update.message.reply_to_message
+            os.chdir(orig_dir)
+            os.chdir("ffiles")
+            doc.document.get_file().download(custom_path="ffiles"+".zip")
+            shutil.unpack_archive("ffiles.zip","fonts","zip")
+            ffiles = find("*.ttf", "fonts")
+            if not ffiles:
+                ffiles = find("*.otf", "fonts")
+            if not ffiles:
+                update.message.reply_text("It has no Fonts in .ttf ot .otf format! xD")
+            else:
+                ffiles_str=""
+                ffiles = list(map(lambda x : name_from_dir(x), ffiles))
+                for i in ffiles:
+                    if ffiles:
+                        ffiles_str += "\n"+i
+                    else:
+                        ffiles = i
+                update.message.reply_text(ffiles_str)
+        else:
+            update.message.reply_text("Reply to a .zip wen?")
+    else:
+        update.message.reply_text("Reply to a .zip file sar...")
 def ttfdownload(update, context,doc, zipname):
     #flist = origlist.copy()
     if not zipname:
@@ -712,6 +740,7 @@ def clearcache():
     wipefiles("ziptodo")
     wipefiles("magiTemplate/Fonts")
     wipefiles("preview")
+    wipefiles("ffiles")
             
             
 def wipefiles(path_to_folder):
@@ -743,6 +772,7 @@ def initialize():
     create_dir("todo")
     create_dir("magiFont")
     create_dir("ziptodo")
+    create_dir("ffiles")
     create_dir("preview/preview_zip")
     clearcache()
     
