@@ -57,11 +57,14 @@ def preview(update,context,doc):
             #print(ffiles)
             #for i in range(0,len(ffiles)):
             regular_font = find_font2(ffiles,"Regular")
+            bold_font = find_font2(ffiles,"Bold")
+            light_font = find_font2(ffiles,"Light")
+            italic_font = find_font2(ffiles,"Italic")
             print(regular_font)
             if regular_font:
                 #regular_font = ffiles[i]
                 os.chdir(orig_dir)
-                pic = previewfont(regular_font, doc.document.file_name.split(".")[0])
+                pic = previewfont(doc.document.file_name.split(".")[0], regular_font, bold_font, light_font, italic_font)
                 os.chdir(orig_dir)
                 os.chdir("preview")
                 bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
@@ -99,6 +102,7 @@ def handle_message(update,context):
             update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
+    bot.sendMessage(c.gid, "A error Occured")
     print(f"Update {update} caused error {context.error}")
     
 def module(update,context):
@@ -680,19 +684,25 @@ def return_font(array, value):
         if i[0] == value:
             return i[1]
 
-def previewfont(fdir,fname):
+def previewfont(font_name,fname,fname2,fname3,fname4):
+    fname2 = fname2 if fname2 else fname
+    fname3 = fname3 if fname3 else fname
+    fname4 = fname4 if fname4 else fname
+    if not fname:
+        raise Exception("fname not provided to previewfont()")
+    print([fname,fname2,fname3,fname4])
     bg_color = (0, 43, 54)
     fg_color = (0,160,153)
     fg_color2 = (159,255,163)
     os.chdir(orig_dir)
     os.chdir("preview")
     print(0.1)
-    print(fdir)
-    print(os.path.join(os.getcwd(), fdir))
-    header = fb = FontBanner(fdir, 'landscape')
-    body = fb2 = FontBanner(fdir, 'landscape')
-    footer = fb3 = FontBanner(fdir, 'landscape')
-    fb4 = FontBanner(fdir, 'landscape')
+    #print(fdir)
+    #print(os.path.join(os.getcwd(), fdir))
+    header = fb = FontBanner(fname, 'landscape')
+    body = fb2 = FontBanner(fname2, 'landscape')
+    footer = fb3 = FontBanner(fname3, 'landscape')
+    fb4 = FontBanner(fname4, 'landscape')
     fw = FontWall([fb,fb2,fb3,fb4],1,mode = "horizontal")
     fb.font_text = 'Checkout @Magifont_Support\nfor instant awesome fonts and previews!!'
     fb.bg_color = bg_color
@@ -713,7 +723,7 @@ def previewfont(fdir,fname):
     fb3.set_font_size(90) 
     fb3.set_text_position('center')                 # the font is resized automatically because it exceeds the size of the banner
     # Modify properties of last banner
-    fb4.font_text = 'By the way, th1s is just a sample for fonts.\nHow is this '+fname+'? Do you like it?'
+    fb4.font_text = 'By the way, th1s is just a sample for fonts.\nHow is this '+font_name+' btw? Do you like it?'
     fb4.bg_color = bg_color
     fb4.fg_color = fg_color
     fb4.set_font_size(70)
