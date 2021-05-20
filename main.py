@@ -56,10 +56,10 @@ def preview(update,context,doc):
             ffiles = list(find("*.ttf", "preview_zip"))
             #print(ffiles)
             #for i in range(0,len(ffiles)):
-            regular_font = find_font2(ffiles,"Regular")
-            bold_font = find_font2(ffiles,"Bold")
-            light_font = find_font2(ffiles,"Light")
-            italic_font = find_font2(ffiles,"Italic")
+            regular_font = find_font(ffiles,"Regular")
+            bold_font = find_font(ffiles,"Bold")
+            light_font = find_font(ffiles,"Light")
+            italic_font = find_font(ffiles,"Italic")
             print(regular_font)
             if regular_font:
                 #regular_font = ffiles[i]
@@ -102,7 +102,7 @@ def handle_message(update,context):
             update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
-    bot.sendMessage(c.gid, "A error Occured")
+    bot.sendMessage(magifonts_id, "A error Occured")
     print(f"Update {update} caused error {context.error}")
     
 def module(update,context):
@@ -243,6 +243,8 @@ def main():
     dispatcher.add_handler(CommandHandler("about",about_command))
     dispatcher.add_handler(CommandHandler("module",module_command))
     dispatcher.add_handler(CommandHandler("ffiles",ffiles_command))
+    dispatcher.add_handler(CommandHandler("delete",delete_command))
+    #dispatcher.add_handler(CommandHandler("rename",rename_command))
     dispatcher.add_handler(CommandHandler("faketrigger",member_join))
     
     dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
@@ -261,7 +263,44 @@ def main():
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
-    
+
+
+
+def delete_command(update, context):
+    if update.message.reply_to_message.document:
+        if update.message.reply_to_message.document.file_name.split(".")[-1] == "zip":
+            clearcache()
+            doc = update.message.reply_to_message.document
+            os.chdir(orig_dir)
+            os.chdir("ziptodo")
+            doc.get_file().download(custom_path=doc.file_name)
+            shutil.unpack_archive(doc.file_name, "to_delete", "zip")
+            
+            
+            ffiles = find("*.ttf", "to_delete")
+            find("*.otf","to_delete") if not ffiles else ffiles
+            
+            for attr in context.args:
+                if attr in list(map(lambda x : name_from_dir(x), ffiles)):
+                    os.remove(find(attr, "to_delete")[0])
+                    print(attr)
+                else:
+                    font = find_font(ffiles, attr)
+                    if font:
+                        os.remove(font)
+                        print(font)
+                    else:
+                        update.message.reply_text("Couldn't find that...")
+                        return
+                print("makin archive")     
+                shutil.make_archive(remove_ext(doc.file_name)+"_mod","zip","to_delete/")
+                bot.send_document(magifonts_id, open(remove_ext(doc.file_name)+"_mod.zip", "rb"))
+                return
+        else:
+            update.message.reply_text("Are you sure that that is a zip file?\nYou might wana get your eyes tested...")
+    else:
+        update.message.reply_text("Reply to a zip...")
+
 def module_command(update,context):
     if update.message.reply_to_message:
         msg = update.message.reply_text("Processing...")
@@ -291,7 +330,7 @@ tfontsall = ["Regular.ttf","Light.ttf","Thin.ttf","Medium.ttf","Black.ttf","Bold
 def modulify(zipname):
     print("modulify me hu")
     if not zipname:
-        zipname=todof.split(".")[0]
+        zipname=remove_ext(todof)
     os.chdir(orig_dir)
     os.chdir("magiTemplate/Fonts")
     
@@ -301,7 +340,7 @@ def modulify(zipname):
     #print(os.getcwd())
     os.chdir(orig_dir)
     os.chdir("magiTemplate")
-    edit_module_prop(todof.split(".")[0])
+    edit_module_prop(remove_ext(todof))
     os.chdir(orig_dir)
     shutil.make_archive("magiFont/"+zipname, 'zip', "magiTemplate")
     print("archive ready")
@@ -444,7 +483,7 @@ def ttfdownload(update, context,doc, zipname):
         else:
             for i in range(len(ffiles)):
                 for j in range(len(tfontsall)):
-                    x = find_font2(ffiles, remove_ext(tfontsall[j]))
+                    x = find_font(ffiles, remove_ext(tfontsall[j]))
                     if x:
                         #print(x,flist)
                         if [remove_ext(tfontsall[j]),False] in flist:
@@ -456,11 +495,11 @@ def ttfdownload(update, context,doc, zipname):
                     if not remove_ext(tfontsall[j]) in deffonts:
                         nearest = nearest_weight2(flist,remove_ext(tfontsall[j]), deffonts)
                         if nearest:
-                            x = find_font2(ffiles, nearest)
+                            x = find_font(ffiles, nearest)
                             if x:
                                 flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
                             else:
-                                x = find_font2(ffiles, "Regular")
+                                x = find_font(ffiles, "Regular")
                                 if x:
                                     flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
                         
@@ -510,106 +549,6 @@ def modulify2(flist,src,dst,definedfonts,filedst):
     shutil.make_archive(remove_ext(filedst), 'zip', "magiTemplate/")
     return filedst
     
-def find_font(font, direc,flist,deffonts,filename=False):
-    files = listfiles(direc).copy()
-
-    allfonts = list(filter(lambda x : x.split(".")[-1].lower() in font_ext, files))
-    if font == "Regular":
-        a = list(filter(lambda x : (x.lower() in filename.lower()) or ("regular" in x.lower()), allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-    if font == "Black":
-        a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-    
-    if font == "Medium":
-        a = list(filter(lambda x : ("-med" in x.lower()) or ("medium" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-            
-    if font == "Light":
-        a = list(filter(lambda x : ("-l" in x.lower()) or ("light" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-
-    if font == "Thin":
-        a = list(filter(lambda x : ("thin" in x.lower()) or ("-th" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-
-    if font == "Bold":
-        a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-
-    if font == "BoldItalic":
-        a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-
-    if font == "Italic":
-        a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-
-    if font == "MediumItalic":
-        a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-
-    if font == "LightItalic":
-        a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-
-    if font == "BlackItalic":
-        a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-
-    if font == "ThinItalic":
-        a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()) , allfonts))
-        if len(a) > 0:
-            return a[0]
-        else:
-            approx = nearest_weight(flist,font,deffonts)
-            return return_font(flist,approx)
-    
-         
 
 def nearest_weight2(defined_fonts, font):
     deffonts = defined_fonts.copy()
@@ -775,8 +714,6 @@ def walklevel(some_dir, level=1):
 def listfiles(direc):
     for dirs,file,name in walklevel(direc, 1):
         return name.copy()
-
-
     
 def initialize():
     create_dir("todo")
@@ -804,9 +741,9 @@ def find(pattern, path):
                 #print(result)
     return list(map(lambda x : str(x).replace("\\","/"),result))
 
-def find_font2(name, font):
+def find_font(name, font):
     filename="hulu`124827@@#"
-    allfonts = name.copy()
+    allfonts = list(name).copy()
     if len(allfonts)== 1:
             return allfonts[0]
     if font == "Regular":
@@ -836,7 +773,7 @@ def find_font2(name, font):
             return a[0]
 
     if font == "Bold":
-        a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()),allfonts))
+        a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
 
@@ -846,7 +783,7 @@ def find_font2(name, font):
             return a[0]
 
     if font == "Italic":
-        a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()),allfonts))
+        a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower()),allfonts))
         if len(a) > 0:
             return a[0]
 
