@@ -102,7 +102,6 @@ def handle_message(update,context):
             update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
-    bot.sendMessage(magifonts_id, "A error Occured")
     print(f"Update {update} caused error {context.error}")
     
 def module(update,context):
@@ -742,8 +741,10 @@ def find(pattern, path):
     return list(map(lambda x : str(x).replace("\\","/"),result))
 
 def find_font(name, font):
+    print("finding ",font," in ",name)
     filename="hulu`124827@@#"
     allfonts = list(name).copy()
+    a = []
     if len(allfonts)== 1:
             return allfonts[0]
     if font == "Regular":
@@ -753,60 +754,42 @@ def find_font(name, font):
         return allfonts[0]
         
     if font == "Black":
-        a = list(filter(lambda x : ("blck" in x.lower()) or ("black" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
+        a = list(filter(lambda x : (("blck" in x.lower()) or ("black" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
 
     if font == "Medium":
-        a = list(filter(lambda x : ("-med" in x.lower()) or ("medium" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
+        a = list(filter(lambda x : (("-med" in x.lower()) or ("medium" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
 
     if font == "Light":
-        a = list(filter(lambda x : ("-l" in x.lower()) or ("light" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
+        a = list(filter(lambda x : (("-l" in x.lower()) or ("light" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
 
     if font == "Thin":
-        a = list(filter(lambda x : ("thin" in x.lower()) or ("-th" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
+        a = list(filter(lambda x : (("thin" in x.lower()) or ("-th" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
 
     if font == "Bold":
-        a = list(filter(lambda x : ("bold" in x.lower()) or ("-b" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
+        a = list(filter(lambda x : (("bold" in x.lower()) or ("-b" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower()),allfonts))
 
     if font == "BoldItalic":
         a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
 
     if font == "Italic":
-        a = list(filter(lambda x : ("italic" in x.lower()) or ("-i" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
+        a = list(filter(lambda x : (("italic" in x.lower()) or ("-i" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower() or "medium" in x.lower()),allfonts))
 
     if font == "MediumItalic":
         a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
 
     if font == "LightItalic":
         a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
 
     if font == "BlackItalic":
         a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
-        if len(a) > 0:
-            return a[0]
 
     if font == "ThinItalic":
         a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()) , allfonts))
-        if len(a) > 0:
-            return a[0]
+    
+    if len(a) > 0:
+        return a[0]
         
+
 def name_from_dir(x):
     return x.split("/")[-1]
 
