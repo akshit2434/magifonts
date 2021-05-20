@@ -32,7 +32,7 @@ def preview_command(update,context):
         msg = bot.send_message(update.message.chat_id, "Gimme a minute")
         preview(update,context,update.message.reply_to_message)
         bot.deleteMessage(update.message.chat_id, msg.message_id)
-        bot.send_message(update.message.chat_id, "Ignore any missing glyphs or broken characters.\nThose will be replaced by Roboto font when flashing the module...")
+        #bot.send_message(update.message.chat_id, "Ignore any missing glyphs or broken characters.\nThose will be replaced by Roboto font when flashing the module...")
     else:
         update.message.reply_text("Reply to a valid font file...")
 
