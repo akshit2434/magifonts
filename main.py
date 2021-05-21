@@ -40,8 +40,8 @@ def preview(update,context,doc):
     os.chdir(orig_dir)
     if doc.document.file_name.split(".")[-1].lower() in font_ext:
         os.chdir("preview")
-        doc.document.get_file().download(custom_path=doc.document.file_name)
-        pic = previewfont(doc.document.file_name.split(".")[0], doc.document.file_name)
+        doc.document.get_file().download(custom_path=remove_ext(doc.document.file_name)+".ttf")
+        pic = previewfont(doc.document.file_name.split(".")[0], remove_ext(doc.document.file_name)+".ttf")
         os.chdir(orig_dir)
         os.chdir("preview")
         bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
@@ -56,19 +56,19 @@ def preview(update,context,doc):
             ffiles = list(find("*.ttf", "preview_zip"))
             #print(ffiles)
             #for i in range(0,len(ffiles)):
-            regular_font = find_font(ffiles,"Regular")
-            bold_font = find_font(ffiles,"Bold")
-            light_font = find_font(ffiles,"Light")
-            italic_font = find_font(ffiles,"Italic")
-            print(regular_font)
-            if regular_font:
-                #regular_font = ffiles[i]
-                os.chdir(orig_dir)
-                pic = previewfont(doc.document.file_name.split(".")[0], regular_font, bold_font, light_font, italic_font)
-                os.chdir(orig_dir)
-                os.chdir("preview")
-                bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
-                os.chdir(orig_dir)
+        regular_font = find_font(ffiles,"Regular")
+        bold_font = find_font(ffiles,"Bold")
+        light_font = find_font(ffiles,"Light")
+        italic_font = find_font(ffiles,"Italic")
+        print(regular_font)
+        if regular_font:
+            #regular_font = ffiles[i]
+            os.chdir(orig_dir)
+            pic = previewfont(doc.document.file_name.split(".")[0], regular_font, bold_font, light_font, italic_font)
+            os.chdir(orig_dir)
+            os.chdir("preview")
+            bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
+            os.chdir(orig_dir)
                 #break
         
     else:
@@ -634,6 +634,7 @@ def previewfont(font_name,fname = None,fname2 = None,fname3 = None,fname4 = None
     if not fname:
         raise Exception("fname not provided to previewfont()")
     print([fname,fname2,fname3,fname4])
+    print(name_from_dir(fname))
     bg_color = (0, 43, 54)
     fg_color = (0,160,153)
     fg_color2 = (159,255,163)
@@ -746,7 +747,7 @@ def find(pattern, path):
     return list(map(lambda x : str(x).replace("\\","/"),result))
 
 def find_font(name, font):
-    print("finding ",font," in ",name)
+    #print("finding ",font," in ",name)
     filename="hulu`124827@@#"
     allfonts = list(name).copy()
     a = []
