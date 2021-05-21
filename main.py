@@ -21,7 +21,7 @@ def member_join(update, context):
     
     for member in update.message.new_chat_members:
         member_count = int(bot.get_chat_members_count(update.message.chat_id))
-        if member_count%10 == 0:
+        if member_count%100 == 0:
             message = update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(member_count)+" members!")
             if not bot.pin_chat_message(update.message.chat_id, message.message_id):
                 update.message.reply_text("I can't even pin a message.. dang!")
