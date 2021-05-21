@@ -8,9 +8,12 @@ import constants as keys
 import responses as r
 import random
 from fontpreview import *
+from pyunpack import Archive
+#from py7zr import unpack_7zarchive
 
 magifonts_id = keys.gid
 font_ext = ("ttf", "otf")
+zip_ext= ("zip","7z","rar")
 todof = "file_17.ttf"
 file_responses = ["This your OP font by your OP group", "You are the best!!", "You are OP", "Keep it up, i am waiting for more...","Here you go!", "Thanks for being one of us","Check this out!!", "Take this...","I hope you like it!", "Done!!","Compiled...","Finished!"]
 FONT, BOLD, ITALICS = range(3)
@@ -45,10 +48,12 @@ def preview(update,context,doc):
         os.chdir(orig_dir)
         os.chdir("preview")
         bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
-    elif doc.document.file_name.split(".")[-1].lower() == "zip":
+    elif doc.document.file_name.split(".")[-1].lower() in zip_ext:
         os.chdir("preview")
-        doc.document.get_file().download(custom_path="preview_zip.zip")
-        shutil.unpack_archive("preview_zip.zip", "preview_zip")
+        doc.document.get_file().download(custom_path="preview_zip."+doc.document.file_name.split(".")[-1].lower())
+        print("gonna extract")
+        create_dir("preview_zip")
+        extract("preview_zip."+doc.document.file_name.split(".")[-1].lower(),"preview_zip/")
         ffiles = []
         ffiles = list(find("*.otf", "preview_zip"))
         regular_font = ""
@@ -268,17 +273,23 @@ def main():
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
-
+def extract(file, location):
+    create_dir(location)
+    if file.split(".")[-1] == "7z":
+        shutil.unpack_archive(file, location)
+    else:
+        Archive(file).extractall(location)
 
 def delete_command(update, context):
     if update.message.reply_to_message.document:
-        if update.message.reply_to_message.document.file_name.split(".")[-1] == "zip":
+        if update.message.reply_to_message.document.file_name.split(".")[-1] in zip_ext:
             clearcache()
             doc = update.message.reply_to_message.document
             os.chdir(orig_dir)
             os.chdir("ziptodo")
             doc.get_file().download(custom_path=doc.file_name)
-            shutil.unpack_archive(doc.file_name, "to_delete", "zip")
+            create_dir("to_delete")
+            extract(doc.file_name,"to_delete/")
             
             
             ffiles = find("*.ttf", "to_delete")
@@ -404,13 +415,13 @@ def remove_ext(filewext):
 
 def ffiles_command(update,context):
     if update.message.reply_to_message.document:
-        if update.message.reply_to_message.document.file_name.split(".")[-1] == "zip":
+        if update.message.reply_to_message.document.file_name.split(".")[-1] in zip_ext:
             clearcache()
             doc = update.message.reply_to_message
             os.chdir(orig_dir)
             os.chdir("ffiles")
-            doc.document.get_file().download(custom_path="ffiles"+".zip")
-            shutil.unpack_archive("ffiles.zip","fonts","zip")
+            doc.document.get_file().download(custom_path="ffiles."+doc.document.file_name.split(".")[-1].lower())
+            extract("ffiles."+doc.document.file_name.split(".")[-1].lower(), "fonts")
             ffiles = find("*.ttf", "fonts")
             if not ffiles:
                 ffiles = find("*.otf", "fonts")
@@ -467,11 +478,11 @@ def ttfdownload(update, context,doc, zipname):
         else:
             update.message.reply_text("invalid file type!")
             os.chdir("../")
-    elif doc.document.file_name.split(".")[-1].lower() == "zip":
+    elif doc.document.file_name.split(".")[-1].lower() in zip_ext:
         os.chdir("ziptodo")
-        doc.document.get_file().download(custom_path=remove_ext(doc.document.file_name)+".zip")
+        doc.document.get_file().download(custom_path=doc.document.file_name)
         print("file downloaded!")
-        shutil.unpack_archive(remove_ext(doc.document.file_name)+".zip",remove_ext(doc.document.file_name))
+        extract(doc.document.file_name, remove_ext(doc.document.file_name))
         print("file unzipped: ",remove_ext(doc.document.file_name))
         ffiles = find("*.ttf",remove_ext(doc.document.file_name))
         print(0)
@@ -726,6 +737,7 @@ def listfiles(direc):
         return name.copy()
     
 def initialize():
+    #shutil.register_unpack_format('7zip', ['.7z'], unpack_7zarchive)
     create_dir("todo")
     create_dir("magiFont")
     create_dir("ziptodo")
