@@ -103,11 +103,12 @@ def handle_message(update,context):
     
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
-    error = context.error.lower
+    error = str(context.error).lower()
+    #print(error, error == "broken file")
     if error == "timed out":
         update.message.reply_text("Request Timed Out. Pls try again...")
     if error == "broken file":
-        update.message.reply_text("File is broken LoL. Sorry, I feel sad for you...")
+        update.message.reply_text("File is broken LoL xD.\nSorry, I feel sad for you...")
 def module(update,context):
     if "-" in str(update.message.chat_id):
         update.message.reply_text("Try running this command in my pm...")
