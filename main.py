@@ -9,7 +9,7 @@ import responses as r
 import random
 from fontpreview import *
 from pyunpack import Archive
-#from py7zr import unpack_7zarchive
+from py7zr import unpack_7zarchive
 
 magifonts_id = keys.gid
 font_ext = ("ttf", "otf")
@@ -737,7 +737,12 @@ def listfiles(direc):
         return name.copy()
     
 def initialize():
-    constants.init()
+    try:
+        shutil.register_unpack_format('7zip', ['.7z'], unpack_7zarchive)
+    except:
+        print("7z already registered")
+    else:
+        shutil.register_unpack_format('7zip', ['.7z'], unpack_7zarchive)
     create_dir("todo")
     create_dir("magiFont")
     create_dir("ziptodo")
