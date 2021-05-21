@@ -41,7 +41,7 @@ def preview(update,context,doc):
     if doc.document.file_name.split(".")[-1].lower() in font_ext:
         os.chdir("preview")
         doc.document.get_file().download(custom_path=doc.document.file_name)
-        pic = previewfont(doc.document.file_name, doc.document.file_name.split(".")[0])
+        pic = previewfont(doc.document.file_name.split(".")[0], doc.document.file_name)
         os.chdir(orig_dir)
         os.chdir("preview")
         bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
@@ -622,7 +622,7 @@ def return_font(array, value):
         if i[0] == value:
             return i[1]
 
-def previewfont(font_name,fname,fname2,fname3,fname4):
+def previewfont(font_name,fname = None,fname2 = None,fname3 = None,fname4 = None):
     fname2 = fname2 if fname2 else fname
     fname3 = fname3 if fname3 else fname
     fname4 = fname4 if fname4 else fname
