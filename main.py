@@ -464,9 +464,9 @@ def ttfdownload(update, context,doc, zipname):
             os.chdir("../")
     elif doc.document.file_name.split(".")[-1].lower() == "zip":
         os.chdir("ziptodo")
-        doc.document.get_file().download(custom_path=doc.document.file_name)
+        doc.document.get_file().download(custom_path=remove_ext(doc.document.file_name)+".zip")
         print("file downloaded!")
-        shutil.unpack_archive(doc.document.file_name,remove_ext(doc.document.file_name))
+        shutil.unpack_archive(remove_ext(doc.document.file_name)+".zip",remove_ext(doc.document.file_name))
         print("file unzipped: ",remove_ext(doc.document.file_name))
         ffiles = find("*.ttf",remove_ext(doc.document.file_name))
         print(0)
@@ -475,7 +475,11 @@ def ttfdownload(update, context,doc, zipname):
         if not ffiles:
             print("otf")
             ffiles = find("*.otf",remove_ext(doc.document.file_name))
-
+        
+        if not ffiles:
+            update.message.reply_text("This zip has no .ttf or .otf file... :(")
+            return
+        
         print("files: ",ffiles[0])
         if len(ffiles) == 1:
             shutil.copyfile(ffiles[0], "../magiTemplate/Fonts/MFFM.ttf")
@@ -504,6 +508,7 @@ def ttfdownload(update, context,doc, zipname):
                         
             print(2)
             paste_to_template(flist,"ziptodo","magiTemplate/Fonts")
+        edit_module_prop(zipname)
         print(3)
         os.chdir(orig_dir)
         print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
