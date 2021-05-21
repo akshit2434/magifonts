@@ -2,3 +2,4 @@ python-telegram-bot
 fontpreview
 patool
 pyunpack
+py7zr
