@@ -793,12 +793,12 @@ def find_font(name, font, filename = ""):
     
     #print(allfonts)
     if len(allfonts)== 1:
-            return allfonts[0]
+            return name[0]
     if font == "Regular":
         a = list(filter(lambda x : regularfinder(x,filename), allfonts))
         print("Regular: ",a, filename)
         if not len(a) > 0:
-            return allfonts[0]
+            return name[0]
         
     if font == "Black":
         a = list(filter(lambda x : (("blck" in x.lower()) or ("black" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
