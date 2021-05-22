@@ -770,7 +770,7 @@ def find(pattern, path):
     return list(map(lambda x : str(x).replace("\\","/"),result))
 
 def regularfinder(x,filename):
-    if(remove_ext(name_from_dir(x.lower())) in filename.lower()) or ("regular" in x.lower()) or ("mffm" in x.lower()):
+    if("regular" in x.lower()) or ("mffm" in x.lower()):
         return True
     else:
         print("False: ", remove_ext(name_from_dir(x.lower())), filename.lower())
