@@ -3,3 +3,4 @@ fontpreview
 patool
 pyunpack
 py7zr
+fontTools
