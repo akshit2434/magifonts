@@ -10,6 +10,7 @@ import random
 from fontpreview import *
 from pyunpack import Archive
 from py7zr import unpack_7zarchive
+from fontTools import ttLib
 
 magifonts_id = keys.gid
 font_ext = ("ttf", "otf")
@@ -61,7 +62,7 @@ def preview(update,context,doc):
             ffiles = list(find("*.ttf", "preview_zip"))
             #print(ffiles)
             #for i in range(0,len(ffiles)):
-        regular_font = find_font(ffiles,"Regular")
+        regular_font = find_font(ffiles,"Regular", remove_ext(doc.document.file_name))
         bold_font = find_font(ffiles,"Bold")
         light_font = find_font(ffiles,"Light")
         italic_font = find_font(ffiles,"Italic")
@@ -300,7 +301,7 @@ def delete_command(update, context):
                     os.remove(find(attr, "to_delete")[0])
                     print(attr)
                 else:
-                    font = find_font(ffiles, attr)
+                    font = find_font(ffiles, attr, remove_ext(doc.document.file_name))
                     if font:
                         os.remove(font)
                         print(font)
@@ -502,7 +503,7 @@ def ttfdownload(update, context,doc, zipname):
         else:
             for i in range(len(ffiles)):
                 for j in range(len(tfontsall)):
-                    x = find_font(ffiles, remove_ext(tfontsall[j]))
+                    x = find_font(ffiles, remove_ext(tfontsall[j]),remove_ext(doc.document.file_name))
                     if x:
                         #print(x,flist)
                         if [remove_ext(tfontsall[j]),False] in flist:
@@ -514,11 +515,11 @@ def ttfdownload(update, context,doc, zipname):
                     if not remove_ext(tfontsall[j]) in deffonts:
                         nearest = nearest_weight2(flist,remove_ext(tfontsall[j]), deffonts)
                         if nearest:
-                            x = find_font(ffiles, nearest)
+                            x = find_font(ffiles, nearest,remove_ext(doc.document.file_name))
                             if x:
                                 flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
                             else:
-                                x = find_font(ffiles, "Regular")
+                                x = find_font(ffiles, "Regular",remove_ext(doc.document.file_name))
                                 if x:
                                     flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
                         
@@ -768,18 +769,36 @@ def find(pattern, path):
                 #print(result)
     return list(map(lambda x : str(x).replace("\\","/"),result))
 
-def find_font(name, font):
+def regularfinder(x,filename):
+    if(remove_ext(name_from_dir(x.lower())) in filename.lower()) or ("regular" in x.lower()) or ("mffm" in x.lower()):
+        return True
+    else:
+        print("False: ", remove_ext(name_from_dir(x.lower())), filename.lower())
+        return False
+
+def find_font(name, font, filename = ""):
     #print("finding ",font," in ",name)
-    filename="hulu`124827@@#"
-    allfonts = list(name).copy()
+    #filename="hulu`124827@@#"
+    #print("\nallfonts")
+    allfonts = []
+    if os.path.exists(list(name)[0]):
+        #print("files detected ")
+        for i in range(0,len(name)):
+            #print("in fur luup")
+            #print(name[i]," mm ")#, shortName(name[i]))
+            allfonts.append(shortName(ttLib.TTFont(name[i])))
+    else:
+        allfonts = list(name).copy()
     a = []
+    
+    #print(allfonts)
     if len(allfonts)== 1:
             return allfonts[0]
     if font == "Regular":
-        a = list(filter(lambda x : (x.lower() in filename.lower()) or ("regular" in x.lower()) or ("mffm" in x.lower()), allfonts))
-        if len(a) > 0:
-            return a[0]
-        return allfonts[0]
+        a = list(filter(lambda x : regularfinder(x,filename), allfonts))
+        print("Regular: ",a, filename)
+        if not len(a) > 0:
+            return allfonts[0]
         
     if font == "Black":
         a = list(filter(lambda x : (("blck" in x.lower()) or ("black" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
@@ -815,8 +834,27 @@ def find_font(name, font):
         a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()) , allfonts))
     
     if len(a) > 0:
-        return a[0]
+        return name[allfonts.index(a[0])]
         
+
+FONT_SPECIFIER_NAME_ID = 4
+FONT_SPECIFIER_FAMILY_ID = 1
+def shortName( font ):
+    """Get the short name from the font's names table"""
+    name = ""
+    family = ""
+    for record in font['name'].names:
+        if b'\x00' in record.string:
+            name_str = record.string.decode('utf-16-be')
+        else:   
+            name_str = record.string.decode('latin-1')
+        if record.nameID == FONT_SPECIFIER_NAME_ID and not name:
+            name = name_str
+        elif record.nameID == FONT_SPECIFIER_FAMILY_ID and not family: 
+            family = name_str
+        if name and family: break
+    return name
+
 
 def name_from_dir(x):
     return x.split("/")[-1]
