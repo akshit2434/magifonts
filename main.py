@@ -513,6 +513,7 @@ def ttfdownload(update, context,doc, zipname):
                 for j in range(len(tfontsall)):
                     deffonts = definefonts(flist)
                     if not remove_ext(tfontsall[j]) in deffonts:
+                        
                         nearest = nearest_weight2(flist,remove_ext(tfontsall[j]), deffonts)
                         if nearest:
                             x = find_font(ffiles, nearest,remove_ext(doc.document.file_name))
@@ -770,11 +771,11 @@ def find(pattern, path):
     return list(map(lambda x : str(x).replace("\\","/"),result))
 
 def regularfinder(x,filename):
-    if("regular" in x.lower()) or ("mffm" in x.lower()):
+    if(("regular" in x.lower() or "mffm" in x.lower())):
         return True
-    else:
-        print("False: ", remove_ext(name_from_dir(x.lower())), filename.lower())
-        return False
+    if not ("italic" in x.lower() or "black" in x.lower() or "bold" in x.lower() or "medium" in x.lower() or  "thin" in x.lower() or "light" in x.lower() or "condensed" in x.lower()):
+        return True
+    return False
 
 def find_font(name, font, filename = ""):
     #print("finding ",font," in ",name)
@@ -796,9 +797,10 @@ def find_font(name, font, filename = ""):
             return name[0]
     if font == "Regular":
         a = list(filter(lambda x : regularfinder(x,filename), allfonts))
-        print("Regular: ",a, filename)
+        print("Regular: ",a," , allfonts: ", allfonts)
         if not len(a) > 0:
             return name[0]
+        
         
     if font == "Black":
         a = list(filter(lambda x : (("blck" in x.lower()) or ("black" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
