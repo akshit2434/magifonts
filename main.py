@@ -111,6 +111,7 @@ def handle_message(update,context):
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
     error = str(context.error).lower()
+    update.message.reply_text("An error Occuered...")
     #print(error, error == "broken file")
     if error == "timed out":
         update.message.reply_text("Request Timed Out. Pls try again...")
