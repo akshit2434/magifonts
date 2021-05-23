@@ -102,10 +102,11 @@ def owner_command(update,context):
     update.message.reply_text("@TheSc1enceGuy(akshit singh) is my father... and he is the owner too lel ;)")
     
 def handle_message(update,context):
-    if update.message.text:
-        text = str(update.message.text).lower()
-        if r.sample_responses(text) not in (""):
-            update.message.reply_text(r.sample_responses(text))
+    if update.message:
+        if update.message.text:
+            text = str(update.message.text).lower()
+            if r.sample_responses(text) not in (""):
+                update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
