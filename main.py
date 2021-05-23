@@ -102,16 +102,14 @@ def owner_command(update,context):
     update.message.reply_text("@TheSc1enceGuy(akshit singh) is my father... and he is the owner too lel ;)")
     
 def handle_message(update,context):
-    if update.message:
-        if update.message.text:
-            text = str(update.message.text).lower()
-            if r.sample_responses(text) not in (""):
-                update.message.reply_text(r.sample_responses(text))
+    if update.message.text:
+        text = str(update.message.text).lower()
+        if r.sample_responses(text) not in (""):
+            update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
     error = str(context.error).lower()
-    update.message.reply_text("An error Occuered...")
     #print(error, error == "broken file")
     if error == "timed out":
         update.message.reply_text("Request Timed Out. Pls try again...")
@@ -303,7 +301,7 @@ def delete_command(update, context):
                     os.remove(find(attr, "to_delete")[0])
                     print(attr)
                 else:
-                    font = find_font(ffiles, attr, remove_ext(doc.document.file_name))
+                    font = find_font(ffiles, attr, remove_ext(doc.file_name))
                     if font:
                         os.remove(font)
                         print(font)
