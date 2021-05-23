@@ -281,6 +281,11 @@ def extract(file, location):
     else:
         Archive(file).extractall(location)
 
+def capscheck(x):
+    lower_tfontsall = list(map(lambda x : x.split(".")[0].lower(), tfontsall.copy()))
+    if x in lower_tfontsall:
+        return list(map(lambda x : x.split(".")[0], tfontsall.copy()))[lower_tfontsall.index(x)]
+
 def delete_command(update, context):
     if update.message.reply_to_message.document:
         if update.message.reply_to_message.document.file_name.split(".")[-1] in zip_ext:
@@ -301,7 +306,9 @@ def delete_command(update, context):
                     os.remove(find(attr, "to_delete")[0])
                     print(attr)
                 else:
-                    font = find_font(ffiles, attr, remove_ext(doc.file_name))
+                    to_del = capscheck(attr)
+                    font = find_font(ffiles, to_del, remove_ext(doc.file_name))
+                    print("font: ",font, "   to_del: ",to_del)
                     if font:
                         os.remove(font)
                         print(font)
