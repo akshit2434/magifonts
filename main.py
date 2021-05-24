@@ -757,6 +757,7 @@ def initialize():
     create_dir("ziptodo")
     create_dir("ffiles")
     create_dir("preview/preview_zip")
+    create_dir("OMF/fonts")
     clearcache()
     
 def create_dir(folder):
