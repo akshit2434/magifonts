@@ -406,7 +406,7 @@ def edit_module_prop(fname):
     os.chdir(orig_dir)
     os.chdir(keys.template_dir)
     os.rename('module.prop','module.txt')
-    prop_list = ["id=omf_font_module\n","name="+fname+"\n","Moduleversion=v2021.05.23\n""versionCode=2021052301\n","author=nongthaihoang @GitLab; MFFM; @TheSc1enceGuy\n","description=OMF Advanced font installer for Android. Module prepared by @magifont_bot. Join @MFFMDisc / @Magifonts_Support for more.\n"]
+    prop_list = ["id=Magifonts_omf_font_module\n","name="+fname+"\n","Moduleversion=v2021.05.23\n""versionCode=2021052301\n","author=nongthaihoang @GitLab; MFFM; @TheSc1enceGuy\n","description=OMF Advanced font installer for Android. Module prepared by @magifont_bot. Join @MFFMDisc / @Magifonts_Support for more.\n"]
     my_file = open("module.txt", "w")
     my_file.write("".join(prop_list))
     my_file.close()
@@ -757,7 +757,7 @@ def initialize():
     create_dir("ziptodo")
     create_dir("ffiles")
     create_dir("preview/preview_zip")
-    create_dir("OMF/fonts")
+    create_dir(keys.fonts_dir)
     clearcache()
     
 def create_dir(folder):
