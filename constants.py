@@ -11,3 +11,6 @@ base = "https://api.telegram.org/bot"+API_KEY+"/"
 gid = -1001393886080
 #gid = -1001370521379
 
+
+template_dir = "OMF"
+fonts_dir = "OMF/fonts"
