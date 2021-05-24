@@ -355,17 +355,17 @@ def modulify(zipname):
     if not zipname:
         zipname=remove_ext(todof)
     os.chdir(orig_dir)
-    os.chdir("magiTemplate/Fonts")
+    os.chdir(keys.font_dir)
     
     for i in range(0,len(tfonts)):
         shutil.copyfile(src="../../todo/"+todof , dst=tfonts[i])
     print("copied files")
     #print(os.getcwd())
     os.chdir(orig_dir)
-    os.chdir("magiTemplate")
+    os.chdir(keys.template_dir)
     edit_module_prop(remove_ext(todof))
     os.chdir(orig_dir)
-    shutil.make_archive("magiFont/"+zipname, 'zip', "magiTemplate")
+    shutil.make_archive("magiFont/"+zipname, 'zip', keys.template_dir)
     print("archive ready")
     
 def modulifybi(fname,zipname=False):
@@ -383,7 +383,7 @@ def modulifybi(fname,zipname=False):
     
     if fnamei not in todocontents:
         fnamei = fname
-    os.chdir("magiTemplate/Fonts")
+    os.chdir(keys.fonts_dir)
     for i in range(0,len(tfontsr)):
         shutil.copyfile(src="../../todo/"+fname , dst=tfontsr[i])
     
@@ -395,18 +395,18 @@ def modulifybi(fname,zipname=False):
     print(4)
     #print(os.getcwd())
     os.chdir(orig_dir)
-    os.chdir("magiTemplate")
+    os.chdir(keys.template_dir)
     edit_module_prop(remove_ext(fname))
     os.chdir(orig_dir)
     #print(zipname)
-    shutil.make_archive("magiFont/"+zipname, 'zip', "magiTemplate/")
+    shutil.make_archive("magiFont/"+zipname, 'zip', keys.template_dir)
     #print(5)
     
 def edit_module_prop(fname):
     os.chdir(orig_dir)
-    os.chdir("magiTemplate")
+    os.chdir(keys.template_dir)
     os.rename('module.prop','module.txt')
-    prop_list = ["id=MFFM_FontInstaller\n","name="+fname+"\n","version=v1.0\n""versionCode=10\n","author=@TheSc1enceGuy and MFFM\n","description=Magifonts - Install custom fonts with ease.\n"]
+    prop_list = ["id=id=omf_font_module\n","name="+fname+"\n","Moduleversion=v2021.05.23\n""versionCode=2021052301\n","author=nongthaihoang @GitLab; MFFM; @TheSc1enceGuy\n","description=OMF Advanced font installer for Android. Module prepared by @magifont_bot. Join @MFFMDisc / @Magifonts_Support for more.\n"]
     my_file = open("module.txt", "w")
     my_file.write("".join(prop_list))
     my_file.close()
@@ -506,7 +506,7 @@ def ttfdownload(update, context,doc, zipname):
         
         print("files: ",ffiles[0])
         if len(ffiles) == 1:
-            shutil.copyfile(ffiles[0], "../magiTemplate/Fonts/MFFM.ttf")
+            shutil.copyfile(ffiles[0], os.path.join("..\\",keys.fonts_dir,"MFFM.ttf"))
         else:
             for i in range(len(ffiles)):
                 for j in range(len(tfontsall)):
@@ -532,12 +532,12 @@ def ttfdownload(update, context,doc, zipname):
                                     flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
                         
             print(2)
-            paste_to_template(flist,"ziptodo","magiTemplate/Fonts")
+            paste_to_template(flist,"ziptodo",keys.fonts_dir)
         edit_module_prop(zipname)
         print(3)
         os.chdir(orig_dir)
         print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
-        shutil.make_archive("magiFont/"+zipname+"[Magifonts]", "zip","magiTemplate/")
+        shutil.make_archive("magiFont/"+zipname+"[Magifonts]", "zip",keys.template_dir)
         bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses))
         bot.send_message(magifonts_id,"Here you go! - @"+update.message.from_user.username)
         if not (update.message.chat_id == magifonts_id):
@@ -575,7 +575,7 @@ def modulify2(flist,src,dst,definedfonts,filedst):
                 if not flist[i][1]:
                     shutil.copyfile(src+"/"+return_font(flist,"Regular"), dst+"/"+flist[i][0]+".ttf")
     edit_module_prop(remove_ext(filedst.split("/")[-1]))
-    shutil.make_archive(remove_ext(filedst), 'zip', "magiTemplate/")
+    shutil.make_archive(remove_ext(filedst), 'zip', keys.template_dir)
     return filedst
     
 
@@ -717,7 +717,7 @@ def clearcache():
     wipefiles("todo")
     wipefiles("magiFont")
     wipefiles("ziptodo")
-    wipefiles("magiTemplate/Fonts")
+    wipefiles(keys.fonts_dir)
     wipefiles("preview")
     wipefiles("ffiles")
             
@@ -804,7 +804,7 @@ def find_font(name, font, filename = ""):
             return name[0]
     if font == "Regular":
         a = list(filter(lambda x : regularfinder(x,filename), allfonts))
-        print("Regular: ",a," , allfonts: ", allfonts)
+        #print("Regular: ",a," , allfonts: ", allfonts)
         if not len(a) > 0:
             return name[0]
         
