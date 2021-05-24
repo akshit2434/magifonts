@@ -12,5 +12,5 @@ gid = -1001393886080
 #gid = -1001370521379
 
 
-template_dir = "OMF"
-fonts_dir = "OMF/fonts"
+template_dir = "omftemplate-master"
+fonts_dir = template_dir+"/fonts"
