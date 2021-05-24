@@ -12,6 +12,6 @@ gid = -1001393886080
 #gid = -1001370521379
 
 
-template_dir = "magiTemplate"#"omftemplate-master"
-fonts_dir = template_dir+"/Fonts"
+template_dir = "OMF"#"omftemplate-master"
+fonts_dir = template_dir+"/fonts"
 
