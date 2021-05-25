@@ -339,7 +339,7 @@ def module_command(update,context):
         bot.delete_message(update.message.chat_id,msg.message_id)
     else:
         update.message.reply_text("Reply to a font file/zip bro.")
-tfonts = ["MFFM.ttf"]
+tfonts = ["Regular.ttf"]
 
 tfontsr = ["Regular.ttf","Light.ttf","Thin.ttf"]
 
@@ -350,13 +350,13 @@ tfontsi = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","L
 tfontsall = ["Regular.ttf","Light.ttf","Thin.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
-def modulify(zipname):
+def modulify(zipname = None):
     print("modulify me hu")
     if not zipname:
         zipname=remove_ext(todof)
     os.chdir(orig_dir)
-    os.chdir(keys.font_dir)
-    
+    os.chdir(keys.fonts_dir)
+    processfonts([["", "../../todo/"+todof]])
     for i in range(0,len(tfonts)):
         shutil.copyfile(src="../../todo/"+todof , dst=tfonts[i])
     print("copied files")
@@ -533,9 +533,13 @@ def ttfdownload(update, context,doc, zipname):
                         
             print(2)
             paste_to_template(flist,"ziptodo",keys.fonts_dir)
+        
         edit_module_prop(zipname)
         print(3)
+        os.chdir("ziptodo")
+        processfonts(flist)
         os.chdir(orig_dir)
+        
         print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
         shutil.make_archive("magiFont/"+zipname+"[Magifonts]", "zip",keys.template_dir)
         bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses))
@@ -552,6 +556,36 @@ def ttfdownload(update, context,doc, zipname):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
 origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
 
+def processfonts(fonts):
+    print("Processin font")
+    for i in range(len(fonts)):
+        if fonts[i][1]:
+            tt = ttLib.TTFont(fonts[i][1])
+            #if tt["head"].unitsPerEm >= 2040:
+            #    tt["hhea"].ascent = 1800
+            #else:
+            #    tt["hhea"].ascent = 900
+            
+            tt["hhea"].ascent = int((1900*tt["head"].unitsPerEm)/2048)
+            print(1)
+            tt["OS/2"].sTypoAscender = int((1900*tt["head"].unitsPerEm)/2048)
+            print(2)
+            tt["OS/2"].usWinAscent = int((1900*tt["head"].unitsPerEm)/2048)
+            print(3)
+            
+            tt["hhea"].lineGap = 0
+            tt["OS/2"].sTypoLineGap = 0
+            print(4)
+            tt["hhea"].descent = int((-500*tt["head"].unitsPerEm)/2048)
+            print(5)
+            tt["OS/2"].sTypoDescender = int((-500*tt["head"].unitsPerEm)/2048)
+            print(6)
+            tt["OS/2"].usWinDescent = int((500*tt["head"].unitsPerEm)/2048)
+            print(7)
+            #tt.saveXML("lesse")
+            tt.save(fonts[i][1])
+            print("666 ", int((1900*tt["head"].unitsPerEm)/2048), " ", int((-500*tt["head"].unitsPerEm)/2048))
+            
 def paste_to_template(flist,src,dst):
     os.chdir(orig_dir)
     print(src+"/"+flist[0][1])
