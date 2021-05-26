@@ -599,7 +599,7 @@ def modulify2(flist,src,dst,definedfonts,filedst):
 
     if "Regular" in definedfonts:
         if len(definedfonts) == 1:
-            shutil.copyfile(src+"/"+flist[2][1], dst+"/MFFM.ttf")
+            shutil.copyfile(src+"/"+flist[2][1], dst+"/Regular.ttf")
         else:
             for i in range(len(flist)):
                 if flist[i][1]:
