@@ -26,8 +26,8 @@ def sample_responses(input_text):
             return "Good Night Sar!"
         if "bye" in message_array:
             return "See you soon Sar!"
-        if "thanks" in message_array or "thank you" in message_array or "thnx" in message_array:
-            return "Not a problem xD"
+        #if "thanks" in message_array or "thank you" in message_array or "thnx" in message_array:
+        #    return "Not a problem "
         if "wtf" in message_array:
             return "no abuses plox..."
         
