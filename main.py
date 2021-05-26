@@ -506,7 +506,7 @@ def ttfdownload(update, context,doc, zipname):
         
         print("files: ",ffiles[0])
         if len(ffiles) == 1:
-            shutil.copyfile(ffiles[0], os.path.join("..\\",keys.fonts_dir,"MFFM.ttf"))
+            shutil.copyfile(ffiles[0], os.path.join("../",keys.fonts_dir,"Regular.ttf"))
         else:
             for i in range(len(ffiles)):
                 for j in range(len(tfontsall)):
