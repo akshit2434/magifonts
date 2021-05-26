@@ -102,19 +102,23 @@ def owner_command(update,context):
     update.message.reply_text("@TheSc1enceGuy(akshit singh) is my father... and he is the owner too lel ;)")
     
 def handle_message(update,context):
-    if update.message.text:
+    if hasattr(update.message, "text"):
         text = str(update.message.text).lower()
         if r.sample_responses(text) not in (""):
             update.message.reply_text(r.sample_responses(text))
     
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
+    update.message.reply_text("An Error Occured...")
     error = str(context.error).lower()
     #print(error, error == "broken file")
     if error == "timed out":
         update.message.reply_text("Request Timed Out. Pls try again...")
+        return
     if error == "broken file":
         update.message.reply_text("File is broken LoL xD.\nSorry, I feel sad for you...")
+        return
+    update.message.reply_text("An Error Occured...")
 def module(update,context):
     if "-" in str(update.message.chat_id):
         update.message.reply_text("Try running this command in my pm...")
