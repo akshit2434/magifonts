@@ -4,3 +4,4 @@ patool
 pyunpack
 py7zr
 fontTools
+requests
