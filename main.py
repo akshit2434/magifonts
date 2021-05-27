@@ -11,6 +11,9 @@ from fontpreview import *
 from pyunpack import Archive
 from py7zr import unpack_7zarchive
 from fontTools import ttLib
+import requests
+import re
+
 
 magifonts_id = keys.gid
 font_ext = ("ttf", "otf")
@@ -20,6 +23,17 @@ file_responses = ["This your OP font by your OP group", "You are the best!!", "Y
 FONT, BOLD, ITALICS = range(3)
 PREVIEW = 1
 bot = Bot(keys.API_KEY)
+
+def getFilename_fromURL(url):
+    cd = requests.get(url, allow_redirects=True).headers.get('content-disposition')
+
+    if not cd:
+        return None
+    fname = re.findall('filename=(.+)', cd)
+    if len(fname) == 0:
+        return None
+    return fname[0]
+
 
 def member_join(update, context):
     
@@ -258,6 +272,7 @@ def main():
     dispatcher.add_handler(CommandHandler("module",module_command))
     dispatcher.add_handler(CommandHandler("ffiles",ffiles_command))
     dispatcher.add_handler(CommandHandler("delete",delete_command))
+    #dispatcher.add_handler(CallbackQueryHandler(button, pattern="^OMF||MFFM$"))
     #dispatcher.add_handler(CommandHandler("rename",rename_command))
     dispatcher.add_handler(CommandHandler("faketrigger",member_join))
     
@@ -330,19 +345,45 @@ def delete_command(update, context):
 
 def module_command(update,context):
     if update.message.reply_to_message:
-        msg = update.message.reply_text("Processing...")
         #print("filename: ",context.args)
+        
+        keyboard = [
+        [
+           InlineKeyboardButton("OMF (Recommended)", callback_data='OMF'),
+           InlineKeyboardButton("MFFM", callback_data='MFFM'),
+        ],
+        #[InlineKeyboardButton("Option 3", callback_data='3')],
+        ]
+   
+        reply_markup = InlineKeyboardMarkup(keyboard)
+   
+        #update.message.reply_text('What Type of Module?', reply_markup=reply_markup)
+        
         msgarray = []
         if "/module " in update.message.text:
-            msgarray = list(map(lambda x: x.replace('"', ""), update.message.text.replace("/module ", "").split(" ")))
+            msgarray = list(map(lambda x: x.replace('\"', ""), update.message.text.replace("/module ", "").split(" ")))
         filename=None
         #print("filename: ",msgarray)
         if len(msgarray) >= 1:
             filename = msgarray[0]
         ttfdownload(update,context,update.message.reply_to_message,filename)
-        bot.delete_message(update.message.chat_id,msg.message_id)
+        #bot.delete_message(update.message.chat_id,msg.message_id)
     else:
         update.message.reply_text("Reply to a font file/zip bro.")
+        
+    
+def button(update: Update, _: CallbackContext) -> None:
+    query = update.callback_query
+
+    # CallbackQueries need to be answered, even if no notification to the user is needed
+    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+    query.answer()
+
+    if query.data in ("OMF","MFFM"):
+        query.edit_message_text(text=f"Processing: {query.data}")
+        print(query.message.reply_to_message, "\n\n")
+        print(query.message.reply_to_message.document)
+
 tfonts = ["Regular.ttf"]
 
 tfontsr = ["Regular.ttf","Light.ttf","Thin.ttf"]
@@ -509,17 +550,20 @@ def ttfdownload(update, context,doc, zipname):
             return
         
         print("files: ",ffiles[0])
+        
         if len(ffiles) == 1:
             shutil.copyfile(ffiles[0], os.path.join("../",keys.fonts_dir,"Regular.ttf"))
+            flist[flist.index(["Regular",False])][1] = ffiles[0]
         else:
-            for i in range(len(ffiles)):
-                for j in range(len(tfontsall)):
-                    x = find_font(ffiles, remove_ext(tfontsall[j]),remove_ext(doc.document.file_name))
-                    if x:
-                        #print(x,flist)
-                        if [remove_ext(tfontsall[j]),False] in flist:
-                            flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
             print(1)
+            for i in range(len(ffiles)):
+                    for j in range(len(tfontsall)):
+                        x = find_font(ffiles, remove_ext(tfontsall[j]),remove_ext(doc.document.file_name))
+                        if x:
+                            #print(x,flist)
+                            if [remove_ext(tfontsall[j]),False] in flist:
+                                flist[flist.index([remove_ext(tfontsall[j]),False])][1] = x
+                                
             for i in range(len(ffiles)):
                 for j in range(len(tfontsall)):
                     deffonts = definefonts(flist)
@@ -560,8 +604,17 @@ def ttfdownload(update, context,doc, zipname):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
 origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
 
-def processfonts(fonts):
+def processfonts(fontslist):
     print("Processin font")
+    fonts = []
+    print(fontslist)
+    defined = []
+    for i in fontslist:
+        if i[1]:
+            defined.append(i[1])
+    print("\n\n", defined)
+    fonts = fontslist#[find_font(defined, "Regular"), find_font(defined, "Italic")]
+    print(fonts)
     for i in range(len(fonts)):
         if fonts[i][1]:
             tt = ttLib.TTFont(fonts[i][1])
