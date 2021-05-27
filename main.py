@@ -234,9 +234,10 @@ def module_command(update,context):
 
         #[InlineKeyboardButton("Option 3", callback_data='3')],
         ]
-   
+        
         reply_markup = InlineKeyboardMarkup(keyboard)
         context.user_data["file_request"] = update.message.reply_to_message
+        context.user_data["module_message"] = update.message
         update.message.reply_text('What Type of Module?', reply_markup=reply_markup)
         
         msgarray = []
@@ -256,7 +257,7 @@ def button(update, context):
     
     #print("a\n",update.callback_query.message.reply_to_message.from_user,"\n\n")
     #print("b\n",update.effective_user)
-    if update.callback_query.message.reply_to_message.from_user.username == update.effective_user.username:
+    def proceed():
         query = update.callback_query
         query.answer()
     
@@ -265,7 +266,7 @@ def button(update, context):
             print(context.user_data.get("file_request", "File Request Not found..."))
             file = context.user_data.get("file_request", "File Request Not found...")
         
-        usermsg = query.message.reply_to_message
+        usermsg = context.user_data["module_message"]
         msgarray = []
         if "/module " in usermsg.text:
             msgarray = list(map(lambda x: x.replace('\"', ""), usermsg.text.replace("/module ", "").split(" ")))
@@ -283,6 +284,13 @@ def button(update, context):
         
         bot.deleteMessage(query.message.chat_id, query.message.message_id)
         bot.deleteMessage(usermsg.chat_id, usermsg.message_id)
+    if update.callback_query.message.reply_to_message:
+        if update.callback_query.message.reply_to_message.from_user.username == update.effective_user.username:
+            proceed()
+        else:
+            return
+    else:
+        proceed()
 
 tfonts = ["Regular.ttf"]
 
@@ -299,6 +307,7 @@ def modulify(template_type, templatedir, fontdir, zipname = None, fonts = ["Regu
     print("modulify me hu")
     if not zipname:
         zipname=remove_ext(todof)
+    zipname = zipname.replace("[Magifonts]","")+"[Magifonts]"
     os.chdir(orig_dir)
     os.chdir(fontdir)
     processfonts([["", "../../todo/"+todof]])
@@ -528,15 +537,15 @@ def processfonts(fontslist):
             
             tt["hhea"].lineGap = 0
             tt["OS/2"].sTypoLineGap = 0
+            
             tt["hhea"].descent = int((-500*tt["head"].unitsPerEm)/2048)
             tt["OS/2"].sTypoDescender = int((-500*tt["head"].unitsPerEm)/2048)
-            tt["OS/2"].usWinDescent = int((500*tt["head"].unitsPerEm)/2048)
             #tt.saveXML("lesse")
+            print("fixed: ", name_from_dir(fonts[i][1]))
             tt.save(fonts[i][1])
             
 def paste_to_template(flist,src,dst):
     os.chdir(orig_dir)
-    print(src+"/"+flist[0][1])
     for i in range(len(flist)):
         if flist[i][1]:
             if os.path.exists(src+"/"+flist[i][1]):
@@ -599,17 +608,14 @@ def nearest_weight2(flist, x, deffonts):
                     
                     if l>=j:
                         if  remove_ext(array[array.index(x+".ttf")+j]) in deffonts:
-                            #print("x: ",x," / ",remove_ext(array[array.index(x+".ttf")+j]))
                             return remove_ext(array[array.index(x+".ttf")+j])
                             break
                     if i>=j:
                         if remove_ext(array[array.index(x+".ttf")-j]) in deffonts:
-                            print("x: ",x," / ",remove_ext(array[array.index(x+".ttf")-j]))
                             return remove_ext(array[array.index(x+".ttf")-j])
                             break
         
         #return return_font(flist, "Regular")
-    print("sed loif: ",x," / ",definedfonts)
     if "Regular" in definedfonts:
         print("regular")
         return "Regular"
@@ -640,7 +646,6 @@ def previewfont(font_name,fname = None,fname2 = None,fname3 = None,fname4 = None
     fname4 = fname4 if fname4 else fname
     if not fname:
         raise Exception("fname not provided to previewfont()")
-    print([fname,fname2,fname3,fname4])
     print(name_from_dir(fname))
     bg_color = (0, 43, 54)
     fg_color = (0,160,153)
@@ -757,7 +762,6 @@ def find(pattern, path):
     for root, dirs, files in os.walk(path):
         for name in files:
             if fnmatch.fnmatch(name, pattern):
-                #print("\n\nfind...")
                 
                 #result = os.path.join(str(result),os.path.join(root,name))
                 result.append(os.path.join(root.replace("//","/"), name.replace("//","/")).replace("//","/"))
@@ -772,26 +776,19 @@ def regularfinder(x,filename):
     return False
 
 def find_font(name, font, filename = ""):
-    #print("finding ",font," in ",name)
     #filename="hulu`124827@@#"
-    #print("\nallfonts")
     allfonts = []
     if os.path.exists(list(name)[0]):
-        #print("files detected ")
         for i in range(0,len(name)):
-            #print("in fur luup")
-            #print(name[i]," mm ")#, shortName(name[i]))
             allfonts.append(shortName(ttLib.TTFont(name[i])))
     else:
         allfonts = list(name).copy()
     a = []
     
-    #print(allfonts)
     if len(allfonts)== 1:
             return name[0]
     if font == "Regular":
         a = list(filter(lambda x : regularfinder(x,filename), allfonts))
-        #print("Regular: ",a," , allfonts: ", allfonts)
         if not len(a) > 0:
             return name[0]
         
