@@ -15,3 +15,33 @@ gid = -1001393886080
 template_dir = "OMF"#"omftemplate-master"
 fonts_dir = template_dir+"/fonts"
 
+omf_dir = "OMF"
+omffonts_dir = omf_dir+"/fonts"
+
+mffm_dir = "magiTemplate"
+mffmfonts_dir = mffm_dir+"/Fonts"
+
+
+
+#MFFM
+mffm_single = ["MFFM.ttf"]
+
+mffm_r = ["Regular.ttf","Light.ttf","Thin.ttf"]
+
+mffm_b = [ "Medium.ttf","Black.ttf","Bold.ttf"]
+
+mffm_i = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]#todof= file...
+
+mffm_all = ["Regular.ttf","Light.ttf","Thin.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]
+
+
+#OMF
+omf_single = ["Regular.ttf"]
+
+omf_r = ["Regular.ttf","Light.ttf","Thin.ttf"]
+
+omf_b = [ "Medium.ttf","Black.ttf","Bold.ttf"]
+
+omf_i = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]#todof= file...
+
+omf_all = ["Regular.ttf","Light.ttf","Thin.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]
