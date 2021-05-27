@@ -253,35 +253,36 @@ def module_command(update,context):
         
     
 def button(update, context):
-    query = update.callback_query
-    #print(update.e)
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
-    query.answer()
-
-    if query.data in ("OMF","MFFM"):
-        query.edit_message_text(text=f"Processing: {query.data}")
-        print(context.user_data.get("file_request", "File Request Not found..."))
-        file = context.user_data.get("file_request", "File Request Not found...")
     
-    usermsg = query.message.reply_to_message
-    msgarray = []
-    if "/module " in usermsg.text:
-        msgarray = list(map(lambda x: x.replace('\"', ""), usermsg.text.replace("/module ", "").split(" ")))
-    filename=None
+    #print("a\n",update.callback_query.message.reply_to_message.from_user,"\n\n")
+    #print("b\n",update.effective_user)
+    if update.callback_query.message.reply_to_message.from_user.username == update.effective_user.username:
+        query = update.callback_query
+        query.answer()
     
-    #print("filename: ",msgarray)
-    if len(msgarray) >= 1:
-        filename = msgarray[0]
-    
-    if query.data == "OMF":
-        ttfdownload("OMF", usermsg,file, filename, keys.omf_dir, keys.omffonts_dir, keys.omf_r, keys.omf_b, keys.omf_i, keys.omf_all, keys.omf_single)
-    
-    if query.data == "MFFM":
-        ttfdownload("MFFM", usermsg,file, filename, keys.mffm_dir, keys.mffmfonts_dir, keys.mffm_r, keys.mffm_b, keys.mffm_i, keys.mffm_all, keys.mffm_single)
-    
-    bot.deleteMessage(query.message.chat_id, query.message.message_id)
-    bot.deleteMessage(usermsg.chat_id, usermsg.message_id)
+        if query.data in ("OMF","MFFM"):
+            query.edit_message_text(text=f"Processing: {query.data}")
+            print(context.user_data.get("file_request", "File Request Not found..."))
+            file = context.user_data.get("file_request", "File Request Not found...")
+        
+        usermsg = query.message.reply_to_message
+        msgarray = []
+        if "/module " in usermsg.text:
+            msgarray = list(map(lambda x: x.replace('\"', ""), usermsg.text.replace("/module ", "").split(" ")))
+        filename=None
+        
+        #print("filename: ",msgarray)
+        if len(msgarray) >= 1:
+            filename = msgarray[0]
+        
+        if query.data == "OMF":
+            ttfdownload("OMF", usermsg,file, filename, keys.omf_dir, keys.omffonts_dir, keys.omf_r, keys.omf_b, keys.omf_i, keys.omf_all, keys.omf_single)
+        
+        if query.data == "MFFM":
+            ttfdownload("MFFM", usermsg,file, filename, keys.mffm_dir, keys.mffmfonts_dir, keys.mffm_r, keys.mffm_b, keys.mffm_i, keys.mffm_all, keys.mffm_single)
+        
+        bot.deleteMessage(query.message.chat_id, query.message.message_id)
+        bot.deleteMessage(usermsg.chat_id, usermsg.message_id)
 
 tfonts = ["Regular.ttf"]
 
