@@ -1090,6 +1090,10 @@ def find_font(name, font, filename = "", method = "filename"):
     if font == "LightItalic":
         a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
 
+    if font == "ExtraLight":
+        a = list(filter(lambda x : ((("extralight" in x.lower()) or ("extra light" in x.lower()) or "exlight" in x.lower()) and "italic" in x.lower()) and not ("bold" in x.lower() or "thin" in x.lower()),allfonts))
+
+
     if font == "BlackItalic":
         a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
 
