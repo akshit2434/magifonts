@@ -59,7 +59,7 @@ def preview(update,context,doc):
     if doc.document.file_name.split(".")[-1].lower() in font_ext:
         os.chdir("preview")
         doc.document.get_file().download(custom_path=remove_ext(doc.document.file_name)+".ttf")
-        pic = previewfont(doc.document.file_name.split(".")[0], remove_ext(doc.document.file_name)+".ttf")
+        pic = previewfont(None, remove_ext(doc.document.file_name)+".ttf")
         os.chdir(orig_dir)
         os.chdir("preview")
         bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
@@ -84,7 +84,7 @@ def preview(update,context,doc):
         if regular_font:
             #regular_font = ffiles[i]
             os.chdir(orig_dir)
-            pic = previewfont(doc.document.file_name.split(".")[0], regular_font, bold_font, light_font, italic_font)
+            pic = previewfont(None, regular_font, bold_font, light_font, italic_font)
             os.chdir(orig_dir)
             os.chdir("preview")
             bot.send_photo(update.message.chat_id, open("preview.png", "rb"))
@@ -321,6 +321,7 @@ def modulify(template_type, templatedir, fontdir, zipname = None, fonts = ["Regu
     os.chdir(orig_dir)
     shutil.make_archive("magiFont/"+zipname, 'zip', templatedir)
     print("archive ready")
+    return zipname
     
 def modulifybi(fname,zipname=False):
     print(["moodulify bi reached",fname])
@@ -354,6 +355,7 @@ def modulifybi(fname,zipname=False):
     os.chdir(orig_dir)
     #print(zipname)
     shutil.make_archive("magiFont/"+zipname, 'zip', keys.template_dir)
+    return zipname
     #print(5)
     
 def edit_module_prop(fname, templatedir, template_type = "OMF"):
@@ -430,11 +432,11 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
         
         if todof.split(".")[-1].lower() in font_ext:
             os.chdir("../")
-            modulify(template_type, templatedir, fontdir, zipname, single_file)
+            to_send = modulify(template_type, templatedir, fontdir, zipname, single_file)
             os.chdir(orig_dir)
             os.chdir("magiFont")
             print("sending...")
-            bot.send_document(magifonts_id, open(zipname+".zip",'rb'),caption=random.choice(file_responses))
+            bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses))
             bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
             if not str(doc.chat_id) == str(magifonts_id):
                 doc.reply_text("Your file has been posted in @magifonts_support")
@@ -644,6 +646,7 @@ def previewfont(font_name,fname = None,fname2 = None,fname3 = None,fname4 = None
     fname2 = fname2 if fname2 else fname
     fname3 = fname3 if fname3 else fname
     fname4 = fname4 if fname4 else fname
+    
     if not fname:
         raise Exception("fname not provided to previewfont()")
     print(name_from_dir(fname))
@@ -652,7 +655,9 @@ def previewfont(font_name,fname = None,fname2 = None,fname3 = None,fname4 = None
     fg_color2 = (159,255,163)
     os.chdir(orig_dir)
     os.chdir("preview")
-    print(0.1)
+    font_name = font_name if font_name else shortName(ttLib.TTFont(fname)) if shortName(ttLib.TTFont(fname)) else "font"
+    
+    print(0.1, " - ", font_name)
     #print(fdir)
     #print(os.path.join(os.getcwd(), fdir))
     header = fb = FontBanner(fname, 'landscape')
