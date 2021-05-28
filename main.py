@@ -47,7 +47,18 @@ def member_join(update, context):
 def preview_command(update,context):
     clearcache()
     if update.message.reply_to_message:
-        msg = bot.send_message(update.message.chat_id, "Gimme a minute")
+        #msg = bot.send_message(update.message.chat_id, "Gimme a minute")
+        keyboard = [
+        [
+            InlineKeyboardButton("OMF (Recommended)", callback_data='OMF'),
+            InlineKeyboardButton("MFFM", callback_data='MFFM'),
+        ]
+        ]
+        
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        context.user_data["file_request"] = update.message.reply_to_message
+        context.user_data["preview_message"] = update.message
+        
         preview(update,context,update.message.reply_to_message)
         bot.deleteMessage(update.message.chat_id, msg.message_id)
         #bot.send_message(update.message.chat_id, "Ignore any missing glyphs or broken characters.\nThose will be replaced by Roboto font when flashing the module...")
@@ -123,16 +134,15 @@ def handle_message(update,context):
     
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
-    update.message.reply_text("An Error Occured...")
     error = str(context.error).lower()
     #print(error, error == "broken file")
     if error == "timed out":
-        update.message.reply_text("Request Timed Out. Pls try again...")
+        bot.send_message(magifonts_id,"Request Timed Out. Pls try again...")
         return
     if error == "broken file":
-        update.message.reply_text("File is broken LoL xD.\nSorry, I feel sad for you...")
+        bot.send_message(magifonts_id,"File is broken LoL xD.\nSorry, I feel sad for you...")
         return
-    update.message.reply_text("An Error Occured...")
+    bot.send_message(magifonts_id,"An Error Occured...")
        
         
     
@@ -155,7 +165,7 @@ def main():
     dispatcher.add_handler(CommandHandler("module",module_command))
     dispatcher.add_handler(CommandHandler("ffiles",ffiles_command))
     dispatcher.add_handler(CommandHandler("delete",delete_command))
-    dispatcher.add_handler(CallbackQueryHandler(button, pattern="^OMF||MFFM$"))
+    dispatcher.add_handler(CallbackQueryHandler(button, pattern="^OMF||MFFM||advanced_module||cancel_module$"))
     dispatcher.add_handler(CommandHandler("faketrigger",member_join))
     
     dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
@@ -163,7 +173,27 @@ def main():
     dispatcher.add_error_handler(error)
     add_group_handle = MessageHandler(Filters.status_update.new_chat_members, member_join)
     dispatcher.add_handler(add_group_handle)
+    
+    adv_handler = ConversationHandler(
+        entry_points=[CommandHandler("advanced",advanced_main)],
+        states={
+            TEMPLATE: [CallbackQueryHandler(template, pattern='^template$')],
+            METRICS: [CallbackQueryHandler(metrics, pattern='^metrics$')],
+            ASCENT: [CallbackQueryHandler(ascent, pattern='^ascent_advanced$')],
+            DESCENT: [CallbackQueryHandler(descent, pattern='^descent_advanced$')],
+            LINEGAP: [CallbackQueryHandler(linegap, pattern='^linegap_advanced$')],
+            EM: [CallbackQueryHandler(em, pattern='^em_advanced$')],
+            ASCENT_R: [MessageHandler(Filters.text, ascent_received)],
+            DESCENT_R: [MessageHandler(Filters.text, descent_received)],
+            LINEGAP_R: [MessageHandler(Filters.text, linegap_received)],
+            EM_R: [MessageHandler(Filters.text, em_received)],
+        },
+        fallbacks=[CallbackQueryHandler(button, pattern='^cancel_advanced$')],
+    )
 
+    # Add ConversationHandler to dispatcher that will be used for handling updates
+    #dispatcher.add_handler(adv_handler)
+    
     # Start the Bot
     updater.start_polling(drop_pending_updates=True)
 
@@ -228,11 +258,11 @@ def module_command(update,context):
         
         keyboard = [
         [
-           InlineKeyboardButton("OMF (Recommended)", callback_data='OMF'),
-           InlineKeyboardButton("MFFM", callback_data='MFFM'),
+            InlineKeyboardButton("OMF (Recommended)", callback_data='OMF'),
+            InlineKeyboardButton("MFFM", callback_data='MFFM'),
         ],
-
-        #[InlineKeyboardButton("Option 3", callback_data='3')],
+        #[InlineKeyboardButton("Advanced", callback_data='advanced')],
+        [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
         ]
         
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -252,12 +282,40 @@ def module_command(update,context):
     else:
         update.message.reply_text("Reply to a font file/zip bro.")
         
+TEMPLATE, METRICS, ASCENT, DESCENT, LINEGAP, EM, ASCENT_R, DESCENT_R, LINEGAP_R, EM_R = range(10)
     
+def ascent_received(update, context):
+    print("ascent_r")
+    bot.delete_message(update.message.chat_id, update.message.message_id)
+    context.user_data["advanced"]["metrics_msg"].edit_message_text("Ascent has been saved too: ", update.message.text)
+    return METRICS
+
+def descent_received(update, context):
+    print("descent_r")
+    bot.delete_message(update.message.chat_id, update.message.message_id)
+    context.user_data["advanced"]["metrics_msg"].edit_message_text("Descent has been saved too: ", update.message.text)
+    return METRICS
+
+def linegap_received(update, context):
+    print("linegap_r")
+    bot.delete_message(update.message.chat_id, update.message.message_id)
+    context.user_data["advanced"]["metrics_msg"].edit_message_text("LineGap has been saved too: ", update.message.text)
+    return METRICS
+
+def em_received(update, context):
+    print("em_r")
+    bot.delete_message(update.message.chat_id, update.message.message_id)
+    context.user_data["advanced"]["metrics_msg"].edit_message_text("UPM has been saved too: ", update.message.text)
+    return METRICS
+
+
 def button(update, context):
-    
+    query = update.callback_query
     #print("a\n",update.callback_query.message.reply_to_message.from_user,"\n\n")
     #print("b\n",update.effective_user)
-    def proceed():
+    
+    
+    def module():
         query = update.callback_query
         query.answer()
     
@@ -284,13 +342,71 @@ def button(update, context):
         
         bot.deleteMessage(query.message.chat_id, query.message.message_id)
         bot.deleteMessage(usermsg.chat_id, usermsg.message_id)
+            
+            
+        
+        def compile_advanced():
+            print("i gotta compile ig")
+        
+        if query.data == "template":
+            template()
+        if query.data == "advanced":
+            main()
+        if query.data == "metrics":
+            metrics()
+        if query.data == "MFFM_advanced":
+            context.user_data["advanced"]["template"] = "MFFM"
+            metrics()
+        if query.data == "OMF_advanced":
+            context.user_data["advanced"]["template"] = "OMF"
+            metrics()
+        if query.data == "ascent_advanced":
+            ascent()
+        if query.data == "descent_advanced":
+            descent()
+        if query.data == "linegap_advanced":
+            linegap()
+        if query.data == "em_advanced":
+            em()
+        
+        if "advanced" in context.user_data:
+            print(context.user_data["advanced"])
+        #if query.data == "metrics":
+        #    metrics()
+    
+    def cancel():
+        query.answer()
+        query.edit_message_text(text="Request Cancelled...")
+        return
+    
+    def proceed():
+        if query.data == "OMF" or query.data == "MFFM":
+            module()
+        if query.data == "advanced_module":
+            advanced()
+        if query.data == "cancel_module":
+            cancel()
+        if query.data in ("template", "metrics","advanced","MFFM_advanced","OMF_advanced","ascent_advanced","descent_advanced","linegap_advanced","em_advanced"):
+            query.answer()
+            advanced()
+        return
+    
+    userMessage = None
     if update.callback_query.message.reply_to_message:
         if update.callback_query.message.reply_to_message.from_user.username == update.effective_user.username:
+            userMessage = update.callback_query.message.reply_to_message
             proceed()
         else:
             return
     else:
         proceed()
+    
+    return
+    
+
+    
+    
+    
 
 tfonts = ["Regular.ttf"]
 
@@ -303,6 +419,120 @@ tfontsi = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","L
 tfontsall = ["Regular.ttf","Light.ttf","Thin.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]
 
 #os.chdir("C:/Users/rsran/Downloads/akshit ka fonts")
+
+def advanced(update,context):
+    print("advanced: ",query.data)
+    keyboard = [
+    [InlineKeyboardButton("Advanced", callback_data='advanced')],
+    [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    context.user_data["file_request"] = update.message.reply_to_message
+    context.user_data["module_message"] = update.message
+    update.message.reply_text('What Type of Module?', reply_markup=reply_markup)
+
+query = None
+def advanced_main(update,context):
+    query = update.callback_query
+    print("advanced_main")
+    context.user_data["advanced"] = {}
+    keyboard = [
+    [
+        InlineKeyboardButton("Template", callback_data='template'),
+        InlineKeyboardButton("Metrics", callback_data='metrics'),
+    ],
+    [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('Choose Template: ', reply_markup=reply_markup)
+def template(update,context):
+    query = update.callback_query
+    print("template")
+    keyboard = [
+    [
+        InlineKeyboardButton("OMF", callback_data='OMF_advanced'),
+        InlineKeyboardButton("MFFM", callback_data='MFFM_advanced'),
+    ],
+    [InlineKeyboardButton("Back", callback_data='advanced')],
+    [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text('Choose Template: ', reply_markup=reply_markup)
+    return METRICS
+def metrics(update,context):
+    query = update.callback_query
+    keyboard = [
+    [
+        InlineKeyboardButton("Ascent", callback_data='ascent_advanced'),
+        InlineKeyboardButton("Descent", callback_data='descent_advanced'),
+        InlineKeyboardButton("LineGap", callback_data='linegap_advanced'),
+        InlineKeyboardButton("unitsPerEm", callback_data='em_advanced')
+    ],
+    [InlineKeyboardButton("Back", callback_data='advanced')],
+    [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text('Choose Template: ', reply_markup=reply_markup)
+    print("metrics")
+    #compile_advanced()
+    return
+
+
+
+def ascent(update,context):
+    query = update.callback_query
+    keyboard = [
+    [InlineKeyboardButton("Back", callback_data='metrics')],
+    [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+    ]
+    print(context.user_data)
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text('Options: ', reply_markup=reply_markup)
+    context.user_data["advanced"]["metrics_msg"] = bot.send_message(query.message.chat_id, "Reply to this message by sending ascent in numbers.\nex. 1900"+(("\n@"+userMessage.from_user.username) if userMessage else ""), reply_markup=ForceReply(selective = True if userMessage else False))
+    return ASCENT_R
+
+def descent(update,context):
+    query = update.callback_query
+    keyboard = [
+    [InlineKeyboardButton("Back", callback_data='metrics')],
+    [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text('Options: ', reply_markup=reply_markup)
+    context.user_data["advanced"]["metrics_msg"] = bot.send_message(query.message.chat_id,"Reply to this message by sending descent in numbers.\nex. -500"+(("\n@"+userMessage.from_user.username) if userMessage else ""), reply_markup=ForceReply(selective = True if userMessage else False))
+    return DESCENT_R
+
+def linegap(update,context):
+    query = update.callback_query
+    keyboard = [
+    [InlineKeyboardButton("Back", callback_data='metrics')],
+    [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text('Options: ', reply_markup=reply_markup)
+    context.user_data["advanced"]["metrics_msg"] = bot.send_message(query.message.chat_id,"Reply to this message by sending linegap in numbers.\nex. 0"+(("\n@"+userMessage.from_user.username) if userMessage else ""), reply_markup=ForceReply(selective = True if userMessage else False))
+    return LINEGAP_R
+
+def em(update,context):
+    query = update.callback_query
+    keyboard = [
+    [InlineKeyboardButton("Back", callback_data='metrics')],
+    [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+    ]
+    
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    query.edit_message_text('Options: ', reply_markup=reply_markup)
+    context.user_data["advanced"]["metrics_msg"] = bot.send_message(query.message.chat_id,"Reply to this message by sending unitsPerEm in numbers.\nex. 2048"+(("\n@"+userMessage.from_user.username) if userMessage else ""), reply_markup=ForceReply(selective = True if userMessage else False))
+    return EM_R
+
+
+
 def modulify(template_type, templatedir, fontdir, zipname = None, fonts = ["Regular.ttf"]):
     print("modulify me hu")
     if not zipname:
@@ -408,7 +638,7 @@ def ffiles_command(update,context):
     else:
         update.message.reply_text("Reply to a .zip file sar...")
 def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fontsr = tfontsr, fontsb = tfontsb, fontsi = tfontsi, fontsall = tfontsall, single_file = tfonts):
-    #flist = origlist.copy()
+    #flist = .copy()
     if not zipname:
         zipname = remove_ext(doc.document.file_name).replace("[Magifonts]","")
     print(doc)
@@ -453,7 +683,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
         print("file unzipped: ",remove_ext(doc.document.file_name))
         ffiles = find("*.ttf",remove_ext(doc.document.file_name))
         print(0)
-        origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
+        origflist = deforigflist( keys.omf_all if template_type.lower() == "omf" else keys.mffm_all)
         flist = origflist.copy()
         if not ffiles:
             print("otf")
@@ -470,16 +700,27 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             flist[flist.index(["Regular",False])][1] = ffiles[0]
         else:
             print(1)
-            for i in range(len(ffiles)):
-                    for j in range(len(fontsall)):
-                        x = find_font(ffiles, remove_ext(fontsall[j]),remove_ext(doc.document.file_name))
+            for j in range(len(fontsall)):
+                print("filename..")
+                x = find_font(ffiles, remove_ext(fontsall[j]),remove_ext(doc.document.file_name))
+                if x:           
+                    if [remove_ext(name_from_dir(fontsall[j])),False] in flist:
+                        flist[flist.index([remove_ext(name_from_dir(fontsall[j])),False])][1] = x
+            print(flist)
+            for j in range(len(fontsall)):
+               
+                    if [remove_ext(name_from_dir(fontsall[j])),False] in flist:
+                        print("fallback")
+                        x = find_font(ffiles, remove_ext(fontsall[j]),remove_ext(doc.document.file_name), "fontname")
                         if x:
-                            #print(x,flist)
-                            if [remove_ext(fontsall[j]),False] in flist:
-                                flist[flist.index([remove_ext(fontsall[j]),False])][1] = x
-                                
-            for i in range(len(ffiles)):
-                for j in range(len(fontsall)):
+                            print("fallback: ",x, " for ", remove_ext(fontsall[j]))
+                            print("applied")
+                            flist[flist.index([remove_ext(name_from_dir(fontsall[j])),False])][1] = x
+            
+            
+            if not template_type.lower() == "omf":
+                for i in range(len(ffiles)):
+                #for j in range(len(fontsall)):
                     deffonts = definefonts(flist)
                     if not remove_ext(fontsall[j]) in deffonts:
                         
@@ -516,35 +757,44 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
         #os.chdir("../magiTemplate/system/fonts")
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
-origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
+origflist = []
+def get_key(dictioary, key):
+    for keys,values in dictionary.items():
+        if attr == keys:
+            return values
 
-def processfonts(fontslist):
-    print("Processing fonts...")
+def processfonts(fontslist, em = None, ascent = None, descent = None, linegap = None):
+    em = em if em else None
+    ascent = ascent if ascent else 1900
+    descent = descent if descent else -500
+    linegap = linegap if linegap else 0
     fonts = []
     defined = []
     for i in fontslist:
-        if i[1]:
+        if i[1] and i[1] not in defined:
             defined.append(i[1])
+    print("Processing fonts...\n", defined,"\n\n")
+
+    
     fonts = fontslist#[find_font(defined, "Regular"), find_font(defined, "Italic")]
-    for i in range(len(fonts)):
-        if fonts[i][1]:
-            tt = ttLib.TTFont(fonts[i][1])
+    for i in range(len(defined)):
+        if defined[i]:
+            tt = ttLib.TTFont(defined[i])
             #if tt["head"].unitsPerEm >= 2040:
             #    tt["hhea"].ascent = 1800
             #else:
             #    tt["hhea"].ascent = 900
+            tt["head"].unitsPerEm = em if em else tt["head"].unitsPerEm
+            tt["hhea"].ascent = int((ascent*tt["head"].unitsPerEm)/2048)
+            tt["OS/2"].sTypoAscender = int((ascent*tt["head"].unitsPerEm)/2048)
             
-            tt["hhea"].ascent = int((1900*tt["head"].unitsPerEm)/2048)
-            tt["OS/2"].sTypoAscender = int((1900*tt["head"].unitsPerEm)/2048)
-            
-            tt["hhea"].lineGap = 0
-            tt["OS/2"].sTypoLineGap = 0
-            
-            tt["hhea"].descent = int((-500*tt["head"].unitsPerEm)/2048)
-            tt["OS/2"].sTypoDescender = int((-500*tt["head"].unitsPerEm)/2048)
+            tt["hhea"].lineGap = linegap
+            tt["OS/2"].sTypoLineGap = linegap
+            tt["hhea"].descent = int((descent*tt["head"].unitsPerEm)/2048)
+            tt["OS/2"].sTypoDescender = int((descent*tt["head"].unitsPerEm)/2048)
             #tt.saveXML("lesse")
-            print("fixed: ", name_from_dir(fonts[i][1]))
-            tt.save(fonts[i][1])
+            print("fixed: ", name_from_dir(defined[i]), tt["hhea"].ascent, tt["hhea"].descent, tt["hhea"].lineGap, tt["head"].unitsPerEm)
+            tt.save(defined[i])
             
 def paste_to_template(flist,src,dst):
     os.chdir(orig_dir)
@@ -655,7 +905,7 @@ def previewfont(font_name,fname = None,fname2 = None,fname3 = None,fname4 = None
     fg_color2 = (159,255,163)
     os.chdir(orig_dir)
     os.chdir("preview")
-    font_name = font_name if font_name else shortName(ttLib.TTFont(fname)) if shortName(ttLib.TTFont(fname)) else "font"
+    font_name = font_name if font_name else shortName(ttLib.TTFont(fname))[1] if shortName(ttLib.TTFont(fname))[1] else "font"
     
     print(0.1, " - ", font_name)
     #print(fdir)
@@ -703,8 +953,14 @@ def previewfont(font_name,fname = None,fname2 = None,fname3 = None,fname4 = None
     fw.save('preview.png')
     return "preview.png"
     
+def deforigflist(all_fonts):
+    arr = []
+    for i in all_fonts:
+        arr.append([remove_ext(i), False])
+    return arr
+
 def clearcache():
-    origflist = [["Regular",False],["Light",False],["Thin",False],["Bold",False],["Black",False],["Medium",False],["BoldItalic",False],["MediumItalic",False],["Italic",False],["BlackItalic",False],["LightItalic",False],["ThinItalic",False]]
+    origflist = deforigflist(keys.omf_all)
     os.chdir(orig_dir)
     wipefiles("todo")
     wipefiles("magiFont")
@@ -776,18 +1032,21 @@ def find(pattern, path):
 def regularfinder(x,filename):
     if(("regular" in x.lower() or "mffm" in x.lower())):
         return True
-    if not ("italic" in x.lower() or "black" in x.lower() or "bold" in x.lower() or "medium" in x.lower() or  "thin" in x.lower() or "light" in x.lower() or "condensed" in x.lower()):
+    if not ("italic" in x.lower() or "black" in x.lower()  or "sembd" in x.lower() or "bold" in x.lower() or "medium" in x.lower() or  "thin" in x.lower() or "light" in x.lower() or "condensed" in x.lower()):
         return True
     return False
 
-def find_font(name, font, filename = ""):
+def find_font(name, font, filename = "", method = "filename"):
     #filename="hulu`124827@@#"
     allfonts = []
-    if os.path.exists(list(name)[0]):
+    if os.path.exists(list(name)[0]) and not method == "filename":
+        
         for i in range(0,len(name)):
-            allfonts.append(shortName(ttLib.TTFont(name[i])))
+            allfonts.append(shortName(ttLib.TTFont(name[i]))[0])
+        print("method filename", font)
     else:
-        allfonts = list(name).copy()
+        allfonts = list(map(lambda x : remove_ext(name_from_dir(x)),name)).copy()
+        print("allfonts\n",allfonts if font=="Regular" else font,"\n")
     a = []
     
     if len(allfonts)== 1:
@@ -802,17 +1061,23 @@ def find_font(name, font, filename = ""):
         a = list(filter(lambda x : (("blck" in x.lower()) or ("black" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
 
     if font == "Medium":
+        print("medium",  allfonts)
         a = list(filter(lambda x : (("-med" in x.lower()) or ("medium" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
 
     if font == "Light":
-        a = list(filter(lambda x : (("-l" in x.lower()) or ("light" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
+        a = list(filter(lambda x : (("-l" in x.lower()) or ("light" in x.lower())) and not ("extra" in x.lower() or "bold" in x.lower() or "italic" in x.lower()),allfonts))
 
-    if font == "Thin":
-        a = list(filter(lambda x : (("thin" in x.lower()) or ("-th" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
+    if font == "ExtraLight":
+        a = list(filter(lambda x : (("extralight" in x.lower()) or ("extra light" in x.lower()) or "exlight" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower() or "thin" in x.lower()),allfonts))
 
     if font == "Bold":
-        a = list(filter(lambda x : (("bold" in x.lower()) or ("-b" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower() or "italic" in x.lower()),allfonts))
-
+        a = list(filter(lambda x : (("bold" in x.lower()) or ("-b" in x.lower())) and not ("semi" in x.lower() or "black" in x.lower() or "light" in x.lower() or "thin" in x.lower() or "italic" in x.lower()),allfonts))
+    
+    if font == "SemiBold":
+        print("semiBold",  allfonts)
+        a = list(filter(lambda x : (("semibold" in x.lower()) or ("semi bold" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower() or "italic" in x.lower()),allfonts))
+        print(a)
+        
     if font == "BoldItalic":
         a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
 
@@ -828,12 +1093,13 @@ def find_font(name, font, filename = ""):
     if font == "BlackItalic":
         a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
 
-    if font == "ThinItalic":
-        a = list(filter(lambda x : ("thin" in x.lower() and "italic" in x.lower()) , allfonts))
+    if font == "SemiBoldItalic":
+        a = list(filter(lambda x : ((("semibold" in x.lower()) or ("semi bold" in x.lower())) and "italics" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
     
     if len(a) > 0:
+        print(a)
         return name[allfonts.index(a[0])]
-        
+    print("lmao")
 
 FONT_SPECIFIER_NAME_ID = 4
 FONT_SPECIFIER_FAMILY_ID = 1
@@ -851,7 +1117,7 @@ def shortName( font ):
         elif record.nameID == FONT_SPECIFIER_FAMILY_ID and not family: 
             family = name_str
         if name and family: break
-    return name
+    return (name,family)
 
 
 def name_from_dir(x):
