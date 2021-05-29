@@ -47,17 +47,17 @@ def member_join(update, context):
 def preview_command(update,context):
     clearcache()
     if update.message.reply_to_message:
-        #msg = bot.send_message(update.message.chat_id, "Gimme a minute")
-        keyboard = [
-        [
-            InlineKeyboardButton("OMF (Recommended)", callback_data='OMF'),
-            InlineKeyboardButton("MFFM", callback_data='MFFM'),
-        ]
-        ]
+        msg = bot.send_message(update.message.chat_id, "Gimme a minute")
+        #keyboard = [
+        #[
+        #    InlineKeyboardButton("OMF (Recommended)", callback_data='OMF'),
+        #    InlineKeyboardButton("MFFM", callback_data='MFFM'),
+        #]
+        #]
         
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        context.user_data["file_request"] = update.message.reply_to_message
-        context.user_data["preview_message"] = update.message
+        #reply_markup = InlineKeyboardMarkup(keyboard)
+        #context.user_data["file_request"] = update.message.reply_to_message
+        #context.user_data["preview_message"] = update.message
         
         preview(update,context,update.message.reply_to_message)
         bot.deleteMessage(update.message.chat_id, msg.message_id)
