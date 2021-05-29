@@ -1090,7 +1090,7 @@ def find_font(name, font, filename = "", method = "filename"):
     if font == "LightItalic":
         a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
 
-    if font == "ExtraLight":
+    if font == "ExtraLightItalic":
         a = list(filter(lambda x : ((("extralight" in x.lower()) or ("extra light" in x.lower()) or "exlight" in x.lower()) and "italic" in x.lower()) and not ("bold" in x.lower() or "thin" in x.lower()),allfonts))
 
 
@@ -1098,7 +1098,19 @@ def find_font(name, font, filename = "", method = "filename"):
         a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
 
     if font == "SemiBoldItalic":
-        a = list(filter(lambda x : ((("semibold" in x.lower()) or ("semi bold" in x.lower())) and "italics" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
+        a = list(filter(lambda x : ((("semibold" in x.lower()) or ("semi bold" in x.lower())) and "italic" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
+    
+    if font == "Thin":
+        a = list(filter(lambda x : ((("thin" in x.lower()))) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "italic" in x.lower()),allfonts))
+    
+    if font == "ThinItalic":
+        a = list(filter(lambda x : ((("thin" in x.lower()) and "italic" in x.lower()) or ("thini" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower()),allfonts))
+    
+    if font == "ExtraBold":
+        a = list(filter(lambda x : ((("bold" in x.lower()) and "extra" in x.lower()) or ("exbold" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "italic" in x.lower()),allfonts))
+    
+    if font == "ExtraBoldItalic":
+        a = list(filter(lambda x : ((("bold" in x.lower()) and "extra" in x.lower()) and ("italic" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
     
     if len(a) > 0:
         print(a)
