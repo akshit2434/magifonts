@@ -38,10 +38,10 @@ mffm_all = ["Regular.ttf","Light.ttf","Thin.ttf","Medium.ttf","Black.ttf","Bold.
 #OMF
 omf_single = ["Regular.ttf"]
 
-omf_r = ["Regular.ttf","Light.ttf","Thin.ttf"]
+omf_r = ["Regular.ttf","Light.ttf","ExtraLight.ttf", "Thin.ttf"]
 
-omf_b = [ "Medium.ttf","Black.ttf","Bold.ttf"]
+omf_b = [ "SemiBold.ttf","Medium.ttf","Black.ttf","Bold.ttf","ExtraBold.ttf"]
 
-omf_i = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]#todof= file...
+omf_i = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf", "ExtraLightItalic.ttf", "SemiBoldItalic.ttf", "ThinItalic.ttf","ExtraBoldItalic.ttf"]#todof= file...
 
-omf_all = ["Regular.ttf","Light.ttf","Thin.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ThinItalic.ttf"]
+omf_all = ["Regular.ttf","Light.ttf","ExtraLight.ttf","SemiBold.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","ExtraLightItalic.ttf","ThinItalic.ttf","Thin.ttf", "SemiBoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ExtraBold.ttf","ExtraBoldItalic.ttf"]
