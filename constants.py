@@ -45,3 +45,6 @@ omf_b = [ "SemiBold.ttf","Medium.ttf","Black.ttf","Bold.ttf","ExtraBold.ttf"]
 omf_i = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf", "ExtraLightItalic.ttf", "SemiBoldItalic.ttf", "ThinItalic.ttf","ExtraBoldItalic.ttf"]#todof= file...
 
 omf_all = ["Regular.ttf","Light.ttf","ExtraLight.ttf","SemiBold.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","ExtraLightItalic.ttf","ThinItalic.ttf","Thin.ttf", "SemiBoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ExtraBold.ttf","ExtraBoldItalic.ttf"]
+
+
+font_styles = ["thin", "condensed", "bold", "light", "italic", "medium", "semi", "extra", "black", "regular"]
