@@ -1029,15 +1029,16 @@ def find(pattern, path):
                 #print(result)
     return list(map(lambda x : str(x).replace("\\","/"),result))
 
-def regularfinder(x,filename):
+def regularfinder(x,filename = "```///2l"):
     if(("regular" in x.lower() or "mffm" in x.lower())):
         return True
-    if not ("italic" in x.lower() or "black" in x.lower()  or "sembd" in x.lower() or "bold" in x.lower() or "medium" in x.lower() or  "thin" in x.lower() or "light" in x.lower() or "condensed" in x.lower()):
+    if not ("italic" in x.lower() or "black" in x.lower()  or "sembd" in x.lower() or "bold" in x.lower() or "medium" in x.lower() or  "thin" in x.lower() or "light" in x.lower() or "condensed" in x.lower()) and  filename.lower() in x.lower().split(' ')[0].split('-')[0]:
         return True
     return False
 
-def find_font(name, font, filename = "", method = "filename"):
+def find_font(name, font, filename = "``/`/...~", method = "filename"):
     #filename="hulu`124827@@#"
+    a = []
     print("\n\n", font)
     allfonts = name.copy()
     #print(allfonts)
