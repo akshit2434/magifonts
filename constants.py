@@ -47,4 +47,4 @@ omf_i = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","Lig
 omf_all = ["Regular.ttf","Light.ttf","ExtraLight.ttf","SemiBold.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","ExtraLightItalic.ttf","ThinItalic.ttf","Thin.ttf", "SemiBoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ExtraBold.ttf","ExtraBoldItalic.ttf"]
 
 
-font_styles = ["thin", "condensed", "bold", "light", "italic", "medium", "semi", "extra", "black", "regular"]
+font_styles = ["thin", "condensed", "bold", "light", "italic", "medium", "semi", "extra", "black", "regular", "ultra", "book"]
