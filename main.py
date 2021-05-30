@@ -702,11 +702,11 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             print(1)
             for j in range(len(fontsall)):
                 print("filename..")
-                x = find_font(ffiles, remove_ext(fontsall[j]),remove_ext(doc.document.file_name))
+                x = find_font(ffiles, remove_ext(fontsall[j]),remove_ext(doc.document.file_name), "filename")
                 if x:           
                     if [remove_ext(name_from_dir(fontsall[j])),False] in flist:
                         flist[flist.index([remove_ext(name_from_dir(fontsall[j])),False])][1] = x
-            print(flist)
+            print("\n\n gonna fallback \n\n")
             for j in range(len(fontsall)):
                
                     if [remove_ext(name_from_dir(fontsall[j])),False] in flist:
@@ -1038,83 +1038,101 @@ def regularfinder(x,filename):
 
 def find_font(name, font, filename = "", method = "filename"):
     #filename="hulu`124827@@#"
-    allfonts = []
+    print("\n\n", font)
+    allfonts = name.copy()
+    #print(allfonts)
     if os.path.exists(list(name)[0]) and not method == "filename":
         
-        for i in range(0,len(name)):
-            allfonts.append(shortName(ttLib.TTFont(name[i]))[0])
+        allfonts = list(map(lambda x : shortName(ttLib.TTFont(x))[0], allfonts))
         print("method filename", font)
     else:
-        allfonts = list(map(lambda x : remove_ext(name_from_dir(x)),name)).copy()
+        allfonts = list(map(lambda x : remove_ext(name_from_dir(x)),allfonts)).copy()
         print("allfonts\n",allfonts if font=="Regular" else font,"\n")
     a = []
-    
+    origlistt = allfonts.copy()
     if len(allfonts)== 1:
-            return name[0]
-    if font == "Regular":
-        a = list(filter(lambda x : regularfinder(x,filename), allfonts))
-        if not len(a) > 0:
-            return name[0]
+        print("special case", allfonts, name[origlistt.index(allfonts[0])])
+        return name[origlistt.index(allfonts[0])]
+    
+    origlistt = allfonts.copy()
+    #if "condensed" not in font.lower():
+    #    allfonts = list(filter(lambda x : "condensed" not in x.lower(), allfonts))
+    
+    #Filters unnescesary fonts
+    for i in range(0,len(keys.font_styles)):
+        if keys.font_styles[i].lower() not in font.lower():
+            #print("removing",keys.font_styles[i].lower(), "for",font.lower())
+            allfonts = list(filter(lambda x : keys.font_styles[i].lower() not in x.lower(), allfonts))
+            
+            
+            
+    print(allfonts)
+    if True:
+        if font == "Regular":
+            a = list(filter(lambda x : regularfinder(x,filename), allfonts))
+            print("regular time...")
+            #if not len(a) > 0:
+            #    return name[0]
         
+            
+        if font == "Black":
+            a = list(filter(lambda x : (("blck" in x.lower()) or ("black" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
+    
+        if font == "Medium":
+            print("medium",  allfonts)
+            a = list(filter(lambda x : (("-med" in x.lower()) or ("medium" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
+    
+        if font == "Light":
+            a = list(filter(lambda x : (("-l" in x.lower()) or ("light" in x.lower())) and not ("extra" in x.lower() or "bold" in x.lower() or "italic" in x.lower()),allfonts))
+    
+        if font == "ExtraLight":
+            a = list(filter(lambda x : (("extralight" in x.lower()) or ("extra light" in x.lower()) or "exlight" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower() or "thin" in x.lower()),allfonts))
+    
+        if font == "Bold":
+            a = list(filter(lambda x : (("bold" in x.lower()) or ("-b" in x.lower())) and not ("semi" in x.lower() or "black" in x.lower() or "light" in x.lower() or "thin" in x.lower() or "italic" in x.lower()),allfonts))
         
-    if font == "Black":
-        a = list(filter(lambda x : (("blck" in x.lower()) or ("black" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-
-    if font == "Medium":
-        print("medium",  allfonts)
-        a = list(filter(lambda x : (("-med" in x.lower()) or ("medium" in x.lower())) and not ("bold" in x.lower() or "italic" in x.lower()),allfonts))
-
-    if font == "Light":
-        a = list(filter(lambda x : (("-l" in x.lower()) or ("light" in x.lower())) and not ("extra" in x.lower() or "bold" in x.lower() or "italic" in x.lower()),allfonts))
-
-    if font == "ExtraLight":
-        a = list(filter(lambda x : (("extralight" in x.lower()) or ("extra light" in x.lower()) or "exlight" in x.lower()) and not ("bold" in x.lower() or "italic" in x.lower() or "thin" in x.lower()),allfonts))
-
-    if font == "Bold":
-        a = list(filter(lambda x : (("bold" in x.lower()) or ("-b" in x.lower())) and not ("semi" in x.lower() or "black" in x.lower() or "light" in x.lower() or "thin" in x.lower() or "italic" in x.lower()),allfonts))
+        if font == "SemiBold":
+           # print("semiBold",  allfonts)
+            a = list(filter(lambda x : (("semibold" in x.lower()) or ("semi bold" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower() or "italic" in x.lower()),allfonts))
+            #print(a)
+            
+        if font == "BoldItalic":
+            a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
     
-    if font == "SemiBold":
-        print("semiBold",  allfonts)
-        a = list(filter(lambda x : (("semibold" in x.lower()) or ("semi bold" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower() or "italic" in x.lower()),allfonts))
-        print(a)
+        if font == "Italic":
+            a = list(filter(lambda x : (("italic" in x.lower()) or ("-i" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower() or "medium" in x.lower()),allfonts))
+    
+        if font == "MediumItalic":
+            a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
+    
+        if font == "LightItalic":
+            a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
+    
+        if font == "ExtraLightItalic":
+            a = list(filter(lambda x : ((("extralight" in x.lower()) or ("extra light" in x.lower()) or "exlight" in x.lower()) and "italic" in x.lower()) and not ("bold" in x.lower() or "thin" in x.lower()),allfonts))
+    
+    
+        if font == "BlackItalic":
+            a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
+    
+        if font == "SemiBoldItalic":
+            a = list(filter(lambda x : ((("semibold" in x.lower()) or ("semi bold" in x.lower())) and "italic" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
         
-    if font == "BoldItalic":
-        a = list(filter(lambda x : ("-bi" in x.lower()) or ("bold" in x.lower() and "italic" in x.lower()) or ("bolditalic" in x.lower()),allfonts))
-
-    if font == "Italic":
-        a = list(filter(lambda x : (("italic" in x.lower()) or ("-i" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "thin" in x.lower() or "medium" in x.lower()),allfonts))
-
-    if font == "MediumItalic":
-        a = list(filter(lambda x : ("mediumitalic" in x.lower()) or ("italic" in x.lower() and "medium" in x.lower()),allfonts))
-
-    if font == "LightItalic":
-        a = list(filter(lambda x : ("italic" in x.lower() and "light" in x.lower()) or ("lightitalic" in x.lower()),allfonts))
-
-    if font == "ExtraLightItalic":
-        a = list(filter(lambda x : ((("extralight" in x.lower()) or ("extra light" in x.lower()) or "exlight" in x.lower()) and "italic" in x.lower()) and not ("bold" in x.lower() or "thin" in x.lower()),allfonts))
-
-
-    if font == "BlackItalic":
-        a = list(filter(lambda x : ("black" in x.lower() and "italic" in x.lower()) or ("blackitalic" in x.lower()),allfonts))
-
-    if font == "SemiBoldItalic":
-        a = list(filter(lambda x : ((("semibold" in x.lower()) or ("semi bold" in x.lower())) and "italic" in x.lower()) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
-    
-    if font == "Thin":
-        a = list(filter(lambda x : ((("thin" in x.lower()))) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "italic" in x.lower()),allfonts))
-    
-    if font == "ThinItalic":
-        a = list(filter(lambda x : ((("thin" in x.lower()) and "italic" in x.lower()) or ("thini" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower()),allfonts))
-    
-    if font == "ExtraBold":
-        a = list(filter(lambda x : ((("bold" in x.lower()) and "extra" in x.lower()) or ("exbold" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "italic" in x.lower()),allfonts))
-    
-    if font == "ExtraBoldItalic":
-        a = list(filter(lambda x : ((("bold" in x.lower()) and "extra" in x.lower()) and ("italic" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
+        if font == "Thin":
+            a = list(filter(lambda x : ((("thin" in x.lower()))) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower() or "italic" in x.lower()),allfonts))
+        
+        if font == "ThinItalic":
+            a = list(filter(lambda x : ((("thin" in x.lower()) and "italic" in x.lower()) or ("thini" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "bold" in x.lower()),allfonts))
+        
+        if font == "ExtraBold":
+            a = list(filter(lambda x : ((("bold" in x.lower()) and "extra" in x.lower()) or ("exbold" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "italic" in x.lower()),allfonts))
+        
+        if font == "ExtraBoldItalic":
+            a = list(filter(lambda x : ((("bold" in x.lower()) and "extra" in x.lower()) and ("italic" in x.lower())) and not ("black" in x.lower() or "light" in x.lower() or "thin" in x.lower()),allfonts))
     
     if len(a) > 0:
-        print(a)
-        return name[allfonts.index(a[0])]
+        print(a,name[origlistt.index(a[0])], origlistt.index(a[0]))
+        return name[origlistt.index(a[0])]
     print("lmao")
 
 FONT_SPECIFIER_NAME_ID = 4
