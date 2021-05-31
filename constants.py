@@ -44,7 +44,9 @@ omf_b = [ "SemiBold.ttf","Medium.ttf","Black.ttf","Bold.ttf","ExtraBold.ttf"]
 
 omf_i = ["BlackItalic.ttf","BoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf", "ExtraLightItalic.ttf", "SemiBoldItalic.ttf", "ThinItalic.ttf","ExtraBoldItalic.ttf"]#todof= file...
 
-omf_all = ["Regular.ttf","Light.ttf","ExtraLight.ttf","SemiBold.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","ExtraLightItalic.ttf","ThinItalic.ttf","Thin.ttf", "SemiBoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ExtraBold.ttf","ExtraBoldItalic.ttf"]
+omf_condensed = ['Condensed-Regular.ttf', 'Condensed-Light.ttf', 'Condensed-ExtraLight.ttf', 'Condensed-SemiBold.ttf', 'Condensed-Medium.ttf', 'Condensed-Black.ttf', 'Condensed-Bold.ttf', 'Condensed-BlackItalic.ttf', 'Condensed-BoldItalic.ttf', 'Condensed-ExtraLightItalic.ttf', 'Condensed-ThinItalic.ttf', 'Condensed-Thin.ttf', 'Condensed-SemiBoldItalic.ttf', 'Condensed-MediumItalic.ttf', 'Condensed-Italic.ttf', 'Condensed-LightItalic.ttf', 'Condensed-ExtraBold.ttf', 'Condensed-ExtraBoldItalic.ttf']
+
+omf_all = ["Regular.ttf","Light.ttf","ExtraLight.ttf","SemiBold.ttf","Medium.ttf","Black.ttf","Bold.ttf","BlackItalic.ttf","BoldItalic.ttf","ExtraLightItalic.ttf","ThinItalic.ttf","Thin.ttf", "SemiBoldItalic.ttf","MediumItalic.ttf","Italic.ttf","LightItalic.ttf","ExtraBold.ttf","ExtraBoldItalic.ttf",'Condensed-Regular.ttf', 'Condensed-Light.ttf', 'Condensed-ExtraLight.ttf', 'Condensed-SemiBold.ttf', 'Condensed-Medium.ttf', 'Condensed-Black.ttf', 'Condensed-Bold.ttf', 'Condensed-BlackItalic.ttf', 'Condensed-BoldItalic.ttf', 'Condensed-ExtraLightItalic.ttf', 'Condensed-ThinItalic.ttf', 'Condensed-Thin.ttf', 'Condensed-SemiBoldItalic.ttf', 'Condensed-MediumItalic.ttf', 'Condensed-Italic.ttf', 'Condensed-LightItalic.ttf', 'Condensed-ExtraBold.ttf', 'Condensed-ExtraBoldItalic.ttf']
 
 
-font_styles = ["thin", "condensed", "bold", "light", "italic", "medium", "semi", "extra", "black", "regular", "ultra", "book"]
+font_styles = ["thin", "condensed", "bold", "light", "italic", "medium", "semi", "extra", "black", "regular", "book"]
