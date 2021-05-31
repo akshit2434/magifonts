@@ -1045,20 +1045,20 @@ def regularfinder(x,filename = "```///2l"):
 def find_font(name, font, filename = "``/`/...~", method = "filename"):
     #filename="hulu`124827@@#"
     a = []
-    print("\n\n", font)
+    print("\n", font)
     allfonts = name.copy()
     #print(allfonts)
     if os.path.exists(list(name)[0]) and not method == "filename":
         
         allfonts = list(map(lambda x : shortName(ttLib.TTFont(x))[0], allfonts))
-        print("method filename", font)
+        #print("method filename", font)
     else:
         allfonts = list(map(lambda x : remove_ext(name_from_dir(x)),allfonts)).copy()
-        print("allfonts\n",allfonts if font=="Regular" else font,"\n")
+        #print("allfonts\n",allfonts if font=="Regular" else font,"\n")
     a = []
     origlistt = allfonts.copy()
     if len(allfonts)== 1:
-        print("special case", allfonts, name[origlistt.index(allfonts[0])])
+        #print("special case", allfonts, name[origlistt.index(allfonts[0])])
         return name[origlistt.index(allfonts[0])]
     
     origlistt = allfonts.copy()
@@ -1067,14 +1067,16 @@ def find_font(name, font, filename = "``/`/...~", method = "filename"):
     
     #Filters unnescesary fonts
     for i in range(0,len(keys.font_styles)):
-        if keys.font_styles[i].lower() not in font.lower():
+        if keys.font_styles[i].lower() in font.lower():
             #print("removing",keys.font_styles[i].lower(), "for",font.lower())
+            allfonts = list(filter(lambda x : keys.font_styles[i].lower() in x.lower() and keys.font_styles[i].lower() in font.lower(), allfonts))
+        else:
             allfonts = list(filter(lambda x : keys.font_styles[i].lower() not in x.lower(), allfonts))
-            
+    
     if len(allfonts) == 1:
         a = allfonts.copy()
-            
-    print(allfonts)
+    #print("v2", allfonts, font)
+    #print(allfonts)
     if True:
         if font == "Regular":
             a = list(filter(lambda x : regularfinder(x,filename), allfonts))
