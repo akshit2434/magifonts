@@ -668,7 +668,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             os.chdir(orig_dir)
             os.chdir("magiFont")
             print("sending...")
-            bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses))
+            bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y %I:%M:%S %p %Z", time.gmtime()))
             bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
             if not str(doc.chat_id) == str(magifonts_id):
                 doc.reply_text("Your file has been posted in @magifonts_support")
