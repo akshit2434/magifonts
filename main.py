@@ -13,6 +13,7 @@ from py7zr import unpack_7zarchive
 from fontTools import ttLib
 import requests
 import re
+from time import *
 
 
 magifonts_id = keys.gid
@@ -135,7 +136,6 @@ def handle_message(update,context):
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
     error = str(context.error).lower()
-    #print(error, error == "broken file")
     if error == "timed out":
         bot.send_message(magifonts_id,"Request Timed Out. Pls try again...")
         return
@@ -232,14 +232,13 @@ def delete_command(update, context):
             for attr in context.args:
                 if attr in list(map(lambda x : name_from_dir(x), ffiles)):
                     os.remove(find(attr, "to_delete")[0])
-                    print(attr)
                 else:
                     to_del = capscheck(attr)
                     font = find_font(ffiles, to_del, remove_ext(doc.file_name))
-                    print("font: ",font, "   to_del: ",to_del)
+                    #print("font: ",font, "   to_del: ",to_del)
                     if font:
                         os.remove(font)
-                        print(font)
+                        #print(font)
                     else:
                         update.message.reply_text("Couldn't find that...")
                         return
@@ -254,31 +253,34 @@ def delete_command(update, context):
 
 def module_command(update,context):
     if update.message.reply_to_message:
-        #print("filename: ",context.args)
-        
-        keyboard = [
-        [
-            InlineKeyboardButton("OMF (Recommended)", callback_data='OMF'),
-            InlineKeyboardButton("MFFM", callback_data='MFFM'),
-        ],
-        #[InlineKeyboardButton("Advanced", callback_data='advanced')],
-        [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
-        ]
-        
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        context.user_data["file_request"] = update.message.reply_to_message
-        context.user_data["module_message"] = update.message
-        update.message.reply_text('What Type of Module?', reply_markup=reply_markup)
-        
-        msgarray = []
-        if "/module " in update.message.text:
-            msgarray = list(map(lambda x: x.replace('\"', ""), update.message.text.replace("/module ", "").split(" ")))
-        filename=None
-        #print("filename: ",msgarray)
-        if len(msgarray) >= 1:
-            filename = msgarray[0]
-        #ttfdownload(update,update.message.reply_to_message,filename)
-        #bot.delete_message(update.message.chat_id,msg.message_id)
+        if int(update.message.reply_to_message.document.file_size) <= 20000000:
+            #print("filename: ",context.args)
+            print(int(update.message.reply_to_message.document.file_size))
+            keyboard = [
+            [
+                InlineKeyboardButton("OMF (Recommended)", callback_data='OMF'),
+                InlineKeyboardButton("MFFM", callback_data='MFFM'),
+            ],
+            #[InlineKeyboardButton("Advanced", callback_data='advanced')],
+            [InlineKeyboardButton("Cancel", callback_data='cancel_module')]
+            ]
+            
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            context.user_data["file_request"] = update.message.reply_to_message
+            context.user_data["module_message"] = update.message
+            update.message.reply_text('What Type of Module?', reply_markup=reply_markup)
+            
+            msgarray = []
+            if "/module " in update.message.text:
+                msgarray = list(map(lambda x: x.replace('\"', ""), update.message.text.replace("/module ", "").split(" ")))
+            filename=None
+            #print("filename: ",msgarray)
+            if len(msgarray) >= 1:
+                filename = msgarray[0]
+            #ttfdownload(update,update.message.reply_to_message,filename)
+            #bot.delete_message(update.message.chat_id,msg.message_id)
+        else:
+            update.message.reply_text("File is too big sar...")
     else:
         update.message.reply_text("Reply to a font file/zip bro.")
         
@@ -693,7 +695,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             doc.reply_text("This zip has no .ttf or .otf file... :(")
             return
         
-        print("files: ",ffiles[0])
+        #print("files: ",ffiles[0])
         
         if len(ffiles) == 1:
             shutil.copyfile(ffiles[0], os.path.join("../",fontdir,"Regular.ttf"))
@@ -701,20 +703,20 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
         else:
             print(1)
             for j in range(len(fontsall)):
-                print("filename..")
+                #print("filename..")
                 x = find_font(ffiles, remove_ext(fontsall[j]),remove_ext(doc.document.file_name), "filename")
                 if x:           
                     if [remove_ext(name_from_dir(fontsall[j])),False] in flist:
                         flist[flist.index([remove_ext(name_from_dir(fontsall[j])),False])][1] = x
-            print("\n\n gonna fallback \n\n")
+            #print("\n\n gonna fallback \n\n")
             for j in range(len(fontsall)):
                
                     if [remove_ext(name_from_dir(fontsall[j])),False] in flist:
-                        print("fallback")
+                        #print("fallback")
                         x = find_font(ffiles, remove_ext(fontsall[j]),remove_ext(doc.document.file_name), "fontname")
                         if x:
-                            print("fallback: ",x, " for ", remove_ext(fontsall[j]))
-                            print("applied")
+                            #print("fallback: ",x, " for ", remove_ext(fontsall[j]))
+                            #print("applied")
                             flist[flist.index([remove_ext(name_from_dir(fontsall[j])),False])][1] = x
             
             
@@ -745,10 +747,13 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
 
         print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
         shutil.make_archive("magiFont/"+zipname+"[Magifonts]", "zip",templatedir)
-        bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses))
-        bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
-        if not (docmsg.chat_id == magifonts_id):
-            bot.send_message(docmsg.chat_id,"The file has been posted to @magifonts_support")
+        if os.stat('"magiFont/"+zipname+"[Magifonts]"+".zip"').st_size <= 20000000:
+            bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y %I:%M:%S %p %Z", time.gmtime()))
+            bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
+            if not (docmsg.chat_id == magifonts_id):
+                bot.send_message(docmsg.chat_id,"The file has been posted to @magifonts_support")
+        else:
+            bot.send_message(docmsg.chat_id,"The file is too big to send.\nTelegram has a limit of max 20mb for bots to send files...")
         os.chdir("../")
     else:                
         os.chdir("../")
@@ -758,10 +763,11 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
         #for i in range(0,len(tfontsr)):
         #    shutil.copyfile(src="../../../todo/"+fname , dst=tfontsr[i])
 origflist = []
-def get_key(dictioary, key):
+def get_key(dictioary, attr):
     for keys,values in dictionary.items():
         if attr == keys:
             return values
+    return False
 
 def processfonts(fontslist, em = None, ascent = None, descent = None, linegap = None):
     em = em if em else None
@@ -1065,7 +1071,8 @@ def find_font(name, font, filename = "``/`/...~", method = "filename"):
             #print("removing",keys.font_styles[i].lower(), "for",font.lower())
             allfonts = list(filter(lambda x : keys.font_styles[i].lower() not in x.lower(), allfonts))
             
-            
+    if len(allfonts) == 1:
+        a = allfonts.copy()
             
     print(allfonts)
     if True:
