@@ -668,7 +668,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             os.chdir(orig_dir)
             os.chdir("magiFont")
             print("sending...")
-            bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y %I:%M:%S %p %Z", gmtime()))
+            bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y", gmtime()))
             bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
             if not str(doc.chat_id) == str(magifonts_id):
                 doc.reply_text("Your file has been posted in @magifonts_support")
@@ -747,8 +747,8 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
 
         print("magiFont/"+remove_ext(doc.document.file_name)+".zip")
         shutil.make_archive("magiFont/"+zipname+"[Magifonts]", "zip",templatedir)
-        if os.stat('"magiFont/"+zipname+"[Magifonts]"+".zip"').st_size <= 20000000:
-            bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y %I:%M:%S %p %Z", gmtime()))
+        if os.stat("magiFont/"+zipname+"[Magifonts]"+".zip").st_size <= 20000000:
+            bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y", gmtime()))
             bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
             if not (docmsg.chat_id == magifonts_id):
                 bot.send_message(docmsg.chat_id,"The file has been posted to @magifonts_support")
