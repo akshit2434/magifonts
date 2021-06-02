@@ -783,9 +783,7 @@ def processfonts(fontslist, em = None, ascent = None, descent = None, linegap = 
     
     
     
-    if not em:
-        ascent = int((ascent*tt["head"].unitsPerEm)/2048)
-        descent = int((descent*tt["head"].unitsPerEm)/2048)
+    
     
     fonts = fontslist#[find_font(defined, "Regular"), find_font(defined, "Italic")]
     for i in range(len(defined)):
@@ -795,6 +793,9 @@ def processfonts(fontslist, em = None, ascent = None, descent = None, linegap = 
             #    tt["hhea"].ascent = 1800
             #else:
             #    tt["hhea"].ascent = 900
+            if not em:
+                ascent = int((ascent*tt["head"].unitsPerEm)/2048)
+                descent = int((descent*tt["head"].unitsPerEm)/2048)
             tt["hhea"].ascent = ascent
             tt["OS/2"].sTypoAscender = ascent
             tt["hhea"].descent = descent
