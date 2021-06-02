@@ -780,7 +780,12 @@ def processfonts(fontslist, em = None, ascent = None, descent = None, linegap = 
         if i[1] and i[1] not in defined:
             defined.append(i[1])
     print("Processing fonts...\n", defined,"\n\n")
-
+    
+    
+    
+    if not em:
+        ascent = int((ascent*tt["head"].unitsPerEm)/2048)
+        descent = int((descent*tt["head"].unitsPerEm)/2048)
     
     fonts = fontslist#[find_font(defined, "Regular"), find_font(defined, "Italic")]
     for i in range(len(defined)):
@@ -790,14 +795,37 @@ def processfonts(fontslist, em = None, ascent = None, descent = None, linegap = 
             #    tt["hhea"].ascent = 1800
             #else:
             #    tt["hhea"].ascent = 900
+            tt["hhea"].ascent = ascent
+            tt["OS/2"].sTypoAscender = ascent
+            tt["hhea"].descent = descent
+            tt["OS/2"].sTypoDescender = descent
+                
             tt["head"].unitsPerEm = em if em else tt["head"].unitsPerEm
-            tt["hhea"].ascent = int((ascent*tt["head"].unitsPerEm)/2048)
-            tt["OS/2"].sTypoAscender = int((ascent*tt["head"].unitsPerEm)/2048)
+            if em:
+                tt["hhea"].ascent = ascent
+                tt["OS/2"].sTypoAscender = ascent
+            else:
+                if int(tt["head"].unitsPerEm) == 2048:
+                    tt["hhea"].ascent = 1900
+                    tt["OS/2"].sTypoAscender = 1900
+                if int(tt["head"].unitsPerEm) == 1000:
+                    tt["hhea"].ascent = 900
+                    tt["OS/2"].sTypoAscender = 900
             
             tt["hhea"].lineGap = linegap
             tt["OS/2"].sTypoLineGap = linegap
-            tt["hhea"].descent = int((descent*tt["head"].unitsPerEm)/2048)
-            tt["OS/2"].sTypoDescender = int((descent*tt["head"].unitsPerEm)/2048)
+            
+            
+            if em:
+                tt["hhea"].descent = descent
+                tt["OS/2"].sTypoDescender = descent
+            else:
+                if int(tt["head"].unitsPerEm) == 2048:
+                    tt["hhea"].descent = -500
+                    tt["OS/2"].sTypoDescender = -500
+                if int(tt["head"].unitsPerEm) == 1000:
+                    tt["hhea"].descent = -270
+                    tt["OS/2"].sTypoDescender = -270
             #tt.saveXML("lesse")
             print("fixed: ", name_from_dir(defined[i]), tt["hhea"].ascent, tt["hhea"].descent, tt["hhea"].lineGap, tt["head"].unitsPerEm)
             tt.save(defined[i])
