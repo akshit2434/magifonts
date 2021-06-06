@@ -787,6 +787,10 @@ def processfonts(fontslist, em = None, ascent = None, descent = None, linegap = 
     
     fonts = fontslist#[find_font(defined, "Regular"), find_font(defined, "Italic")]
     for i in range(len(defined)):
+        em = em if em else None
+        ascent = ascent if ascent else 1900
+        descent = descent if descent else -500
+        linegap = linegap if linegap else 0
         if defined[i]:
             tt = ttLib.TTFont(defined[i])
             #if tt["head"].unitsPerEm >= 2040:
