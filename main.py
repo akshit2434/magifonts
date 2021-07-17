@@ -633,7 +633,7 @@ def extract_font(update,context):
                 #ffiles = list(map(lambda x : name_from_dir(x), ffiles))
                 for i in ffiles:
                     if ffiles:
-                        update.message.send_document(update.message.chat_id, open(i,"rb"), caption=shortName(ttLib.TTFont(i))[0])
+                        bot.send_document(update.message.chat_id, open(i,"rb"), caption=shortName(ttLib.TTFont(i))[0])
                         #ffiles_str += "\n"+i
                     else:
                         ffiles = i
