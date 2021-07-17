@@ -15,7 +15,7 @@ import requests
 import re
 from time import *
 
-
+member_count_alert = 1000
 magifonts_id = keys.gid
 font_ext = ("ttf", "otf")
 zip_ext= ("zip","7z","rar")
@@ -40,7 +40,7 @@ def member_join(update, context):
     
     for member in update.message.new_chat_members:
         member_count = int(bot.get_chat_members_count(update.message.chat_id))
-        if member_count%100 == 0:
+        if member_count%member_count_alert == 0:
             message = update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(member_count)+" members!")
             if not bot.pin_chat_message(update.message.chat_id, message.message_id):
                 update.message.reply_text("I can't even pin a message.. dang!")
@@ -167,6 +167,7 @@ def main():
     dispatcher.add_handler(CommandHandler("delete",delete_command))
     dispatcher.add_handler(CallbackQueryHandler(button, pattern="^OMF||MFFM||advanced_module||cancel_module$"))
     dispatcher.add_handler(CommandHandler("faketrigger",member_join))
+    dispatcher.add_handler(CommandHandler("extractfont",extract_font))
     
     dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
     
@@ -612,6 +613,38 @@ def remove_ext(filewext):
        strfile+=str(i)
     return strfile
 
+
+def extract_font(update,context):
+    if update.message.reply_to_message.document:
+        if update.message.reply_to_message.document.file_name.split(".")[-1] in zip_ext:
+            clearcache()
+            doc = update.message.reply_to_message
+            os.chdir(orig_dir)
+            os.chdir("ffiles")
+            doc.document.get_file().download(custom_path="ffiles."+doc.document.file_name.split(".")[-1].lower())
+            extract("ffiles."+doc.document.file_name.split(".")[-1].lower(), "fonts")
+            ffiles = find("*.ttf", "fonts")
+            if not ffiles:
+                ffiles = find("*.otf", "fonts")
+            if not ffiles:
+                update.message.reply_text("It has no Fonts in .ttf ot .otf format! xD")
+            else:
+                ffiles_str=""
+                #ffiles = list(map(lambda x : name_from_dir(x), ffiles))
+                for i in ffiles:
+                    if ffiles:
+                        update.message.send_document(update.message.chat_id, open(i,"rb"), caption=shortName(ttLib.TTFont(i))[0])
+                        #ffiles_str += "\n"+i
+                    else:
+                        ffiles = i
+                #update.message.reply_text(ffiles_str)
+        else:
+            update.message.reply_text("Reply to a .zip wen?")
+    else:
+        update.message.reply_text("Reply to a .zip file sar...")
+
+
+
 def ffiles_command(update,context):
     if update.message.reply_to_message.document:
         if update.message.reply_to_message.document.file_name.split(".")[-1] in zip_ext:
@@ -622,6 +655,8 @@ def ffiles_command(update,context):
             doc.document.get_file().download(custom_path="ffiles."+doc.document.file_name.split(".")[-1].lower())
             extract("ffiles."+doc.document.file_name.split(".")[-1].lower(), "fonts")
             ffiles = find("*.ttf", "fonts")
+            print(ffiles)
+            print(os.getcwd())
             if not ffiles:
                 ffiles = find("*.otf", "fonts")
             if not ffiles:
