@@ -137,12 +137,12 @@ def error(update,context):
     print(f"Update {update} caused error {context.error}")
     error = str(context.error).lower()
     if error == "timed out":
-        bot.send_message(magifonts_id,"Request Timed Out. Pls try again...")
+        bot.send_message(update.message.chat_id,"Request Timed Out. Pls try again...")
         return
     if error == "broken file":
-        bot.send_message(magifonts_id,"File is broken LoL xD.\nSorry, I feel sad for you...")
+        bot.send_message(update.message.chat_id,"File is broken LoL xD.\nSorry, I feel sad for you...")
         return
-    bot.send_message(magifonts_id,"An Error Occured...")
+    bot.send_message(update.message.chat_id,"An Error Occured...")
        
         
     
