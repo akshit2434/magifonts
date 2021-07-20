@@ -675,15 +675,15 @@ def ffiles_command(update,context):
     else:
         update.message.reply_text("Reply to a .zip file sar...")
 def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fontsr = tfontsr, fontsb = tfontsb, fontsi = tfontsi, fontsall = tfontsall, single_file = tfonts):
-    #flist = .copy()
+
     if not zipname:
         zipname = remove_ext(doc.document.file_name).replace("[Magifonts]","")
     print(doc)
-    #if not doc:
-    #    doc = docmsg
+
     os.chdir(orig_dir)
     clearcache()
-    print("ttf download requested by @"+docmsg.from_user.username)
+    print("ttf download requested by @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else print("ttf download requested by @"+docmsg.from_user.first_name)
+        
     
     if doc.document.file_name.split(".")[-1].lower() in font_ext:
         print(os.getcwd())
