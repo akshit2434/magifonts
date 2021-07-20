@@ -682,7 +682,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
 
     os.chdir(orig_dir)
     clearcache()
-    print("ttf download requested by @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else print("ttf download requested by @"+docmsg.from_user.first_name)
+    print("ttf download requested by @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else print("ttf download requested by @"+docmsg.from_user)
         
     
     if doc.document.file_name.split(".")[-1].lower() in font_ext:
@@ -704,7 +704,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             os.chdir("magiFont")
             print("sending...")
             bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y", gmtime()))
-            bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
+            bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else bot.send_message(magifonts_id,"Here you go!")
             if not str(doc.chat_id) == str(magifonts_id):
                 doc.reply_text("Your file has been posted in @magifonts_support")
                 doc.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
@@ -784,7 +784,8 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
         shutil.make_archive("magiFont/"+zipname+"[Magifonts]", "zip",templatedir)
         if os.stat("magiFont/"+zipname+"[Magifonts]"+".zip").st_size <= 20000000:
             bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y", gmtime()))
-            bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
+            bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else bot.send_message(magifonts_id,"Here you go!")
+
             if not (docmsg.chat_id == magifonts_id):
                 bot.send_message(docmsg.chat_id,"The file has been posted to @magifonts_support")
         else:
