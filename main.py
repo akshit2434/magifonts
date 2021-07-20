@@ -682,7 +682,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
 
     os.chdir(orig_dir)
     clearcache()
-    print("ttf download requested by @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else print("ttf download requested by @"+docmsg.from_user.first_name)
+    print("ttf download requested by @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else print("ttf download requested")
         
     
     if doc.document.file_name.split(".")[-1].lower() in font_ext:
