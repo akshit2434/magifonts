@@ -3,7 +3,7 @@
 
 set -xv
 
-[ -d ${MAGISKTMP:=$(magisk --path)/.magisk} ] && ORIDIR=$MAGISKTMP/mirror
+[ -d ${MAGISKTMP:=`magisk --path`/.magisk} ] && ORIDIR=$MAGISKTMP/mirror
 [ -d ${ORIPRD:=$ORIDIR/product} ] || ORIPRD=$ORIDIR/system/product
 ORIPRDFONT=$ORIPRD/fonts
 ORIPRDETC=$ORIPRD/etc
@@ -44,6 +44,15 @@ FB=fallback
 ver() { sed -i "/^version=/s|$|-$1|" $MODPROP; }
 
 xml() { sed -i "$1" ${XML:=$SYSXML}; }
+
+src() {
+    local l=`find $OMFDIR -maxdepth 1 -type f -name '*.sh' -exec basename {} \; | sort` i
+    [ "$1" = 0 ] && l=`echo "$l" | grep '^0'` || l=`echo "$l" | grep '^[^0]'`
+    for i in $l; do
+        ui_print "+ Source $i"
+        . $OMFDIR/$i
+    done
+}
 
 cpf() {
     [ $# -eq 0 ] && return 1; local i
@@ -151,7 +160,8 @@ lnf(){
 up() { echo $@ | tr [:lower:] [:upper:]; }
 
 install_font() {
-    mono
+    $MONO && mono
+    $SANS || abort
     cpf $SS && {
         local i j=4 k=4
         for i in m sb b eb bl; do
@@ -177,6 +187,7 @@ install_font() {
     [ -f $FONTS/$It$X ] || ln -s $Re$X $FONTS/$It$X
     [ -f $FONTS/$Cn$Re$X ] || ln -s $Re$X $FONTS/$Cn$Re$X
     [ -f $FONTS/$Cn$It$X ] || ln -s $Cn$Re$X $FONTS/$Cn$It$X
+    mksty; mksty $SC
     set $Th t $ELi el $Li l $Me m $SBo sb $Bo b $EBo eb $Bl bl
     while [ $2 ]; do
         cp -P $FONTS/$1$X $SYSFONT && font $SA $1$X $2
@@ -196,9 +207,6 @@ install_font() {
 mono () {
     cpf Mono.ttf && font $MO Mono.ttf r && return
     MS=`valof MS` MSI=`valof MSI`; cpf $MS || return
-    for i in $FW; do i=`up $i`
-        eval $(echo M$i=\"`valof M$i`\")
-    done
     local i j=4 k=4
     for i in m sb b eb bl; do
         eval $(echo "[ \"\$M`up $i`\" ] && j=$((j+1)) || break")
@@ -229,7 +237,9 @@ rom() {
     # Pixel
     readonly Gs=GoogleSans
     [ -f $ORIPRDFONT/$Gs-$Re.ttf ] && cp $ORIPRDXML $PRDXML && {
-        PXL=true; ver pxl; local XML=$PRDXML fa=google-sans.*
+        PXL=true; ver pxl
+        [ ${GS:=`valof GS`} ]; ${GS:=false} && return
+        local XML=$PRDXML fa=google-sans.* i
         [ $SS ] && {
             ln -s /system/fonts/$SS $PRDFONT
             ln -s /system/fonts/$SSI $PRDFONT
@@ -239,7 +249,6 @@ rom() {
             done
             return
         }
-        GS=`valof GS`; [ $API -ge 31 ] && ${GS:=true} && return
         for i in $Bo$It $Bo $SBo$It $SBo $Me$It $Me $Re $It; do
             ln -s /system/fonts/$i$X $PRDFONT
         done
@@ -266,19 +275,7 @@ rom() {
     grep -q MIUI $ORISYSXML && {
         MIUI=true
         [ -f $ORISYSFONT/MiLanProVF.ttf ] && {
-            MIUI=milan; ver milan
-            [ $SS ] && ln -s $SS $SYSFONT/MiLanProVF.ttf && return
-            font mipro $Re$X r             ; font mipro $Me$X b
-            font mipro-thin $Th$X r        ; font mipro-thin $ELi$X b
-            font mipro-extralight $ELi$X r ; font mipro-extralight $Li$X b
-            font mipro-light $Li$X r       ; font mipro-light $Li$X b
-            font mipro-normal $Li$X r      ; font mipro-normal $Re$X b
-            font mipro-regular $Re$X r     ; font mipro-regular $Me$X b
-            font mipro-medium $Me$X r      ; font mipro-medium $SBo$X b
-            font mipro-demibold $SBo$X r   ; font mipro-demibold $SBo$X b
-            font mipro-semibold $SBo$X r   ; font mipro-semibold $Bo$X b
-            font mipro-bold $Bo$X r        ; font mipro-bold $EBo$X b
-            font mipro-heavy $Bl$X r       ; return
+            MIUI=milan; ver milan; return
         }
         ver miui; return
     }
@@ -319,7 +316,7 @@ rom() {
 
 valof() {
     sed -n "s|^$1[[:blank:]]*=[[:blank:]]*||p" $UCONF | \
-    sed 's|[[:blank:]][[:blank:]]*| |g;s|[[:blank:]][[:blank:]]*$||' | \
+    sed 's|[[:blank:]][[:blank:]]*| |g;s| $||' | \
     tail -${2:-1}
 }
 
@@ -332,6 +329,9 @@ config() {
         cp $UCONF $UCONF~; cp $dconf $UCONF; ui_print '  Reset'
     }
 
+    SANS=`valof SANS` MONO=`valof MONO`
+    SERF=`valof SERF` SRMO=`valof SRMO`
+
     SS=`valof SS` SSI=`valof SSI`
     [ ${SSI:=$SS} ] && \
     for i in $FW; do i=`up $i`
@@ -341,26 +341,8 @@ config() {
         eval $(echo C$i=\"`valof C$i`\")
         eval $(echo [ \"\${C$i:=\$U$i}\" ])
         eval $(echo D$i=\"`valof D$i`\")
-        eval $(echo [ \"\${D$i:=\$C$i}\" ])
+        eval $(echo [ \"\${D$i:=\$I$i}\" ])
+        eval $(echo M$i=\"`valof M$i`\")
+        eval $(echo S$i=\"`valof S$i`\")
     done
 }
-
-### INSTALLATION ###
-
-ui_print "- Installing Custom Fonts"
-
-ui_print "+ Preparing..."
-prep; $FB
-
-ui_print "+ Configuring..."
-config
-
-ui_print "+ Installing Fonts"
-install_font
-
-ui_print "+ Rom Specific Omptimisations..."
-rom
-
-ui_print "+ Thanks to nongthaihoang, MFFM, and akshit singh"
-bold
-finish
