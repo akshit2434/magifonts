@@ -2,21 +2,21 @@
 
 ### INSTALLATION ###
 
-ui_print '- Installing'
+#ui_print '- Installing'
 
+#ui_print '+ Prepare'
+#prep; $FB
 
-ui_print '+ Prepare'
-prep; $FB
+#ui_print '+ Configure'
+#config
 
-ui_print '+ Configure'
-config
+#ui_print '+ Font'
+#install_font
 
-install_font
+#src
 
-src
+#ui_print '+ Rom'
+#rom
 
-ui_print '+ Rom'
-rom
-
-bold
-finish
+#bold
+#finish
