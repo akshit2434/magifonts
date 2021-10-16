@@ -10,6 +10,7 @@ ORIPRDETC=$ORIPRD/etc
 ORIPRDXML=$ORIPRDETC/fonts_customization.xml
 ORISYSFONT=$ORIDIR/system/fonts
 ORISYSETC=$ORIDIR/system/etc
+ORISYSEXTETC=$ORIDIR/system/system_ext/etc
 ORISYSXML=$ORISYSETC/fonts.xml
 
 PRDFONT=$MODPATH/system/product/fonts
@@ -17,9 +18,10 @@ PRDETC=$MODPATH/system/product/etc
 PRDXML=$PRDETC/fonts_customization.xml
 SYSFONT=$MODPATH/system/fonts
 SYSETC=$MODPATH/system/etc
+SYSEXTETC=$MODPATH/system/system_ext/etc
 SYSXML=$SYSETC/fonts.xml
 MODPROP=$MODPATH/module.prop
-mkdir -p $PRDFONT $PRDETC $SYSFONT $SYSETC
+mkdir -p $PRDFONT $PRDETC $SYSFONT $SYSETC $SYSEXTETC
 
 FONTS=$MODPATH/fonts
 tar xf $MODPATH/*xz -C $MODPATH
@@ -37,13 +39,28 @@ readonly SE SA SAQ SAF SC SCQ SCF MO SO
 Bl=Black Bo=Bold EBo=Extra$Bo SBo=Semi$Bo Me=Medium
 Th=Thin Li=Light ELi=Extra$Li Re=Regular It=Italic
 Cn=Condensed- X=.ttf
-readonly Bl Bo EBo SBo Me Th Li ELi Re It Cn
+readonly Bl Bo EBo SBo Me Th Li ELi Re It Cn X
 
 FB=fallback
 
 ver() { sed -i "/^version=/s|$|-$1|" $MODPROP; }
 
-xml() { sed -i "$1" ${XML:=$SYSXML}; }
+xml() {
+    [ ${XML:=$SYSXML} ]
+    case $XML_LIST in
+        *$XML*) ;;
+        *)
+            sed -i '/<!--.*-->/d;/<!--/,/-->/d' $XML
+            sed -i "s|'|\"|g" $XML
+            sed -i "/<$F .*>/s|>|\n&|" $XML
+            sed -i "/[[:blank:]]<$F/{:a;N;/>/!ba;s|\n||g}" $XML
+            sed -i "/<$F.*$FE/s|$FE|\n&|" $XML
+            sed -i "/<$F .*>$/{N;s|\n||}" $XML
+            sed -i "/<$F /{N;s|\n$FE|$FE|}" $XML
+            XML_LIST="$XML $XML_LIST" ;;
+    esac
+    sed -i "$@" $XML
+}
 
 src() {
     local l=`find $OMFDIR -maxdepth 1 -type f -name '*.sh' -exec basename {} \; | sort` i
@@ -74,8 +91,8 @@ prep() {
         find /data/adb/modules/ -type f -name fonts*xml -delete
         false | cp -i /system/etc/fonts.xml $SYSXML && ver '<!>'
     } || false | cp -i $ORISYSXML $SYSXML
-    xml '/<!--.*-->/d;/<!--/,/-->/d'
-    grep -q "$FA >" $SYSXML && readonly FB=
+    sed -n "/<$FA *>/,$FAE{/400.*$N/p}" $SYSXML | \
+    grep -q Roboto && readonly FB=
 }
 
 font() {
@@ -90,7 +107,7 @@ font() {
     esac
     fa="/$FA.*\"$fa\"/,$FAE" s="${w}00.*$s"
     [ $i ] && s="$s.*$i=\"[0-9]*"
-    [ $r ] && s="$s.*$r"; s="$s\">"
+    [ $r ] && s="$s.*\"$r"; s="$s\"[[:blank:]]*[p>]"
 
     xml "$fa{/$s/s|$FE|\n&|}"
     $axis_del && xml "$fa{/$s/,/$FE/{/$F/!d}}"
@@ -151,7 +168,7 @@ lnf(){
             [ -f $FONTS/$i$X ] || ln -s $Re$X $FONTS/$i$X
             [ -f $FONTS/$i$It$X ] || ln -s $i$X $FONTS/$i$It$X
             [ -f $FONTS/$Cn$i$X ] || ln -s $i$X $FONTS/$Cn$i$X
-            [ -f $FONTS/$Cn$i$It$X ] || ln -s $Cn$i$X $FONTS/$Cn$i$It$X
+            [ -f $FONTS/$Cn$i$It$X ] || ln -s $i$It$X $FONTS/$Cn$i$It$X
         done
         shift 2
     done
@@ -159,7 +176,25 @@ lnf(){
 
 up() { echo $@ | tr [:lower:] [:upper:]; }
 
+rename() {
+    set bli $Bl$It bl $Bl ebi $EBo$It eb $EBo bi $Bo$It b $Bo \
+        sbi $SBo$It sb $SBo mi $Me$It m $Me i $It r $Re \
+        li $Li$It l $Li eli $ELi$It el $ELi ti $Th$It t $Th
+    while [ $2 ]; do
+        ([ -f $FONTS/$1$X ] || [ -f $FONTS/$1.otf ]) && mv $FONTS/$1.[to]tf $FONTS/$2$X
+        ([ -f $FONTS/c$1$X ] || [ -f $FONTS/c$1.otf ]) && mv $FONTS/c$1.[to]tf $FONTS/$Cn$2$X
+        shift 2
+    done
+    set mo Mono e Emoji
+    while [ $2 ]; do
+        ([ -f $FONTS/$1$X ] || [ -f $FONTS/$1.otf ]) && mv $FONTS/$1.[to]tf $FONTS/$2$X
+        shift 2
+    done
+}
+
 install_font() {
+    rename
+    $EMOJ && emoji
     $MONO && mono
     $SANS || abort
     cpf $SS && {
@@ -180,32 +215,45 @@ install_font() {
         done
         return
     }
-    [ -f $FONTS/$Re$X ] || return
-    lnf "$Me $SBo" "$Me $SBo $Bo" "$Bo" "$EBo $Bl $SBo $Me"
-    lnf "$EBo $Bl" "$Bl $EBo $Bo $SBo $Me"
-    lnf "$Li" "$ELi $Th" "$ELi $Th" "$Th $ELi $Li"
-    [ -f $FONTS/$It$X ] || ln -s $Re$X $FONTS/$It$X
-    [ -f $FONTS/$Cn$Re$X ] || ln -s $Re$X $FONTS/$Cn$Re$X
-    [ -f $FONTS/$Cn$It$X ] || ln -s $Cn$Re$X $FONTS/$Cn$It$X
-    mksty; mksty $SC
-    set $Th t $ELi el $Li l $Me m $SBo sb $Bo b $EBo eb $Bl bl
-    while [ $2 ]; do
-        cp -P $FONTS/$1$X $SYSFONT && font $SA $1$X $2
-        cp -P $FONTS/$1$It$X $SYSFONT && font $SA $1$It$X $2i
-        cp -P $FONTS/$Cn$1$X $SYSFONT && font $SC $Cn$1$X $2
-        cp -P $FONTS/$Cn$1$It$X $SYSFONT && font $SC $Cn$1$It$X $2i
-        shift 2
-    done
-    set $Re r $It ri
-    while [ $2 ]; do
-        cp -P $FONTS/$1$X $SYSFONT && font $SA $1$X $2
-        cp -P $FONTS/$Cn$1$X $SYSFONT && font $SC $Cn$1$X $2
-        shift 2
-    done
+    ${FULL:=`valof FULL`} && {
+        [ -f $FONTS/$Re$X ] || return
+        lnf "$Me $SBo" "$Me $SBo $Bo" "$Bo" "$EBo $Bl $SBo $Me"
+        lnf "$EBo $Bl" "$Bl $EBo $Bo $SBo $Me"
+        lnf "$Li" "$ELi $Th" "$ELi $Th" "$Th $ELi $Li"
+        [ -f $FONTS/$It$X ] || ln -s $Re$X $FONTS/$It$X
+        [ -f $FONTS/$Cn$Re$X ] || ln -s $Re$X $FONTS/$Cn$Re$X
+        [ -f $FONTS/$Cn$It$X ] || ln -s $It$X $FONTS/$Cn$It$X
+        mksty; mksty $SC
+        set $Th t $ELi el $Li l $Me m $SBo sb $Bo b $EBo eb $Bl bl
+        while [ $2 ]; do
+            cp -P $FONTS/$1$X $SYSFONT && font $SA $1$X $2
+            cp -P $FONTS/$1$It$X $SYSFONT && font $SA $1$It$X $2i
+            cp -P $FONTS/$Cn$1$X $SYSFONT && font $SC $Cn$1$X $2
+            cp -P $FONTS/$Cn$1$It$X $SYSFONT && font $SC $Cn$1$It$X $2i
+            shift 2
+        done
+        set $Re r $It ri
+        while [ $2 ]; do
+            cp -P $FONTS/$1$X $SYSFONT && font $SA $1$X $2
+            cp -P $FONTS/$Cn$1$X $SYSFONT && font $SC $Cn$1$X $2
+            shift 2
+        done
+    } || {
+        set bli $Bl$It bl $Bl ebi $EBo$It eb $EBo bi $Bo$It b $Bo \
+            sbi $SBo$It sb $SBo mi $Me$It m $Me i $It r $Re \
+            li $Li$It l $Li eli $ELi$It el $ELi ti $Th$It t $Th
+        while [ $2 ]; do
+            [ -f $FONTS/$2$X ] && font $SA $2$X $1
+            [ -f $FONTS/$Cn$2$X ] && font $SC $Cn$2$X $1
+            shift 2
+        done
+    }
 }
 
-mono () {
-    cpf Mono.ttf && font $MO Mono.ttf r && return
+emoji() { cpf Emoji$X && font und-Zsye Emoji$X r; }
+
+mono() {
+    cpf Mono$X && font $MO Mono$X r && return
     MS=`valof MS` MSI=`valof MSI`; cpf $MS || return
     local i j=4 k=4
     for i in m sb b eb bl; do
@@ -227,8 +275,8 @@ bold() {
         cp `readlink -f $SYSFONT/$Me$X` `readlink -f $SYSFONT/$Re$X`
         cp `readlink -f $SYSFONT/$Me$It$X` `readlink -f $SYSFONT/$It$X`
         [ $PXL ] && {
-            ln -sf $Me$X $PRDFONT/$Re$X
-            ln -sf $Me$It$X $PRDFONT/$It$X
+            [ -f $PRDFONT/$Me$X ] && ln -sf $Me$X $PRDFONT/$Re$X
+            [ -f $PRDFONT/$Me$It$X ] && ln -sf $Me$It$X $PRDFONT/$It$X
         }
     }
 }
@@ -236,7 +284,7 @@ bold() {
 rom() {
     # Pixel
     readonly Gs=GoogleSans
-    [ -f $ORIPRDFONT/$Gs-$Re.ttf ] && cp $ORIPRDXML $PRDXML && {
+    [ -f $ORIPRDFONT/$Gs-$Re$X ] && cp $ORIPRDXML $PRDXML && {
         PXL=true; ver pxl
         [ ${GS:=`valof GS`} ]; ${GS:=false} && return
         local XML=$PRDXML fa=google-sans.* i
@@ -249,23 +297,30 @@ rom() {
             done
             return
         }
-        for i in $Bo$It $Bo $SBo$It $SBo $Me$It $Me $Re $It; do
-            ln -s /system/fonts/$i$X $PRDFONT
+        set $Bo$It bi $Bo b $SBo$It sbi $SBo sb $Me$It mi $Me m $Re r $It ri
+        while [ $2 ]; do
+            [ -f $SYSFONT/$1$X ] && {
+                ln -s /system/fonts/$1$X $PRDFONT
+                font $fa $1$X $2
+            }
+            shift 2
         done
-        font $fa $Re$X r   ; font $fa $It$X ri
-        font $fa $Me$X m   ; font $fa $Me$It$X mi
-        font $fa $SBo$X sb ; font $fa $SBo$It$X sbi
-        font $fa $Bo$X b   ; font $fa $Bo$It$X bi
         return
     }
 
-    # Oxygen 11 (basexml)
+    # Oxygen OS 11 (basexml)
     [ -f $ORISYSETC/fonts_base.xml ] && {
         cp $SYSXML $SYSETC/fonts_base.xml
         OOS11=true; ver basexml; return
     }
 
-    # Oxygen (slatexml)
+    # Color OS 11 (basexml)
+    [ -f $ORISYSEXTETC/fonts_base.xml ] && {
+        cp $SYSXML $SYSEXTETC/fonts_base.xml
+        COS=true; ver xbasexml; return
+    }
+
+    # Oxygen OS 10 (slatexml)
     [ -f $ORISYSETC/fonts_slate.xml ] && {
         cp $SYSXML $SYSETC/fonts_slate.xml
         OOS=true; ver slatexml; return
@@ -273,10 +328,9 @@ rom() {
 
     # MIUI
     grep -q MIUI $ORISYSXML && {
-        MIUI=true
-        [ -f $ORISYSFONT/MiLanProVF.ttf ] && {
-            MIUI=milan; ver milan; return
-        }
+        MIUI=`sed -n "/$FA.*\"miui\"/,$FAE{/400.*$N/{s|.*>||;p}}" $SYSXML`
+        [ -f $ORISYSFONT/$MIUI ] && ln -s $X $SYSFONT/$MIUI
+        [ -f $ORISYSFONT/RobotoVF$X ] && ln -s $X $SYSFONT/RobotoVF$X
         ver miui; return
     }
 
@@ -291,11 +345,11 @@ rom() {
             font sec-roboto-condensed-light $SS r $CL
             return
         }
-        font sec-roboto-light $Re$X r
-        font sec-roboto-light $Me$X b
-        font sec-roboto-condensed $Cn$Re$X r
-        font sec-roboto-condensed $Cn$Bo$X b
-        font sec-roboto-condensed-light $Cn$Li$X r
+        [ -f $SYSFONT/$Re$X ] && font sec-roboto-light $Re$X r
+        [ -f $SYSFONT/$Me$X ] && font sec-roboto-light $Me$X b
+        [ -f $SYSFONT/$Cn$Re$X ] && font sec-roboto-condensed $Cn$Re$X r
+        [ -f $SYSFONT/$Cn$Bo$X ] && font sec-roboto-condensed $Cn$Bo$X b
+        [ -f $SYSFONT/$Cn$Li$X ] && font sec-roboto-condensed-light $Cn$Li$X r
         return
     }
 
