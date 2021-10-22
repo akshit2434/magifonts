@@ -145,13 +145,13 @@ def error(update,context):
     if error == "timed out":
         bot.send_message(chat_id,"Request Timed Out. Pls try again...")
         return
-    if error == "broken file":
+    elif error == "broken file":
         bot.send_message(chat_id,"File is broken LoL xD.\nSorry, I feel sad for you...")
         return
+    elif error == str("Message can't be deleted").lower():
+        print("I cant delete a message either lol")
     else:
         bot.send_message(chat_id,"An Error Occured...")
-    if error == str("Message can't be deleted").lower():
-        print("I cant delete a message either lol")
        
         
     
