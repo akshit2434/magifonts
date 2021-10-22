@@ -148,7 +148,10 @@ def error(update,context):
     if error == "broken file":
         bot.send_message(chat_id,"File is broken LoL xD.\nSorry, I feel sad for you...")
         return
-    bot.send_message(chat_id,"An Error Occured...")
+    else:
+        bot.send_message(chat_id,"An Error Occured...")
+    if error == str("Message can't be deleted").lower():
+        print("I cant delete a message either lol")
        
         
     
