@@ -42,7 +42,9 @@ def member_join(update, context):
         member_count = int(bot.get_chat_members_count(update.message.chat_id))
         if member_count%member_count_alert == 0:
             message = update.message.reply_text(f"{member.full_name} is the "+str(member_count)+"th to join the group!!\nWhoo!! "+str(member_count)+" members!")
-            if not bot.pin_chat_message(update.message.chat_id, message.message_id):
+            try:
+                bot.pin_chat_message(update.message.chat_id, message.message_id)
+            except:
                 update.message.reply_text("I can't even pin a message.. dang!")
 
 def preview_command(update,context):
@@ -111,7 +113,7 @@ def start_command(update, context):
     update.message.reply_text("I'm alive bRUH!...")
     
 def help_command(update,context):
-    update.message.reply_text("Search for it on Google, duh. Tag my master @TheSc1enceGuy for some very important questions...")
+    update.message.reply_text("Search for it on Google, duh. Tag @TheSc1enceGuy for some very important questions...")
     
 def ccache_command(update,context):
     clearcache()
@@ -136,13 +138,20 @@ def handle_message(update,context):
 def error(update,context):
     print(f"Update {update} caused error {context.error}")
     error = str(context.error).lower()
+    try:
+        chat_id = update.message.chat_id
+    except:
+        chat_id = magifonts_id
     if error == "timed out":
-        bot.send_message(update.message.chat_id,"Request Timed Out. Pls try again...")
+        bot.send_message(chat_id,"Request Timed Out. Pls try again...")
         return
-    if error == "broken file":
-        bot.send_message(update.message.chat_id,"File is broken LoL xD.\nSorry, I feel sad for you...")
+    elif error == "broken file":
+        bot.send_message(chat_id,"File is broken LoL xD.\nSorry, I feel sad for you...")
         return
-    bot.send_message(update.message.chat_id,"An Error Occured...")
+    elif error == str("Message can't be deleted").lower():
+        print("I cant delete a message either lol")
+    else:
+        bot.send_message(chat_id,"An Error Occured...")
        
         
     
@@ -682,7 +691,10 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
 
     os.chdir(orig_dir)
     clearcache()
-    print("ttf download requested by @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else print("ttf download requested")
+    try:
+        print("ttf download requested by @"+docmsg.from_user.username)
+    except:
+        print("ttf download requested")
         
     
     if doc.document.file_name.split(".")[-1].lower() in font_ext:
@@ -703,8 +715,12 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             os.chdir(orig_dir)
             os.chdir("magiFont")
             print("sending...")
-            bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y", gmtime()))
-            bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else bot.send_message(magifonts_id,"Here you go!")
+            flashable_in = "Magisk / TWRP (Read Instructions)" if (template_type=="OMF") else "Magisk"
+            bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+flashable_in+"\nTime: "+strftime("%a, %d %b %Y", gmtime()))
+            try:
+                bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
+            except:
+                bot.send_message(magifonts_id,"Here you go!")
             if not str(doc.chat_id) == str(magifonts_id):
                 doc.reply_text("Your file has been posted in @magifonts_support")
                 doc.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
@@ -784,7 +800,10 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
         shutil.make_archive("magiFont/"+zipname+"[Magifonts]", "zip",templatedir)
         if os.stat("magiFont/"+zipname+"[Magifonts]"+".zip").st_size <= 20000000:
             bot.send_document(magifonts_id, open("magiFont/"+zipname+"[Magifonts]"+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+"Magisk"+"\nTime: "+strftime("%a, %d %b %Y", gmtime()))
-            bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username) if hasattr(docmsg.from_user, 'username') else bot.send_message(magifonts_id,"Here you go!")
+            try:
+                bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
+            except:
+                bot.send_message(magifonts_id,"Here you go!")
 
             if not (docmsg.chat_id == magifonts_id):
                 bot.send_message(docmsg.chat_id,"The file has been posted to @magifonts_support")
