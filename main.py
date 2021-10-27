@@ -362,7 +362,7 @@ def button(update, context):
             
             
         
-        def compile_advanced():
+    def compile_advanced():
         if query.data == "template":
             template()
         if query.data == "advanced":
