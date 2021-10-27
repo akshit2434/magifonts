@@ -88,8 +88,6 @@ def preview(update,context,doc):
         regular_font = ""
         if len(ffiles)<1:
             ffiles = list(find("*.ttf", "preview_zip"))
-            #print(ffiles)
-            #for i in range(0,len(ffiles)):
         regular_font = find_font(ffiles,"Regular", remove_ext(doc.document.file_name))
         bold_font = find_font(ffiles,"Bold")
         light_font = find_font(ffiles,"Light")
@@ -153,7 +151,15 @@ def error(update,context):
     else:
         bot.send_message(chat_id,"An Error Occured...")
        
-        
+
+#OMF update function
+def updateomf():
+    print("updating OMF")
+    
+
+#OMF backup function
+def backupomf():
+    print("backing up OMF")
     
 def main():
     # Create the Updater and pass it your bot's token.
@@ -177,6 +183,10 @@ def main():
     dispatcher.add_handler(CallbackQueryHandler(button, pattern="^OMF||MFFM||advanced_module||cancel_module$"))
     dispatcher.add_handler(CommandHandler("faketrigger",member_join))
     dispatcher.add_handler(CommandHandler("extractfont",extract_font))
+
+    #OMF update and backup
+    dispatcher.add_handler(CommandHandler("updateomf",updateomf))
+    dispatcher.add_handler(CommandHandler("backupomf",backupomf))
     
     dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
     
@@ -245,10 +255,8 @@ def delete_command(update, context):
                 else:
                     to_del = capscheck(attr)
                     font = find_font(ffiles, to_del, remove_ext(doc.file_name))
-                    #print("font: ",font, "   to_del: ",to_del)
                     if font:
                         os.remove(font)
-                        #print(font)
                     else:
                         update.message.reply_text("Couldn't find that...")
                         return
@@ -264,7 +272,6 @@ def delete_command(update, context):
 def module_command(update,context):
     if update.message.reply_to_message:
         if int(update.message.reply_to_message.document.file_size) <= 20000000:
-            #print("filename: ",context.args)
             print(int(update.message.reply_to_message.document.file_size))
             keyboard = [
             [
@@ -323,8 +330,6 @@ def em_received(update, context):
 
 def button(update, context):
     query = update.callback_query
-    #print("a\n",update.callback_query.message.reply_to_message.from_user,"\n\n")
-    #print("b\n",update.effective_user)
     
     
     def module():
@@ -358,8 +363,6 @@ def button(update, context):
             
         
         def compile_advanced():
-            print("i gotta compile ig")
-        
         if query.data == "template":
             template()
         if query.data == "advanced":
@@ -723,7 +726,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
                 bot.send_message(magifonts_id,"Here you go!")
             if not str(doc.chat_id) == str(magifonts_id):
                 doc.reply_text("Your file has been posted in @magifonts_support")
-                doc.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
+                # doc.reply_text("Checkout #submit-sample\nThanks for being a part of the awesome community!!")
             os.chdir("../")
         else:
             doc.reply_text("invalid file type!")
@@ -1133,7 +1136,6 @@ def regularfinder(x,filename = "```///2l"):
 def find_font(name, font, filename = "``/`/...~", method = "filename"):
     #filename="hulu`124827@@#"
     a = []
-    print("\n", font)
     allfonts = name.copy()
     #print(allfonts)
     if os.path.exists(list(name)[0]) and not method == "filename":
@@ -1231,7 +1233,6 @@ def find_font(name, font, filename = "``/`/...~", method = "filename"):
     if len(a) > 0:
         print(a,name[origlistt.index(a[0])], origlistt.index(a[0]))
         return name[origlistt.index(a[0])]
-    print("lmao")
 
 FONT_SPECIFIER_NAME_ID = 4
 FONT_SPECIFIER_FAMILY_ID = 1
