@@ -170,11 +170,10 @@ def updateomf(update, context):
             print(1)
             urllib.urlretrieve("https://gitlab.com/nongthaihoang/omftemplate/-/archive/master/omftemplate-master.zip", "OMF.zip")
             print(1)
-            os.mkdir("OMF")
-            with zipfile.ZipFile("OMF.zip", 'r') as zip_ref:
-                zip_ref.extractall("OMF")
-            os.chdir("OMF")
-            print(os.listdir())
+            # os.mkdir("OMF")
+            extract("OMF.zip", os.getcwd())
+            os.rename("omftemplate-master", "OMF")
+            # print(os.listdir())
             print(1)
             update.message.reply_text("Updated OMF successfully")
             print(1)
@@ -1153,7 +1152,7 @@ def listfiles(direc):
 def fix_update():
     os.chdir(orig_dir)
     os.chdir("OMF") 
-    print(os.getcwd(), os.listdir())
+    # print(os.getcwd(), os.listdir())
 
     omfsh_data = open(os.path.join(os.getcwd(),"ohmyfont.sh"))
     string_list = omfsh_data.readlines()
