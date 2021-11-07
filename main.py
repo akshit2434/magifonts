@@ -1159,7 +1159,7 @@ def fix_update():
     print(2)
     omfsh_data.close()
     print(2)
-    omfsh = open("ohmyfont.sh", "w")
+    omfsh = open("ohmyfont.sh", "w", errors = "ignore")
     print(2)
     new_string_list = map(tempfunc,string_list)
     print(2)
