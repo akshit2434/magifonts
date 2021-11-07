@@ -160,23 +160,23 @@ def updateomf(update, context):
         try:
             print("updating OMF")
             os.chdir(orig_dir)
-            print(1)
+            
             shutil.rmtree("OMF_old")
-            print(1)
+            
             if os.path.isdir('OMF_reverted'):
                 shutil.rmtree("OMF_reverted")
-            print(1)
+            
             os.rename("OMF", "OMF_old")
-            print(1)
+            
             urllib.urlretrieve("https://gitlab.com/nongthaihoang/omftemplate/-/archive/master/omftemplate-master.zip", "OMF.zip")
-            print(1)
+            
             # os.mkdir("OMF")
             extract("OMF.zip", os.getcwd())
             os.rename("omftemplate-master", "OMF")
             print(os.listdir())
-            print(1)
+            
             update.message.reply_text("Updated OMF successfully")
-            print(1)
+            
         except:
             update.message.reply_text("An error occured, which might have caused some messups. so better check that out asap...")
         os.chdir(orig_dir)
@@ -194,18 +194,18 @@ def revertomf(update, context):
         os.chdir(orig_dir)
         if os.isdir('OMD_reverted') or os.isdir('OMF_old'):
             try:
-                print(2)
+                
                 if os.path.isdir('OMF_reverted'):
                     os.rename('OMF', 'OMF_old')
-                    print(2)
+                    
                     os.rename('OMF_reverted', "OMF")
-                    print(2)
+                    
                 else:
                     os.chdir(orig_dir)
                     os.rename("OMF", "OMF_reverted")
-                    print(2)
+                    
                     os.rename("OMF_old", "OMF")
-                    print(2)
+                    
                     update.message.reply_text("Revert successful!")
             except:
                 update.message.reply_text("An error occured, that too during Reverting,,. so better check that out asap!")
@@ -811,7 +811,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             shutil.copyfile(ffiles[0], os.path.join("../",fontdir,"Regular.ttf"))
             flist[flist.index(["Regular",False])][1] = ffiles[0]
         else:
-            print(1)
+            
             for j in range(len(fontsall)):
                 #print("filename..")
                 x = find_font(ffiles, remove_ext(fontsall[j]),remove_ext(doc.document.file_name), "filename")
@@ -846,11 +846,11 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
                                 if x:
                                     flist[flist.index([remove_ext(fontsall[j]),False])][1] = x
                         
-            print(2)
+            
             paste_to_template(flist,"ziptodo",fontdir)
         
         edit_module_prop(zipname,templatedir)
-        print(3)
+        
         os.chdir("ziptodo")
         processfonts(flist)
         os.chdir(orig_dir)
@@ -1153,18 +1153,12 @@ def fix_update():
     os.chdir("OMF") 
     print(os.getcwd(), os.listdir())
 
-    omfsh_data = open("ohmyfont.sh", errors = "ignore")
-    print(2)
+    omfsh_data = open("customize.sh", errors = "ignore")
     string_list = omfsh_data.readlines()
-    print(2)
     omfsh_data.close()
-    print(2)
-    omfsh = open("ohmyfont.sh", "w", errors = "ignore")
-    print(2)
+    omfsh = open("customize.sh", "w", errors = "ignore")
     new_string_list = map(tempfunc,string_list)
-    print(2)
     omfsh.writelines(new_string_list)
-    print(2)
     os.chdir(orig_dir)
 
 def tempfunc(x):
