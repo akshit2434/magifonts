@@ -161,7 +161,8 @@ def updateomf(update, context):
         print(1)
         shutil.rmtree("OMF_old")
         print(1)
-        shutil.rmtree("OMF_reverted")
+        if os.path.isdir('OMF_reverted'):
+            shutil.rmtree("OMF_reverted")
         print(1)
         os.rename("OMF", "OMF_old")
         print(1)
