@@ -173,6 +173,8 @@ def updateomf(update, context):
             os.mkdir("OMF")
             with zipfile.ZipFile("OMF.zip", 'r') as zip_ref:
                 zip_ref.extractall("OMF")
+            os.chdir("OMF")
+            print(os.listdir())
             print(1)
             update.message.reply_text("Updated OMF successfully")
             print(1)
@@ -1149,9 +1151,9 @@ def listfiles(direc):
         return name.copy()
     
 def fix_update():
-    
+    os.chdir(orig_dir)
     os.chdir("OMF") 
-    print(os.getcwd())
+    print(os.getcwd(), os.listdir())
 
     omfsh_data = open(os.path.join(os.getcwd(),"ohmyfont.sh"))
     string_list = omfsh_data.readlines()
