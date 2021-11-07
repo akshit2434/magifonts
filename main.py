@@ -166,7 +166,7 @@ def updateomf(update, context):
         print(1)
         os.rename("OMF", "OMF_old")
         print(1)
-        urllib.urlretrieve("https://gitlab.com/nongthaihoang/oh_my_font/-/raw/master/releases/OMF.zip?inline=false", "OMF.zip")
+        urllib.urlretrieve("https://gitlab.com/nongthaihoang/omftemplate/-/archive/master/omftemplate-master.zip", "OMF.zip")
         print(1)
         extract('OMF.zip', "OMF")
         print(1)
@@ -175,12 +175,15 @@ def updateomf(update, context):
     except:
         update.message.reply_text("An error occured, which might have caused some messups. so better check that out asap...")
     os.chdir(orig_dir)
+    initialize()
+    fix_update()
     
     
 
 #OMF revert function
 def revertomf(update, context):
     print("reverting OMF")
+    os.chdir(orig_dir)
     if os.isdir('OMD_reverted') or os.isdir('OMF_old'):
         try:
             print(2)
@@ -202,6 +205,7 @@ def revertomf(update, context):
         print(3)
     else:
         update.message.reply_text("Nothing to revert sir!")
+    initialize()
 
 def main():
     # Create the Updater and pass it your bot's token.
@@ -1135,6 +1139,20 @@ def listfiles(direc):
     for dirs,file,name in walklevel(direc, 1):
         return name.copy()
     
+def fix_update(dir):
+    os.remove("OMF/module.prop")
+    shutil.copyfile("OMF_old/module.prop", "OMF/module.prop")
+    
+    omfsh_data = open("ohmyfont.sh")
+    string_list = omfsh_data.readlines()
+    omfsh_data.close()
+    omfsh = open("ohmyfont.sh", "w")
+    new_string_list = map(tempfunc,string_list)
+    omfsh.writelines(new_string_list)
+
+def tempfunc(x):
+    return x[1:] if x[0] == "#" and not x[1] == "#" else x
+
 def initialize():
     try:
         shutil.register_unpack_format('7zip', ['.7z'], unpack_7zarchive)
@@ -1142,6 +1160,7 @@ def initialize():
         print("7z already registered")
     #else:
         #shutil.register_unpack_format('7zip', ['.7z'], unpack_7zarchive)
+    os.chdir(orig_dir)
     create_dir("todo")
     create_dir("magiFont")
     create_dir("ziptodo")
