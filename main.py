@@ -223,7 +223,33 @@ def main():
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
     
+    
+    try:
+        print("updating OMF")
+        os.chdir(orig_dir)
+        
+        shutil.rmtree("OMF_old")
+        
+        if os.path.isdir('OMF_reverted'):
+            shutil.rmtree("OMF_reverted")
+        
+        os.rename("OMF", "OMF_old")
+        
+        urllib.urlretrieve("https://gitlab.com/nongthaihoang/omftemplate/-/archive/master/omftemplate-master.zip", "OMF.zip")
+        
+        # os.mkdir("OMF")
+        extract("OMF.zip", os.getcwd())
+        os.rename("omftemplate-master", "OMF")
+        print(os.listdir())
+        
+        print("Updated OMF successfully!")
+        
+    except:
+        print("error_occured while updating")
+    os.chdir(orig_dir)
     initialize()
+    fix_update()
+
     
     dispatcher.add_handler(CommandHandler("preview",preview_command))
     dispatcher.add_handler(CommandHandler("start", start_command))
