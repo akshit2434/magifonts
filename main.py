@@ -160,11 +160,17 @@ def updateomf(update, context):
         os.chdir(orig_dir)
         print(1)
         shutil.rmtree("OMF_old")
+        print(1)
         shutil.rmtree("OMF_reverted")
+        print(1)
         os.rename("OMF", "OMF_old")
+        print(1)
         urllib.urlretrieve("https://gitlab.com/nongthaihoang/oh_my_font/-/raw/master/releases/OMF.zip?inline=false", "OMF.zip")
+        print(1)
         extract('OMF.zip', "OMF")
+        print(1)
         update.message.reply_text("Updated OMF successfully")
+        print(1)
     except:
         update.message.reply_text("An error occured, which might have caused some messups. so better check that out asap...")
     os.chdir(orig_dir)
@@ -175,17 +181,23 @@ def updateomf(update, context):
 def revertomf(update, context):
     print("reverting OMF")
     try:
+        print(2)
         if os.path.isdir('OMF_reverted'):
             os.rename('OMF', 'OMF_old')
+            print(2)
             os.rename('OMF_reverted', "OMF")
+            print(2)
         else:
-            os.chdir(orig_dir);
+            os.chdir(orig_dir)
             os.rename("OMF", "OMF_reverted")
-            os.rename("OMF_old", "OMF");
+            print(2)
+            os.rename("OMF_old", "OMF")
+            print(2)
             update.message.reply_text("Revert successful!")
     except:
         update.message.reply_text("An error occured, that too during Reverting,,. so better check that out asap!")
     os.chdir(orig_dir)
+    print(3)
     
 def main():
     # Create the Updater and pass it your bot's token.
