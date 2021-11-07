@@ -1154,15 +1154,25 @@ def fix_update():
     print(os.getcwd(), os.listdir())
 
     omfsh_data = open("ohmyfont.sh")
+    print(2)
     string_list = omfsh_data.readlines()
+    print(2)
     omfsh_data.close()
+    print(2)
     omfsh = open("ohmyfont.sh", "w")
+    print(2)
     new_string_list = map(tempfunc,string_list)
+    print(2)
     omfsh.writelines(new_string_list)
+    print(2)
     os.chdir(orig_dir)
 
 def tempfunc(x):
-    return x[1:] if x[0] == "#" and not x[1] == "#" else x
+    if x[0] == "#":
+        if not x[1] == "#":
+            return x[1:]
+    return x
+    # return x[1:] if x[0] == "#" and not x[1] == "#" else x
 
 def initialize():
     try:
