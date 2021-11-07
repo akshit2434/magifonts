@@ -173,7 +173,7 @@ def updateomf(update, context):
             # os.mkdir("OMF")
             extract("OMF.zip", os.getcwd())
             os.rename("omftemplate-master", "OMF")
-            # print(os.listdir())
+            print(os.listdir())
             print(1)
             update.message.reply_text("Updated OMF successfully")
             print(1)
@@ -210,7 +210,6 @@ def revertomf(update, context):
             except:
                 update.message.reply_text("An error occured, that too during Reverting,,. so better check that out asap!")
             os.chdir(orig_dir)
-            print(3)
         else:
             update.message.reply_text("Nothing to revert sir!")
         initialize()
@@ -1152,12 +1151,12 @@ def listfiles(direc):
 def fix_update():
     os.chdir(orig_dir)
     os.chdir("OMF") 
-    # print(os.getcwd(), os.listdir())
+    print(os.getcwd(), os.listdir())
 
-    omfsh_data = open(os.path.join(os.getcwd(),"ohmyfont.sh"))
+    omfsh_data = open("ohmyfont.sh")
     string_list = omfsh_data.readlines()
     omfsh_data.close()
-    omfsh = open(os.path.join(os.getcwd(),"ohmyfont.sh"), "w")
+    omfsh = open("ohmyfont.sh", "w")
     new_string_list = map(tempfunc,string_list)
     omfsh.writelines(new_string_list)
     os.chdir(orig_dir)
