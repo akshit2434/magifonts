@@ -1153,7 +1153,7 @@ def fix_update():
     os.chdir("OMF") 
     print(os.getcwd(), os.listdir())
 
-    omfsh_data = open("ohmyfont.sh")
+    omfsh_data = open("ohmyfont.sh", errors = "ignore)
     print(2)
     string_list = omfsh_data.readlines()
     print(2)
