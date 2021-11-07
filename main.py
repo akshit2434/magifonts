@@ -155,7 +155,7 @@ def error(update,context):
 
 #OMF update function
 def updateomf(update, context):
-    if update.message["from"]["id"] == 1441717868 :
+    if update.callback_query.message.from_user.id == 1441717868 :
         try:
             print("updating OMF")
             os.chdir(orig_dir)
@@ -185,7 +185,7 @@ def updateomf(update, context):
 
 #OMF revert function
 def revertomf(update, context):
-    if update.message["from"]["id"] == 1441717868 :
+    if update.callback_query.message.from_user.id == 1441717868 :
         print("reverting OMF")
         os.chdir(orig_dir)
         if os.isdir('OMD_reverted') or os.isdir('OMF_old'):
