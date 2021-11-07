@@ -155,57 +155,63 @@ def error(update,context):
 
 #OMF update function
 def updateomf(update, context):
-    try:
-        print("updating OMF")
+    if update.message["from"]["id"] == 1441717868 :
+        try:
+            print("updating OMF")
+            os.chdir(orig_dir)
+            print(1)
+            shutil.rmtree("OMF_old")
+            print(1)
+            if os.path.isdir('OMF_reverted'):
+                shutil.rmtree("OMF_reverted")
+            print(1)
+            os.rename("OMF", "OMF_old")
+            print(1)
+            urllib.urlretrieve("https://gitlab.com/nongthaihoang/omftemplate/-/archive/master/omftemplate-master.zip", "OMF.zip")
+            print(1)
+            extract('OMF.zip', "OMF")
+            print(1)
+            update.message.reply_text("Updated OMF successfully")
+            print(1)
+        except:
+            update.message.reply_text("An error occured, which might have caused some messups. so better check that out asap...")
         os.chdir(orig_dir)
-        print(1)
-        shutil.rmtree("OMF_old")
-        print(1)
-        if os.path.isdir('OMF_reverted'):
-            shutil.rmtree("OMF_reverted")
-        print(1)
-        os.rename("OMF", "OMF_old")
-        print(1)
-        urllib.urlretrieve("https://gitlab.com/nongthaihoang/omftemplate/-/archive/master/omftemplate-master.zip", "OMF.zip")
-        print(1)
-        extract('OMF.zip', "OMF")
-        print(1)
-        update.message.reply_text("Updated OMF successfully")
-        print(1)
-    except:
-        update.message.reply_text("An error occured, which might have caused some messups. so better check that out asap...")
-    os.chdir(orig_dir)
-    initialize()
-    fix_update()
+        initialize()
+        fix_update()
+    else:
+        update.message.reply_text("Only my owner can execute this cmd")
     
     
 
 #OMF revert function
 def revertomf(update, context):
-    print("reverting OMF")
-    os.chdir(orig_dir)
-    if os.isdir('OMD_reverted') or os.isdir('OMF_old'):
-        try:
-            print(2)
-            if os.path.isdir('OMF_reverted'):
-                os.rename('OMF', 'OMF_old')
-                print(2)
-                os.rename('OMF_reverted', "OMF")
-                print(2)
-            else:
-                os.chdir(orig_dir)
-                os.rename("OMF", "OMF_reverted")
-                print(2)
-                os.rename("OMF_old", "OMF")
-                print(2)
-                update.message.reply_text("Revert successful!")
-        except:
-            update.message.reply_text("An error occured, that too during Reverting,,. so better check that out asap!")
+    if update.message["from"]["id"] == 1441717868 :
+        print("reverting OMF")
         os.chdir(orig_dir)
-        print(3)
+        if os.isdir('OMD_reverted') or os.isdir('OMF_old'):
+            try:
+                print(2)
+                if os.path.isdir('OMF_reverted'):
+                    os.rename('OMF', 'OMF_old')
+                    print(2)
+                    os.rename('OMF_reverted', "OMF")
+                    print(2)
+                else:
+                    os.chdir(orig_dir)
+                    os.rename("OMF", "OMF_reverted")
+                    print(2)
+                    os.rename("OMF_old", "OMF")
+                    print(2)
+                    update.message.reply_text("Revert successful!")
+            except:
+                update.message.reply_text("An error occured, that too during Reverting,,. so better check that out asap!")
+            os.chdir(orig_dir)
+            print(3)
+        else:
+            update.message.reply_text("Nothing to revert sir!")
+        initialize()
     else:
-        update.message.reply_text("Nothing to revert sir!")
-    initialize()
+        update.message.reply_text("Only my owner can execute this cmd")
 
 def main():
     # Create the Updater and pass it your bot's token.
@@ -1140,8 +1146,11 @@ def listfiles(direc):
         return name.copy()
     
 def fix_update():
-    os.remove("OMF/module.prop")
-    shutil.copyfile("OMF_old/module.prop", "OMF/module.prop")
+    
+    os.chdir("OMF")
+    os.remove("module.prop")
+    shutil.copyfile("../OMF_old/module.prop", "module.prop")
+    
     
     omfsh_data = open("ohmyfont.sh")
     string_list = omfsh_data.readlines()
@@ -1149,6 +1158,7 @@ def fix_update():
     omfsh = open("ohmyfont.sh", "w")
     new_string_list = map(tempfunc,string_list)
     omfsh.writelines(new_string_list)
+    os.chdir(orig_dir)
 
 def tempfunc(x):
     return x[1:] if x[0] == "#" and not x[1] == "#" else x
