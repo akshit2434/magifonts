@@ -800,7 +800,7 @@ def ttfdownload(template_type, docmsg, doc, zipname, templatedir, fontdir, fonts
             os.chdir(orig_dir)
             os.chdir("magiFont")
             print("sending...")
-            flashable_in = "Magisk / TWRP (Read Instructions)" if (template_type=="OMF") else "Magisk"
+            flashable_in = "Magisk / TWRP (Read Instructions)" if (template_type.lower()=="omf") else "Magisk"
             bot.send_document(magifonts_id, open(to_send+".zip",'rb'),caption=random.choice(file_responses)+"\nFont Name: "+zipname+"\nTemplate used: "+template_type+"\nFlashable in: "+flashable_in+"\nTime: "+strftime("%a, %d %b %Y", gmtime()))
             try:
                 bot.send_message(magifonts_id,"Here you go! - @"+docmsg.from_user.username)
