@@ -1148,12 +1148,12 @@ def listfiles(direc):
 def fix_update():
     
     os.chdir("OMF") 
-    print(os.getcwd(), os.listdir())
+    print(os.getcwd())
 
-    omfsh_data = open("ohmyfont.sh")
+    omfsh_data = open(os.path.join(os.getcwd(),"ohmyfont.sh"))
     string_list = omfsh_data.readlines()
     omfsh_data.close()
-    omfsh = open("ohmyfont.sh", "w")
+    omfsh = open(os.path.join(os.getcwd(),"ohmyfont.sh"), "w")
     new_string_list = map(tempfunc,string_list)
     omfsh.writelines(new_string_list)
     os.chdir(orig_dir)
