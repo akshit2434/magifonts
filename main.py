@@ -1147,11 +1147,7 @@ def listfiles(direc):
     
 def fix_update():
     
-    os.chdir("OMF")
-    os.remove("module.prop")
-    shutil.copyfile("../OMF_old/module.prop", "module.prop")
-    
-    
+    os.chdir("OMF")  
     omfsh_data = open("ohmyfont.sh")
     string_list = omfsh_data.readlines()
     omfsh_data.close()
