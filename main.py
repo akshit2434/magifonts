@@ -192,7 +192,7 @@ def revertomf(update, context):
     if update.message.from_user.id == 1441717868 :
         print("reverting OMF")
         os.chdir(orig_dir)
-        if os.isdir('OMD_reverted') or os.isdir('OMF_old'):
+        if os.path.isdir('OMD_reverted') or os.path.isdir('OMF_old'):
             try:
                 
                 if os.path.isdir('OMF_reverted'):
