@@ -1148,8 +1148,8 @@ def listfiles(direc):
 def fix_update():
     
     os.chdir("OMF") 
-    print(os.getcwd())
-    
+    print(os.getcwd(), os.listdir())
+
     omfsh_data = open("ohmyfont.sh")
     string_list = omfsh_data.readlines()
     omfsh_data.close()
