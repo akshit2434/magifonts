@@ -1139,7 +1139,7 @@ def listfiles(direc):
     for dirs,file,name in walklevel(direc, 1):
         return name.copy()
     
-def fix_update(dir):
+def fix_update():
     os.remove("OMF/module.prop")
     shutil.copyfile("OMF_old/module.prop", "OMF/module.prop")
     
