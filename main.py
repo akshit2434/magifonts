@@ -7,7 +7,7 @@ import logging
 import constants as keys
 import responses as r
 import random
-import urllib
+import urllib.request as urllib
 from fontpreview import *
 from pyunpack import Archive
 from py7zr import unpack_7zarchive
@@ -181,25 +181,28 @@ def updateomf(update, context):
 #OMF revert function
 def revertomf(update, context):
     print("reverting OMF")
-    try:
-        print(2)
-        if os.path.isdir('OMF_reverted'):
-            os.rename('OMF', 'OMF_old')
+    if os.isdir('OMD_reverted') or os.isdir('OMF_old'):
+        try:
             print(2)
-            os.rename('OMF_reverted', "OMF")
-            print(2)
-        else:
-            os.chdir(orig_dir)
-            os.rename("OMF", "OMF_reverted")
-            print(2)
-            os.rename("OMF_old", "OMF")
-            print(2)
-            update.message.reply_text("Revert successful!")
-    except:
-        update.message.reply_text("An error occured, that too during Reverting,,. so better check that out asap!")
-    os.chdir(orig_dir)
-    print(3)
-    
+            if os.path.isdir('OMF_reverted'):
+                os.rename('OMF', 'OMF_old')
+                print(2)
+                os.rename('OMF_reverted', "OMF")
+                print(2)
+            else:
+                os.chdir(orig_dir)
+                os.rename("OMF", "OMF_reverted")
+                print(2)
+                os.rename("OMF_old", "OMF")
+                print(2)
+                update.message.reply_text("Revert successful!")
+        except:
+            update.message.reply_text("An error occured, that too during Reverting,,. so better check that out asap!")
+        os.chdir(orig_dir)
+        print(3)
+    else:
+        update.message.reply_text("Nothing to revert sir!")
+
 def main():
     # Create the Updater and pass it your bot's token.
     updater = Updater(keys.API_KEY)
