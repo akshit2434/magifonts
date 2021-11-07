@@ -14,6 +14,7 @@ from py7zr import unpack_7zarchive
 from fontTools import ttLib
 import requests
 import re
+import zipfile
 from time import *
 
 member_count_alert = 1000
@@ -169,7 +170,9 @@ def updateomf(update, context):
             print(1)
             urllib.urlretrieve("https://gitlab.com/nongthaihoang/omftemplate/-/archive/master/omftemplate-master.zip", "OMF.zip")
             print(1)
-            extract('OMF.zip', "OMF")
+            os.mkdir("OMF")
+            with zipfile.ZipFile("OMF.zip", 'r') as zip_ref:
+                zip_ref.extractall("OMF")
             print(1)
             update.message.reply_text("Updated OMF successfully")
             print(1)
