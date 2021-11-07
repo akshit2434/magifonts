@@ -7,6 +7,7 @@ import logging
 import constants as keys
 import responses as r
 import random
+import urllib
 from fontpreview import *
 from pyunpack import Archive
 from py7zr import unpack_7zarchive
@@ -153,13 +154,36 @@ def error(update,context):
        
 
 #OMF update function
-def updateomf():
-    print("updating OMF")
+def updateomf(update, context):
+    try:
+        print("updating OMF")
+        os.chdir(orig_dir);
+        shutil.rmtree("OMF_old");
+        shutil.rmtree("OMF_reverted");
+        os.rename("OMF", "OMF_old");
+        urllib.urlretrieve("https://gitlab.com/nongthaihoang/oh_my_font/-/raw/master/releases/OMF.zip?inline=false", "OMF.zip")
+        extract('OMF.zip', "OMF");
+        update.message.reply_text("Updated OMF successfully")
+    except:
+        update.message.reply_text("An error occured, which might have caused some messups. so better check that out asap...")
+    
     
 
-#OMF backup function
-def backupomf():
-    print("backing up OMF")
+#OMF revert function
+def revertomf(update, context):
+    print("reverting OMF")
+    try:
+        if os.path.isdir('OMF_reverted'):
+            os.rename('OMF', 'OMF_old')
+            os.rename('OMF_reverted', "OMF")
+        else:
+            os.chdir(orig_dir);
+            os.rename("OMF", "OMF_reverted")
+            os.rename("OMF_old", "OMF");
+            update.message.reply_text("Revert successful!")
+    except:
+        update.message.reply_text("An error occured, that too during Reverting,,. so better check that out asap!")
+
     
 def main():
     # Create the Updater and pass it your bot's token.
@@ -186,7 +210,7 @@ def main():
 
     #OMF update and backup
     dispatcher.add_handler(CommandHandler("updateomf",updateomf))
-    dispatcher.add_handler(CommandHandler("backupomf",backupomf))
+    dispatcher.add_handler(CommandHandler("revertomf",revertomf))
     
     dispatcher.add_handler(MessageHandler(Filters.text, handle_message))
     
