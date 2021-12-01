@@ -26,6 +26,7 @@ file_responses = ["This your OP font by your OP group", "You are the best!!", "Y
 FONT, BOLD, ITALICS = range(3)
 PREVIEW = 1
 bot = Bot(keys.API_KEY)
+admins = [1441717868, 783535757]
 
 def getFilename_fromURL(url):
     cd = requests.get(url, allow_redirects=True).headers.get('content-disposition')
@@ -156,7 +157,7 @@ def error(update,context):
 
 #OMF update function
 def updateomf(update, context):
-    if update.message.from_user.id == 1441717868 :
+    if update.message.from_user.id in admins:
         try:
             print("updating OMF")
             os.chdir(orig_dir)
@@ -189,7 +190,7 @@ def updateomf(update, context):
 
 #OMF revert function
 def revertomf(update, context):
-    if update.message.from_user.id == 1441717868 :
+    if update.message.from_user.id in admins:
         print("reverting OMF")
         os.chdir(orig_dir)
         if os.path.isdir('OMD_reverted') or os.path.isdir('OMF_old'):
